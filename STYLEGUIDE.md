@@ -42,7 +42,7 @@
         // code
     }
     ```
-- **Incorrect:**
+  - **Incorrect:**
     ```java
     if(condition){
         // code
