@@ -59,3 +59,4 @@ TODO text
 # Common build-tool wrapper scripts ('.cmd' versions are handled by 'Common.gitattributes')
 mvnw            text eol=lf
 gradlew         text eol=lf
+*.java          text eol=lf
