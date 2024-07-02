@@ -1,0 +1,8 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.refactor.renameFromFileExplorer": "prompt",
+    "java.format.settings.url": "./.vscode/JME_style.xml",
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "java.compile.nullAnalysis.mode": "automatic"
+}
