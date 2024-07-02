@@ -72,7 +72,7 @@ set CLASSPATH=%APP_HOME%\lib\graveborn-1.0.jar;%APP_HOME%\lib\jme3-desktop-3.6.1
 
 
 @rem Execute graveborn
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRAVEBORN_OPTS%  -classpath "%CLASSPATH%" com.mygame.Main %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRAVEBORN_OPTS%  -classpath "%CLASSPATH%" com.mygame.Graveborn %*
 
 :end
 @rem End local scope for the variables with windows NT shell

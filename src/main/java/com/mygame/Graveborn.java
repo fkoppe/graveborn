@@ -14,6 +14,9 @@ import com.jme3.scene.shape.Box;
  */
 public class Graveborn extends SimpleApplication {
 
+    private Geometry cube1;
+    private Geometry cube2;
+    
     public static void main(String[] args) {
         Graveborn app = new Graveborn();
         app.start();
@@ -21,19 +24,27 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        viewPort.setBackgroundColor(new ColorRGBA(1.0f, 0.8f, 1f, 1f));
+        
         Box b = new Box(1, 1, 1);
-        Geometry geom = new Geometry("Box", b);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
-        geom.setMaterial(mat);
-
-        rootNode.attachChild(geom);
+        mat.setTexture("ColorMap", assetManager.loadTexture("Textures/zombie.png"));
+        
+        cube1 = new Geometry("Cube1", b);
+        cube1.setMaterial(mat);
+        cube1.setLocalTranslation(0f, 0f, 0f);
+        rootNode.attachChild(cube1);
+        
+        cube2 = new Geometry("Cube2", b);
+        cube2.setMaterial(mat);
+        cube2.setLocalTranslation(-4f, -4f, -4f);
+        rootNode.attachChild(cube2);
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        //TODO: add update code
+        cube1.rotate(0.01f, 0.01f, 0.01f);
     }
 
     @Override
