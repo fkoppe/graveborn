@@ -1,13 +1,11 @@
-# git
+# Git configuration files
 .gitattributes text
 .gitignore text
 .gitconfig text
 .gitmodules text
 
-# document
+# Documentation
 *.md text
-*.css text
-*.html text
 *.txt text
 AUTHORS text
 CHANGELOG text
@@ -27,7 +25,7 @@ TODO text
 *.gradle        text diff=java
 *.gradle.kts    text diff=kotlin
 
-# These files are text and should be normalized (Convert crlf => lf)
+# Normalize text files (Convert crlf => lf)
 *.css           text diff=css
 *.scss          text diff=css
 *.sass          text
@@ -46,7 +44,7 @@ TODO text
 *.tagx          text
 *.xml           text
 
-# These files are binary and should be left untouched
+# Binary files
 # (binary is a macro for -text -diff)
 *.class         binary
 *.dll           binary
@@ -56,7 +54,6 @@ TODO text
 *.war           binary
 *.jks           binary
 
-# Common build-tool wrapper scripts ('.cmd' versions are handled by 'Common.gitattributes')
+# Build tool wrappers
 mvnw            text eol=lf
 gradlew         text eol=lf
-*.java          text eol=lf
