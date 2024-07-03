@@ -38,7 +38,7 @@ To get started with Graveborn, follow these steps:
 We appreciate your contributions to Graveborn! If you would like to contribute, please follow these steps:
 
 ### Recommended IDEs
-- Visual Studio Code with the [Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) v0.27.0
+- Visual Studio Code with the [Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack)
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/)
 - Alternatively, you can use the [JMonkey SDK](https://jmonkeyengine.org/start/)
 
