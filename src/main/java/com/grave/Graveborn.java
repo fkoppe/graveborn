@@ -10,6 +10,9 @@ import com.jme3.system.JmeContext;
 public class Graveborn extends SimpleApplication {
     static private JmeContext.Type context;
 
+    public final Arguments arguments;
+
+    private Mode mode = Mode.NONE;
     private GraveServer server = null;
     private GraveClient client = null;
 
@@ -19,12 +22,18 @@ public class Graveborn extends SimpleApplication {
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
 
-        Graveborn app = new Graveborn(arguments.getMode());
+        Graveborn app = new Graveborn(arguments);
         app.start(context);
     }
 
-    public Graveborn(Mode mode)
+    public Graveborn(Arguments a)
     {
+        arguments = a;
+
+        mode = arguments.getMode();
+        ip = arguments.getIp();
+        port = arguments.getPort();
+
         Scanner scanner = new Scanner(System.in);
 
         if(Mode.NONE == mode)
@@ -36,22 +45,31 @@ public class Graveborn extends SimpleApplication {
             case CLIENT:
                 context = JmeContext.Type.Display;
 
-                ip = Configurator.askForIp(scanner);
-                port = Configurator.askForPort(scanner);
+                if (null == ip) {
+                    ip = Configurator.askForIp(scanner);
+                }
+
+                if (-1 == port) {
+                    port = Configurator.askForPort(scanner);
+                }
 
                 client = new GraveClient(ip, port);
                 break;
             case SERVER:
                 context = JmeContext.Type.Headless;
 
-                port = Configurator.askForPort(scanner);
+                if (-1 == port) {
+                    port = Configurator.askForPort(scanner);
+                }
 
                 server = new GraveServer(port);
                 break;
             case HOST:
                 context = JmeContext.Type.Display;
 
-                port = Configurator.askForPort(scanner);
+                if (-1 == port) {
+                    port = Configurator.askForPort(scanner);
+                }
                 
                 server = new GraveServer(port);
                 ip = server.getIp();
