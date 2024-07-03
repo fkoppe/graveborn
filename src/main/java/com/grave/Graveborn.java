@@ -1,7 +1,6 @@
 package com.grave;
 
 import com.grave.Networking.GraveClient;
-import com.grave.Networking.GraveMode;
 import com.grave.Networking.GraveServer;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.JmeContext;
@@ -14,12 +13,19 @@ public class Graveborn extends SimpleApplication {
     private GraveClient client = null;
     
     public static void main(String[] args) {
-        Graveborn app = new Graveborn(GraveMode.HOST);
+        Arguments arguments = new Arguments(args);
+
+        Graveborn app = new Graveborn(arguments.getMode());
         app.start(context);
     }
 
-    public Graveborn(GraveMode mode)
+    public Graveborn(Mode mode)
     {
+        if(Mode.NONE == mode)
+        {
+            mode = ModeSelector.askForMode();
+        }
+        
         switch (mode) {
             case CLIENT:
                 context = JmeContext.Type.Display;
@@ -35,7 +41,7 @@ public class Graveborn extends SimpleApplication {
                 server = new GraveServer();
                 break;
             default:
-                break;
+                throw new RuntimeException("Unknown Error");
         }
     }
 
