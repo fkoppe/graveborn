@@ -35,8 +35,14 @@ To get started with Graveborn, follow these steps:
 
 ## Contributing
 
-We welcome contributions! If you would like to contribute to Graveborn, please follow these steps:
+We appreciate your contributions to Graveborn! If you would like to contribute, please follow these steps:
 
+### Recommended IDEs
+- Visual Studio Code with the [Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) v0.27.0
+- [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+- Alternatively, you can use the [JMonkey SDK](https://jmonkeyengine.org/start/)
+
+### Contribution Steps
 1. **Fork the repository.**
 2. **Create a new branch:**
    ```bash
@@ -52,9 +58,5 @@ We welcome contributions! If you would like to contribute to Graveborn, please f
    ```
 5. **Create a pull request:** Go to the original repository on GitHub, navigate to the "Pull requests" tab, and click "New pull request". Select your branch to compare and create the pull request.
 
+### Coding Standards
 Ensure that your code follows the coding standards outlined in the [STYLEGUIDE.md](STYLEGUIDE.md) file.
-
-### IDE
-- Visual Studio Code with the [Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) v0.27.0
-- [IntelliJ IDEA](https://www.jetbrains.com/idea/)
-- Alternatively, you can use the [JMonkey SDK](https://jmonkeyengine.org/start/)
