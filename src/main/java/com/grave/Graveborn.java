@@ -7,14 +7,18 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
+import com.jme3.texture.Texture;
+import com.jme3.texture.Texture2D;
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
@@ -42,34 +46,38 @@ public class Graveborn extends SimpleApplication {
         viewPort.setBackgroundColor(new ColorRGBA(1.0f, 0.8f, 1f, 1f));
         flyCam.setEnabled(false);
 
-        cam.setLocation(new Vector3f(0,0,18));
-        cam.setRotation(new Quaternion(0,0,0,0));
+        cam.setLocation(new Vector3f(0,0,20));
         cam.lookAt(Vector3f.ZERO,Vector3f.UNIT_Z);
 
         Box b = new Box(10, 10, 0);
         bg = new Geometry("Plane", b);
-        bg.setLocalTranslation(0f, 0f, 0f);
+        bg.setLocalTranslation(0f, 0f, -0.1f);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Red);
         bg.setMaterial(mat);
 
-        Sphere p = new Sphere(100,100,1f);
+        Box p = new Box(1,1,0);
         player = new Geometry("Player", p);
         player.setLocalTranslation(0,0,0);
         Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        p_mat.setColor("Color", ColorRGBA.Blue);
+        Texture characterTex = assetManager.loadTexture("Textures/character.png");
+        characterTex.setMagFilter(Texture.MagFilter.Nearest);
+        p_mat.setTexture("ColorMap", characterTex);
+        p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        player.setQueueBucket(RenderQueue.Bucket.Transparent);
         player.setMaterial(p_mat);
 
         rootNode.attachChild(player);
         rootNode.attachChild(bg);
 
         initKeys();
+
     }
 
     private void initKeys() {
         inputManager.addMapping("Up",  new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Down",   new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Left",  new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addListener(analogListener, "Up", "Down", "Left", "Right");
     }
@@ -99,6 +107,7 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+//        System.out.println(cam.getLocation());
     }
 
     @Override
