@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.grave.Networking.GraveClient;
 import com.grave.Networking.GraveServer;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.JmeContext;
 
@@ -63,6 +64,7 @@ public class Graveborn extends SimpleApplication {
                 }
 
                 server = new GraveServer(port);
+                ip = server.getIp();
                 break;
             case HOST:
                 context = JmeContext.Type.Display;

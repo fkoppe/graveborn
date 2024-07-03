@@ -22,6 +22,7 @@ public class GraveClient {
         boolean connected = false;
         while (!connected) {
             try {
+                System.out.println("Try to connect to " + ip + ":" + Integer.toString(port));
                 myClient = Network.connectToServer(ip, port);
                 connected = true;
             } catch (IOException exception) {
