@@ -72,3 +72,12 @@
   if (condition) {
       // code
   }
+
+## Git Commit Messages
+### Guidelines
+- Start with a capital letter.
+- Use the imperative.
+  - **Correct:** `"Add feature"`
+  - **Incorrect:** `"I added feature"`
+  - **Incorrect:** `"Added feature"`
+- Keep it concise and descriptive.

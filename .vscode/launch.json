@@ -8,7 +8,7 @@
             "type": "java",
             "name": "Launch Graveborn",
             "request": "launch",
-            "mainClass": "com.mygame.Graveborn",
+            "mainClass": "com.grave.Graveborn",
             "osx": {
                 "vmArgs": "-XstartOnFirstThread -ea"
             },
