@@ -1,6 +1,8 @@
 /.gradle/
 /.nb-gradle/
 /build/
+/bin/
+/target/
 /private/
 /*.dll
 /*.dylib
@@ -11,3 +13,5 @@
 !/.idea/runConfigurations/
 
 local.properties
+
+/.vscode/
