@@ -12,7 +12,7 @@ public class Graveborn extends SimpleApplication {
 
     public final Arguments arguments;
 
-    private Mode mode = Mode.NONE;
+    private Mode mode;
     private GraveServer server = null;
     private GraveClient client = null;
 

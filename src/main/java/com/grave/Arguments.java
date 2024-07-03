@@ -28,6 +28,8 @@ public class Arguments {
                         System.out.println("Redundant option -s after mode was already set");
                         return;
                     }
+                    mode = Mode.SERVER;
+                    break;
                 case "-i":
                     if (i + 1 < args.length) {
                         ip = args[++i];
