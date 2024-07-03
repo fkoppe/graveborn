@@ -3,12 +3,12 @@ plugins {
     id 'application'
 }
 
-group 'com.mygame'
+group 'com.grave'
 version '1.0'
 
 application {
     applicationName = 'graveborn'
-    mainClass = 'com.mygame.Graveborn'
+    mainClass = 'com.grave.Graveborn'
     // Mac OS with LWJGL 3 needs to be started with this JVM argument
     if (System.getProperty("os.name").toLowerCase().contains("mac")) {
         applicationDefaultJvmArgs = ['-XstartOnFirstThread']
