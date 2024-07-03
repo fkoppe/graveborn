@@ -40,6 +40,8 @@ public class GraveServer {
         myServer.addMessageListener(new GraveServerListener(), GraveMessage.class);
 
         myServer.start();
+
+        System.out.println("Server listening on " + ip + ":" + Integer.toString(port));
     }
 
     public void shutdown() {
