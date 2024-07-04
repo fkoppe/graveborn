@@ -43,15 +43,15 @@ public class NetClient {
         boolean connected = false;
         while (!connected) {
             try {
-                System.out.println("Try to connect to " + ip + ":" + Integer.toString(port));
+                System.out.println("trying to connect to " + ip + ":" + Integer.toString(port));
                 myClient = Network.connectToServer(ip, port);
                 connected = true;
             } catch (IOException exception) {
-                System.out.println("Failed to connect to Server (trying again in " + RETRY_DELAY + "s)");
+                System.out.println("failed to connect to Server (trying again in " + RETRY_DELAY + "s)");
                 try {
                     Thread.sleep(RETRY_DELAY * 1000);
                 } catch (InterruptedException e) {
-                    System.err.println("Thread was interrupted while sleeping");
+                    System.err.println("thread was interrupted while sleeping");
                     e.printStackTrace();
                 }
             }
