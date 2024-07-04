@@ -2,6 +2,7 @@ package com.grave;
 
 import java.util.Scanner;
 
+import com.grave.Object.Objectmanager;
 import com.grave.Networking.GraveClient;
 import com.grave.Networking.GraveServer;
 
@@ -13,14 +14,13 @@ public class Graveborn extends SimpleApplication {
     
     static private JmeContext.Type context;
 
-    public final Arguments arguments;
+    private Objectmanager objectmanager = null;
 
     private Mode mode;
-    private GraveServer server = null;
-    private GraveClient client = null;
-
     private String ip;
     private int port;
+    private GraveServer server = null;
+    private GraveClient client = null;
     
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
@@ -29,9 +29,9 @@ public class Graveborn extends SimpleApplication {
         app.start(context);
     }
 
-    public Graveborn(Arguments a)
+    public Graveborn(Arguments arguments)
     {
-        arguments = a;
+        objectmanager = new Objectmanager();
 
         mode = arguments.getMode();
         ip = arguments.getIp();
@@ -89,6 +89,8 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        objectmanager.init();
+ 
         if (null != server) {
             server.init();
         }
@@ -100,14 +102,28 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if(null != server)
-        {
+        objectmanager.update();
+
+        if (null != server) {
             server.update();
         }
 
         if (null != client) {
             client.update();
         }
+    }
+    
+    public void simpleShutdown()
+    {
+        if (null != client) {
+            client.shutdown();
+        }
+
+        if (null != server) {
+            server.shutdown();
+        }
+
+        objectmanager.shutdown();
     }
 }
 
