@@ -14,7 +14,7 @@ To get started with Graveborn, follow these steps:
 
 ### Prerequisites
 
-- **Java Development Kit (JDK) 17** or higher
+- **Java Development Kit (JDK) 17**
 - **Gradle** 6.0 or higher
 
 ### Installation
