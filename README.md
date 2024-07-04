@@ -8,6 +8,8 @@
 
 Graveborn is a multiplayer game written in Java currently under early development.
 
+Graveborn is licensed under the **GNU Affero General Public License v3.0**.
+
 ## Getting Started
 
 To get started with Graveborn, follow these steps:
