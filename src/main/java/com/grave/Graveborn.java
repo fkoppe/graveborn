@@ -1,6 +1,7 @@
 package com.grave;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import com.grave.Object.Objectmanager;
 import com.grave.Networking.NetClient;
@@ -10,15 +11,16 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.system.JmeContext;
 
 public class Graveborn extends SimpleApplication {
-    static public final int DEFAULT_PORT = 6143;
-    
-    static private JmeContext.Type context;
+    private static final Logger LOGGER = Logger.getLogger(Graveborn.class.getName());
+    private static final int DEFAULT_PORT = 6143;
+
+    private static JmeContext.Type context;
 
     private Objectmanager objectmanager = null;
 
     private NetServer server = null;
     private NetClient client = null;
-    
+
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
 
@@ -87,7 +89,7 @@ public class Graveborn extends SimpleApplication {
                 client = new NetClient(this, arguments.clientName, arguments.ip, arguments.port);
                 break;
             default:
-                throw new RuntimeException("Unknown Error");
+                throw new RuntimeException("unknown Error");
         }
 
         scanner.close();
@@ -103,14 +105,6 @@ public class Graveborn extends SimpleApplication {
 
         if (null != client) {
             client.init();
-        }
-
-        if (null != server) {
-            server.start();
-        }
-
-        if (null != client) {
-            client.start();
         }
     }
 

@@ -32,7 +32,7 @@ public class Arguments {
                     if (i + 1 < args.length) {
                         ip = args[++i];
                     } else {
-                        throw new IllegalArgumentException("Ip address not provided after -i");
+                        throw new IllegalArgumentException("ip address not provided after -i");
                     }
                     iFlag = true;
                     break;
@@ -41,10 +41,10 @@ public class Arguments {
                         try {
                             port = Integer.parseInt(args[++i]);
                         } catch (NumberFormatException exception) {
-                            throw new IllegalArgumentException("Port must be an integer");
+                            throw new IllegalArgumentException("port must be an integer");
                         }
                     } else {
-                        throw new IllegalArgumentException("Port not provided after -p");
+                        throw new IllegalArgumentException("port not provided after -p");
                     }
                     pFlag = true;
                     break;
@@ -52,7 +52,7 @@ public class Arguments {
                     if (i + 1 < args.length) {
                         clientName = args[++i];
                     } else {
-                        throw new IllegalArgumentException("Client name not provided after -n");
+                        throw new IllegalArgumentException("client name not provided after -n");
                     }
                     cnFlag = true;
                     break;
@@ -60,12 +60,12 @@ public class Arguments {
                     if (i + 1 < args.length) {
                         serverName = args[++i];
                     } else {
-                        throw new IllegalArgumentException("Server name not provided after -n");
+                        throw new IllegalArgumentException("server name not provided after -n");
                     }
                     snFlag = true;
                     break;
                 default:
-                    System.out.println("Unknown option: " + args[i]);
+                    System.out.println("unknown option: " + args[i]);
                     return;
             }
         }
@@ -88,32 +88,32 @@ public class Arguments {
         }
 
         if (modeFlagCount > 1) {
-            throw new IllegalArgumentException("Only one mode flag (c/h/s) allowed");
+            throw new IllegalArgumentException("only one mode flag (c/h/s) allowed");
         }
         
         if (cFlag) {
             if (snFlag) {
-                throw new IllegalArgumentException("Server mode does not allow -sn flag");
+                throw new IllegalArgumentException("server mode does not allow -sn flag");
             }
         }
 
         if (hFlag) {
             if (iFlag) {
-                throw new IllegalArgumentException("Host mode does not allow -i flag");
+                throw new IllegalArgumentException("host mode does not allow -i flag");
             }
 
             if (pFlag) {
-                throw new IllegalArgumentException("Host mode does not allow -p flag");
+                throw new IllegalArgumentException("host mode does not allow -p flag");
             }
         }
         
         if (sFlag) {
             if (iFlag) {
-                throw new IllegalArgumentException("Server mode does not allow -i flag");
+                throw new IllegalArgumentException("server mode does not allow -i flag");
             }
 
             if (cnFlag) {
-                throw new IllegalArgumentException("Server mode does not allow -cn flag");
+                throw new IllegalArgumentException("server mode does not allow -cn flag");
             }
         }
     }

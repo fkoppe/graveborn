@@ -1,18 +1,20 @@
 package com.grave.Networking;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.grave.Graveborn;
 
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
-import com.jme3.system.NanoTimer;
+//import com.jme3.system.NanoTimer;
 import com.jme3.network.Message;
 
 public class NetClient {
-    static public final int NETUPDATE_FREQUENCY = 2;
-    static public final int RETRY_DELAY = 3;
+    private static final Logger LOGGER = Logger.getLogger(NetClient.class.getName());
+    private static final int RETRY_DELAY = 3;
 
     private Graveborn application;
     
@@ -21,7 +23,7 @@ public class NetClient {
     private String ip;
     private int port;
 
-    private NanoTimer netUpdateTimer;
+    //private NanoTimer netUpdateTimer;
 
     public NetClient(Graveborn application_, String clientName_, String ip_, int port_)
     {
@@ -30,26 +32,14 @@ public class NetClient {
         ip = ip_;
         port = port_;
 
-        netUpdateTimer = new NanoTimer();
+        //netUpdateTimer = new NanoTimer();
+        Serializer.registerClass(RealtimeServerMessage.class);
+        Serializer.registerClass(ClientJoinMessage.class);
+        Serializer.registerClass(RealtimeClientMessage.class);
     }
 
     public void init()
     {
-        Serializer.registerClass(RealtimeServerMessage.class);
-    }
-
-    public void shutdown()
-    {
-
-    }
-
-    public void update() {
-        if (netUpdateTimer.getTimeInSeconds() * NETUPDATE_FREQUENCY >= 1) {
-            netUpdate();
-        }
-    }
-
-    public void start() {
         boolean connected = false;
         while (!connected) {
             try {
@@ -70,15 +60,18 @@ public class NetClient {
         myClient.addMessageListener(new NetClientListener(this), RealtimeServerMessage.class);
 
         myClient.start();
-    }
 
-    public void stop() {
-        System.out.println("Client stopped.");
-    }
-
-    private void netUpdate() {
         Message message = new ClientJoinMessage(clientName);
-
         myClient.send(message);
+        LOGGER.log(Level.INFO, "connected to server '" + "" + "'");
+    }
+
+    public void shutdown()
+    {
+
+    }
+
+    public void update() {
+        
     }
 }

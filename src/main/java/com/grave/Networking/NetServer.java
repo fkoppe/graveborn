@@ -2,16 +2,18 @@ package com.grave.Networking;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.grave.Graveborn;
 
 import com.jme3.network.serializing.Serializer;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
-import com.jme3.system.NanoTimer;
+//import com.jme3.system.NanoTimer;
 
 public class NetServer {
-    static public final int NETUPDATE_FREQUENCY = 2;
+    private static final Logger LOGGER = Logger.getLogger(NetServer.class.getName());
 
     private Graveborn application;
 
@@ -21,8 +23,7 @@ public class NetServer {
     private int port;
 
     boolean initialised = false;
-    boolean started = false;
-    private NanoTimer netUpdateTimer;
+    //private NanoTimer netUpdateTimer;
 
     public NetServer(Graveborn application_, String name_, int port_)
     {
@@ -34,71 +35,53 @@ public class NetServer {
         try {
             localHost = InetAddress.getLocalHost();
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to get localhost");
+            throw new RuntimeException("failed to get localhost ip adress");
         }
         ip = localHost.getHostAddress();
 
-        netUpdateTimer = new NanoTimer();
-    }
+        //netUpdateTimer = new NanoTimer();
 
-    public void init() {
         try {
             myServer = Network.createServer(port);
-        }
-        catch (IOException exception)
-        {
-            throw new RuntimeException("Failed to create server");
+        } catch (IOException exception) {
+            throw new RuntimeException("failed to create server");
         }
 
+        Serializer.registerClass(RealtimeServerMessage.class);
         Serializer.registerClass(ClientJoinMessage.class);
         Serializer.registerClass(RealtimeClientMessage.class);
 
         myServer.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
         myServer.addMessageListener(new NetServerListener(this), RealtimeClientMessage.class);
+    }
+
+    public void update() {
+        if (!initialised)
+        {
+            return;
+        }
+
+        //
+    }
+    
+    public void init()
+    {
+        assert (!initialised);
+
+        myServer.start();
+
+        LOGGER.log(Level.INFO, "server listening on " + ip + ":" + port);
 
         initialised = true;
     }
 
-    public void update() {
-        if (!started)
-        {
-            return;
-        }
-        
-        if (netUpdateTimer.getTimeInSeconds() * NETUPDATE_FREQUENCY >= 1) {
-            netUpdate();
-        }
-    }
-    
-    public void start()
+    public void shutdown()
     {
         assert (initialised);
-        assert (!started);
 
-        myServer.start();
+        LOGGER.log(Level.INFO, "server stopped");
 
-        System.out.println("Server listening on " + ip + ":" + port);
-
-        started = true;
-    }
-
-    public void stop()
-    {
-        assert (initialised);
-        assert (started);
-
-        System.out.println("Server stopped.");
-
-        started = false;
-    }
-
-    private void netUpdate() {
-        //application.getObjectManager()
-        //fetch gameworld updates
-
-        //RealtimeServerMessage updateMessage = new RealtimeServerMessage();
-
-        //myServer.broadcast(updateMessage);
+        initialised = false;
     }
 
     public String getIp()
