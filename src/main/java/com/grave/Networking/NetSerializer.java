@@ -10,6 +10,5 @@ public class NetSerializer {
         Serializer.registerClass(ServerSyncMessage.class);
         Serializer.registerClass(ClientJoinMessage.class);
         Serializer.registerClass(ClientSyncMessage.class);
-        Serializer.setReadOnly(true);
     }
 }

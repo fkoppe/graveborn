@@ -104,7 +104,7 @@ public class Graveborn extends SimpleApplication {
     public void simpleInitApp() {
         objectmanager.init();
 
-        NetSerializer.serializeAll();
+        //NetSerializer.serializeAll();
 
         switch (mode) {
             case CLIENT:

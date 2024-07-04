@@ -43,6 +43,8 @@ public class NetServer {
             throw new RuntimeException("failed to create server");
         }
 
+        NetSerializer.serializeAll();
+
         instance.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
         instance.addMessageListener(new NetServerListener(this), ClientSyncMessage.class);
     }

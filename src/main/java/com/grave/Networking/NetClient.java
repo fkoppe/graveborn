@@ -71,6 +71,8 @@ public class NetClient {
             {
                 LOGGER.log(Level.FINE, "establishing connection...");
 
+                NetSerializer.serializeAll();
+                
                 instance.addMessageListener(new NetClientListener(this), ServerJoinMessage.class);
                 instance.addMessageListener(new NetClientListener(this), ServerSyncMessage.class);
 
