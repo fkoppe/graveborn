@@ -9,6 +9,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.system.JmeContext;
 
 public class Graveborn extends SimpleApplication {
+    static public final int DEFAULT_PORT = 6143;
+    
     static private JmeContext.Type context;
 
     public final Arguments arguments;
@@ -51,7 +53,7 @@ public class Graveborn extends SimpleApplication {
                 }
 
                 if (-1 == port) {
-                    port = Configurator.askForPort(scanner);
+                    port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
 
                 client = new GraveClient(ip, port);
@@ -60,7 +62,7 @@ public class Graveborn extends SimpleApplication {
                 context = JmeContext.Type.Headless;
 
                 if (-1 == port) {
-                    port = Configurator.askForPort(scanner);
+                    port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
 
                 server = new GraveServer(port);
@@ -70,7 +72,7 @@ public class Graveborn extends SimpleApplication {
                 context = JmeContext.Type.Display;
 
                 if (-1 == port) {
-                    port = Configurator.askForPort(scanner);
+                    port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
                 
                 server = new GraveServer(port);
