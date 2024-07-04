@@ -86,4 +86,21 @@ public class Configurator {
 
         return port;
     }
+
+    public static String askForName(Scanner scanner, String what) {
+        String name = null;
+
+        while (true) {
+            System.out.print("Enter " + what + " name: ");
+            name = scanner.nextLine();
+
+            if (!name.isEmpty()) {
+                break;
+            }
+
+            System.out.println("Invalid input. Enter a " + what + " name.");
+        }
+
+        return name;
+    }
 }

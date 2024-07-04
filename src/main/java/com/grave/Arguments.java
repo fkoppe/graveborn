@@ -1,15 +1,19 @@
 package com.grave;
 
 public class Arguments {
-    private Mode mode = Mode.NONE;
-    private String ip = null;
-    private int port = -1;
+    public Mode mode = Mode.NONE;
+    public String ip = null;
+    public int port = -1;
+    public String serverName = null;
+    public String clientName = null;
 
     private boolean cFlag = false;
     private boolean hFlag = false;
     private boolean sFlag = false;
     private boolean iFlag = false;
     private boolean pFlag = false;
+    private boolean cnFlag = false;
+    private boolean snFlag = false;
     
     public Arguments(String[] args)
     {
@@ -44,6 +48,22 @@ public class Arguments {
                     }
                     pFlag = true;
                     break;
+                case "-cn":
+                    if (i + 1 < args.length) {
+                        clientName = args[++i];
+                    } else {
+                        throw new IllegalArgumentException("Client name not provided after -n");
+                    }
+                    cnFlag = true;
+                    break;
+                case "-sn":
+                    if (i + 1 < args.length) {
+                        serverName = args[++i];
+                    } else {
+                        throw new IllegalArgumentException("Server name not provided after -n");
+                    }
+                    snFlag = true;
+                    break;
                 default:
                     System.out.println("Unknown option: " + args[i]);
                     return;
@@ -67,8 +87,14 @@ public class Arguments {
             mode = Mode.SERVER;
         }
 
-        if(modeFlagCount > 1) {
+        if (modeFlagCount > 1) {
             throw new IllegalArgumentException("Only one mode flag (c/h/s) allowed");
+        }
+        
+        if (cFlag) {
+            if (snFlag) {
+                throw new IllegalArgumentException("Server mode does not allow -sn flag");
+            }
         }
 
         if (hFlag) {
@@ -85,19 +111,10 @@ public class Arguments {
             if (iFlag) {
                 throw new IllegalArgumentException("Server mode does not allow -i flag");
             }
+
+            if (cnFlag) {
+                throw new IllegalArgumentException("Server mode does not allow -cn flag");
+            }
         }
-    }
-
-    public Mode getMode()
-    {
-        return mode;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public int getPort() {
-        return port;
     }
 }

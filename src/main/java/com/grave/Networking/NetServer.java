@@ -16,14 +16,16 @@ public class NetServer {
     private Graveborn application;
 
     private Server myServer = null;
+    private String name;
     private String ip;
     private int port;
 
     private NanoTimer netUpdateTimer;
 
-    public NetServer(Graveborn application_, int port_)
+    public NetServer(Graveborn application_, String name_, int port_)
     {
         application = application_;
+        name = name_;
         port = port_;
         
         InetAddress localHost;
@@ -46,10 +48,10 @@ public class NetServer {
             throw new RuntimeException("Failed to create server");
         }
 
-        Serializer.registerClass(ChatMessage.class);
+        Serializer.registerClass(ClientJoinMessage.class);
         Serializer.registerClass(RealtimeClientMessage.class);
 
-        myServer.addMessageListener(new NetServerListener(this), ChatMessage.class);
+        myServer.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
         myServer.addMessageListener(new NetServerListener(this), RealtimeClientMessage.class);
 
         myServer.start();

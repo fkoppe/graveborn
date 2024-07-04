@@ -16,9 +16,6 @@ public class Graveborn extends SimpleApplication {
 
     private Objectmanager objectmanager = null;
 
-    private Mode mode;
-    private String ip;
-    private int port;
     private NetServer server = null;
     private NetClient client = null;
     
@@ -33,52 +30,61 @@ public class Graveborn extends SimpleApplication {
     {
         objectmanager = new Objectmanager();
 
-        mode = arguments.getMode();
-        ip = arguments.getIp();
-        port = arguments.getPort();
-
         Scanner scanner = new Scanner(System.in);
 
-        if(Mode.NONE == mode)
+        if(Mode.NONE == arguments.mode)
         {
-            mode = Configurator.askForMode(scanner);
+            arguments.mode = Configurator.askForMode(scanner);
         }
         
-        switch (mode) {
+        switch (arguments.mode) {
             case CLIENT:
                 context = JmeContext.Type.Display;
 
-                if (null == ip) {
-                    ip = Configurator.askForIp(scanner);
+                if (null == arguments.ip) {
+                    arguments.ip = Configurator.askForIp(scanner);
+                }
+                if (-1 == arguments.port) {
+                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                }
+                if (null == arguments.clientName)
+                {
+                    arguments.clientName = Configurator.askForName(scanner, "client");
                 }
 
-                if (-1 == port) {
-                    port = Configurator.askForPort(scanner, DEFAULT_PORT);
-                }
-
-                client = new NetClient(this, ip, port);
+                client = new NetClient(this, arguments.clientName, arguments.ip, arguments.port);
                 break;
             case SERVER:
                 context = JmeContext.Type.Headless;
 
-                if (-1 == port) {
-                    port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                if (-1 == arguments.port) {
+                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                }
+                if (null == arguments.serverName) {
+                    arguments.serverName = Configurator.askForName(scanner, "server");
                 }
 
-                server = new NetServer(this, port);
-                ip = server.getIp();
+                server = new NetServer(this, arguments.serverName, arguments.port);
+                arguments.ip = server.getIp();
                 break;
             case HOST:
                 context = JmeContext.Type.Display;
 
-                if (-1 == port) {
-                    port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                if (-1 == arguments.port) {
+                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                }
+                if (null == arguments.serverName) {
+                    arguments.serverName = Configurator.askForName(scanner, "server");
                 }
                 
-                server = new NetServer(this, port);
-                ip = server.getIp();
+                server = new NetServer(this, arguments.serverName, arguments.port);
+                arguments.ip = server.getIp();
 
-                client = new NetClient(this, ip, port);
+                if (null == arguments.clientName) {
+                    arguments.clientName = Configurator.askForName(scanner, "client");
+                }
+
+                client = new NetClient(this, arguments.clientName, arguments.ip, arguments.port);
                 break;
             default:
                 throw new RuntimeException("Unknown Error");
@@ -129,11 +135,6 @@ public class Graveborn extends SimpleApplication {
     public Objectmanager getObjectmanager()
     {
         return objectmanager;
-    }
-
-    public Mode getMode()
-    {
-        return mode;
     }
 }
 

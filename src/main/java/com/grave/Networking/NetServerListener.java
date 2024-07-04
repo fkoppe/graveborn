@@ -13,9 +13,9 @@ public class NetServerListener implements MessageListener<HostedConnection> {
     }
 
     public void messageReceived(HostedConnection source, Message message) {
-        if (message instanceof ChatMessage) {
-            ChatMessage helloMessage = (ChatMessage) message;
-            System.out.println("Server received '" + helloMessage.getChatMessage() + "' from client #" + source.getId());
+        if (message instanceof ClientJoinMessage) {
+            ClientJoinMessage joinMessage = (ClientJoinMessage) message;
+            System.out.println("Server received '" + joinMessage.getClientName() + "' from client #" + source.getId());
         }
     }
 }

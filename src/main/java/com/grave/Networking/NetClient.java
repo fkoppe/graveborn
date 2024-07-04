@@ -17,14 +17,16 @@ public class NetClient {
     private Graveborn application;
     
     private Client myClient = null;
+    String clientName;
     private String ip;
     private int port;
 
     private NanoTimer netUpdateTimer;
 
-    public NetClient(Graveborn application_, String ip_, int port_)
+    public NetClient(Graveborn application_, String clientName_, String ip_, int port_)
     {
         application = application_;
+        clientName = clientName_;
         ip = ip_;
         port = port_;
 
@@ -50,10 +52,10 @@ public class NetClient {
             }
         }
         
-        Serializer.registerClass(ChatMessage.class);
+        Serializer.registerClass(ClientJoinMessage.class);
         Serializer.registerClass(RealtimeServerMessage.class);
 
-        myClient.addMessageListener(new NetClientListener(this), ChatMessage.class);
+        myClient.addMessageListener(new NetClientListener(this), ClientJoinMessage.class);
         myClient.addMessageListener(new NetClientListener(this), RealtimeServerMessage.class);
 
         myClient.start();
@@ -71,7 +73,7 @@ public class NetClient {
     }
 
     private void netUpdate() {
-        Message message = new ChatMessage("Hello World!");
+        Message message = new ClientJoinMessage("Hello World!");
 
         myClient.send(message);
     }
