@@ -4,14 +4,10 @@ public class Objectmanager {
 
     public Objectmanager()
     {
-        
+
     }
 
     public void init() {
-
-    }
-
-    public void shutdown() {
 
     }
 

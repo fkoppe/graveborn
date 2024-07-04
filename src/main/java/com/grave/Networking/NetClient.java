@@ -11,7 +11,7 @@ import com.jme3.system.NanoTimer;
 import com.jme3.network.Message;
 
 public class NetClient {
-    static public final int NETUPDATE_FREQUENCY = 120;
+    static public final int NETUPDATE_FREQUENCY = 2;
     static public final int RETRY_DELAY = 3;
 
     private Graveborn application;
@@ -35,6 +35,21 @@ public class NetClient {
 
     public void init()
     {
+        Serializer.registerClass(RealtimeServerMessage.class);
+    }
+
+    public void shutdown()
+    {
+
+    }
+
+    public void update() {
+        if (netUpdateTimer.getTimeInSeconds() * NETUPDATE_FREQUENCY >= 1) {
+            netUpdate();
+        }
+    }
+
+    public void start() {
         boolean connected = false;
         while (!connected) {
             try {
@@ -51,29 +66,18 @@ public class NetClient {
                 }
             }
         }
-        
-        Serializer.registerClass(ClientJoinMessage.class);
-        Serializer.registerClass(RealtimeServerMessage.class);
 
-        myClient.addMessageListener(new NetClientListener(this), ClientJoinMessage.class);
         myClient.addMessageListener(new NetClientListener(this), RealtimeServerMessage.class);
 
         myClient.start();
     }
 
-    public void shutdown()
-    {
-
-    }
-
-    public void update() {
-        if (netUpdateTimer.getTimeInSeconds() * NETUPDATE_FREQUENCY >= 1) {
-            netUpdate();
-        }
+    public void stop() {
+        System.out.println("Client stopped.");
     }
 
     private void netUpdate() {
-        Message message = new ClientJoinMessage("Hello World!");
+        Message message = new ClientJoinMessage(clientName);
 
         myClient.send(message);
     }

@@ -11,7 +11,7 @@ import com.jme3.network.Server;
 import com.jme3.system.NanoTimer;
 
 public class NetServer {
-    static public final int NETUPDATE_FREQUENCY = 60;
+    static public final int NETUPDATE_FREQUENCY = 2;
 
     private Graveborn application;
 
@@ -20,6 +20,8 @@ public class NetServer {
     private String ip;
     private int port;
 
+    boolean initialised = false;
+    boolean started = false;
     private NanoTimer netUpdateTimer;
 
     public NetServer(Graveborn application_, String name_, int port_)
@@ -54,29 +56,49 @@ public class NetServer {
         myServer.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
         myServer.addMessageListener(new NetServerListener(this), RealtimeClientMessage.class);
 
-        myServer.start();
-
-        System.out.println("Server listening on " + ip + ":" + port);
-    }
-
-    public void shutdown() {
-
+        initialised = true;
     }
 
     public void update() {
-        if(netUpdateTimer.getTimeInSeconds() * NETUPDATE_FREQUENCY >= 1)
+        if (!started)
         {
+            return;
+        }
+        
+        if (netUpdateTimer.getTimeInSeconds() * NETUPDATE_FREQUENCY >= 1) {
             netUpdate();
         }
+    }
+    
+    public void start()
+    {
+        assert (initialised);
+        assert (!started);
+
+        myServer.start();
+
+        System.out.println("Server listening on " + ip + ":" + port);
+
+        started = true;
+    }
+
+    public void stop()
+    {
+        assert (initialised);
+        assert (started);
+
+        System.out.println("Server stopped.");
+
+        started = false;
     }
 
     private void netUpdate() {
         //application.getObjectManager()
         //fetch gameworld updates
 
-        RealtimeServerMessage updateMessage = new RealtimeServerMessage();
+        //RealtimeServerMessage updateMessage = new RealtimeServerMessage();
 
-        myServer.broadcast(updateMessage);
+        //myServer.broadcast(updateMessage);
     }
 
     public String getIp()

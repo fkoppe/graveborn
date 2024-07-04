@@ -104,12 +104,20 @@ public class Graveborn extends SimpleApplication {
         if (null != client) {
             client.init();
         }
+
+        if (null != server) {
+            server.start();
+        }
+
+        if (null != client) {
+            client.start();
+        }
     }
 
     @Override
     public void simpleUpdate(float tpf) {
         objectmanager.update();
-
+        
         if (null != server) {
             server.update();
         }
@@ -118,23 +126,18 @@ public class Graveborn extends SimpleApplication {
             client.update();
         }
     }
-    
-    public void simpleShutdown()
-    {
-        if (null != client) {
-            client.shutdown();
-        }
-
-        if (null != server) {
-            server.shutdown();
-        }
-
-        objectmanager.shutdown();
-    }
 
     public Objectmanager getObjectmanager()
     {
         return objectmanager;
+    }
+
+    public NetServer getServer() {
+        return server;
+    }
+
+    public NetClient getClient() {
+        return client;
     }
 }
 
