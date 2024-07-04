@@ -3,9 +3,9 @@ package com.grave.Networking;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
-public class RealtimeServerMessage extends RealtimeMessage {
+public class ServerSyncMessage extends SyncMessage {
 
-    public RealtimeServerMessage()  {
+    public ServerSyncMessage()  {
         
     }
 

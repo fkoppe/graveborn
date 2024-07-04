@@ -7,23 +7,21 @@ import java.util.logging.Logger;
 
 import com.grave.Graveborn;
 
-import com.jme3.network.serializing.Serializer;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
-//import com.jme3.system.NanoTimer;
 
 public class NetServer {
     private static final Logger LOGGER = Logger.getLogger(NetServer.class.getName());
 
-    private Graveborn application;
+    Graveborn application;
 
-    private Server myServer = null;
-    private String name;
-    private String ip;
-    private int port;
+    Server instance = null;
 
-    boolean initialised = false;
-    //private NanoTimer netUpdateTimer;
+    String name;
+    String ip;
+    int port;
+
+    private boolean initialised = false;
 
     public NetServer(Graveborn application_, String name_, int port_)
     {
@@ -39,36 +37,22 @@ public class NetServer {
         }
         ip = localHost.getHostAddress();
 
-        //netUpdateTimer = new NanoTimer();
-
         try {
-            myServer = Network.createServer(port);
+            instance = Network.createServer(port);
         } catch (IOException exception) {
             throw new RuntimeException("failed to create server");
         }
 
-        Serializer.registerClass(RealtimeServerMessage.class);
-        Serializer.registerClass(ClientJoinMessage.class);
-        Serializer.registerClass(RealtimeClientMessage.class);
-
-        myServer.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
-        myServer.addMessageListener(new NetServerListener(this), RealtimeClientMessage.class);
+        instance.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
+        instance.addMessageListener(new NetServerListener(this), ClientSyncMessage.class);
     }
 
-    public void update() {
-        if (!initialised)
-        {
-            return;
-        }
-
-        //
-    }
     
     public void init()
     {
         assert (!initialised);
 
-        myServer.start();
+        instance.start();
 
         LOGGER.log(Level.INFO, "server listening on " + ip + ":" + port);
 
@@ -82,6 +66,14 @@ public class NetServer {
         LOGGER.log(Level.INFO, "server stopped");
 
         initialised = false;
+    }
+
+    public void update() {
+        if (!initialised) {
+            return;
+        }
+
+        //...
     }
 
     public String getIp()

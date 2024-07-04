@@ -4,10 +4,10 @@ import com.jme3.network.serializing.Serializable;
 import com.jme3.network.AbstractMessage;
 
 @Serializable
-public class RealtimeMessage extends AbstractMessage {
+public class SyncMessage extends AbstractMessage {
     // timestamp
 
-    public RealtimeMessage()
+    public SyncMessage()
     {
         
     }

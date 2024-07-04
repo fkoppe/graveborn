@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.grave.Object.Objectmanager;
 import com.grave.Networking.NetClient;
+import com.grave.Networking.NetSerializer;
 import com.grave.Networking.NetServer;
 
 import com.jme3.app.SimpleApplication;
@@ -20,6 +21,8 @@ public class Graveborn extends SimpleApplication {
 
     private NetServer server = null;
     private NetClient client = null;
+
+    public Mode mode = Mode.NONE;
 
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
@@ -89,36 +92,59 @@ public class Graveborn extends SimpleApplication {
                 client = new NetClient(this, arguments.clientName, arguments.ip, arguments.port);
                 break;
             default:
-                throw new RuntimeException("unknown Error");
+                throw new RuntimeException("invalid mode");
         }
 
         scanner.close();
+
+        mode = arguments.mode;
     }
 
     @Override
     public void simpleInitApp() {
         objectmanager.init();
- 
-        if (null != server) {
-            server.init();
-        }
 
-        if (null != client) {
-            client.init();
+        NetSerializer.serializeAll();
+
+        switch (mode) {
+            case CLIENT:
+                client.init();
+                break;
+            case SERVER:
+                server.init();
+                break;
+            case HOST:
+                server.init();
+                client.init();
+                break;
+            default:
+                throw new RuntimeException("invalid mode");
         }
     }
 
     @Override
     public void simpleUpdate(float tpf) {
         objectmanager.update();
-        
-        if (null != server) {
-            server.update();
-        }
 
-        if (null != client) {
-            client.update();
+        switch (mode) {
+            case CLIENT:
+                client.update();
+                break;
+            case SERVER:
+                server.update();
+                break;
+            case HOST:
+                server.update();
+                client.update();
+                break;
+            default:
+                throw new RuntimeException("invalid mode");
         }
+    }
+    
+    @Override
+    public void destroy() {
+        
     }
 
     public Objectmanager getObjectmanager()

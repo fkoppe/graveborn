@@ -8,7 +8,7 @@ public class ClientJoinMessage extends AbstractMessage {
     private final String clientName;
 
     public ClientJoinMessage() {
-        clientName = "fdgdfg";
+        clientName = null;
     }
 
     public ClientJoinMessage(String clientName_)
