@@ -3,8 +3,8 @@ package com.grave;
 import java.util.Scanner;
 
 import com.grave.Object.Objectmanager;
-import com.grave.Networking.GraveClient;
-import com.grave.Networking.GraveServer;
+import com.grave.Networking.NetClient;
+import com.grave.Networking.NetServer;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.JmeContext;
@@ -19,8 +19,8 @@ public class Graveborn extends SimpleApplication {
     private Mode mode;
     private String ip;
     private int port;
-    private GraveServer server = null;
-    private GraveClient client = null;
+    private NetServer server = null;
+    private NetClient client = null;
     
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
@@ -56,7 +56,7 @@ public class Graveborn extends SimpleApplication {
                     port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
 
-                client = new GraveClient(ip, port);
+                client = new NetClient(this, ip, port);
                 break;
             case SERVER:
                 context = JmeContext.Type.Headless;
@@ -65,7 +65,7 @@ public class Graveborn extends SimpleApplication {
                     port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
 
-                server = new GraveServer(port);
+                server = new NetServer(this, port);
                 ip = server.getIp();
                 break;
             case HOST:
@@ -75,10 +75,10 @@ public class Graveborn extends SimpleApplication {
                     port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
                 
-                server = new GraveServer(port);
+                server = new NetServer(this, port);
                 ip = server.getIp();
 
-                client = new GraveClient(ip, port);
+                client = new NetClient(this, ip, port);
                 break;
             default:
                 throw new RuntimeException("Unknown Error");
@@ -124,6 +124,16 @@ public class Graveborn extends SimpleApplication {
         }
 
         objectmanager.shutdown();
+    }
+
+    public Objectmanager getObjectmanager()
+    {
+        return objectmanager;
+    }
+
+    public Mode getMode()
+    {
+        return mode;
     }
 }
 
