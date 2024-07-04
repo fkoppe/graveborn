@@ -23,7 +23,7 @@ To get started with Graveborn, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/graveborn.git
+   git clone https://github.com/fkoppe/graveborn.git
    cd graveborn
    ```
 2. **Build the project:**
