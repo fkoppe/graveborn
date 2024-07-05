@@ -40,7 +40,7 @@ public class Graveborn extends SimpleApplication {
         app.setShowSettings(false);
         app.start();
     }
-
+    PlayerHandler playerHandler;
     @Override
     public void simpleInitApp() {
         viewPort.setBackgroundColor(new ColorRGBA(1.0f, 0.8f, 1f, 1f));
@@ -56,58 +56,18 @@ public class Graveborn extends SimpleApplication {
         mat.setColor("Color", ColorRGBA.Red);
         bg.setMaterial(mat);
 
-        Box p = new Box(1,1,0);
-        player = new Geometry("Player", p);
-        player.setLocalTranslation(0,0,0);
-        Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture characterTex = assetManager.loadTexture("Textures/character.png");
-        characterTex.setMagFilter(Texture.MagFilter.Nearest);
-        p_mat.setTexture("ColorMap", characterTex);
-        p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        player.setQueueBucket(RenderQueue.Bucket.Transparent);
-        player.setMaterial(p_mat);
-
-        rootNode.attachChild(player);
         rootNode.attachChild(bg);
 
-        initKeys();
+        playerHandler = new PlayerHandler(inputManager,assetManager,rootNode, stateManager);
 
     }
 
-    private void initKeys() {
-        inputManager.addMapping("Up",  new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addListener(analogListener, "Up", "Down", "Left", "Right");
-    }
 
-    final private AnalogListener analogListener = new AnalogListener() {
-        @Override
-        public void onAnalog(String name, float value, float tpf) {
-            Vector3f v = player.getLocalTranslation();
-            switch(name){
-                case "Up":
-                    player.setLocalTranslation(v.x,v.y+0.1f,v.z);
-                    break;
-                case "Down":
-                    player.setLocalTranslation(v.x,v.y-0.1f,v.z);
-                    break;
-                case "Left":
-                    player.setLocalTranslation(v.x-0.1f,v.y,v.z);
-                    break;
-                case "Right":
-                    player.setLocalTranslation(v.x+0.1f,v.y,v.z);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     @Override
     public void simpleUpdate(float tpf) {
 //        System.out.println(cam.getLocation());
+        playerHandler.update(tpf);
     }
 
     @Override
