@@ -1,70 +1,120 @@
 package com.grave;
 
 public class Arguments {
-    private Mode mode = Mode.NONE;
-    private String ip = null;
-    private int port = -1;
+    public Mode mode = Mode.NONE;
+    public String ip = null;
+    public int port = -1;
+    public String serverName = null;
+    public String clientName = null;
+
+    private boolean cFlag = false;
+    private boolean hFlag = false;
+    private boolean sFlag = false;
+    private boolean iFlag = false;
+    private boolean pFlag = false;
+    private boolean cnFlag = false;
+    private boolean snFlag = false;
     
     public Arguments(String[] args)
     {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-c":
-                    if (mode != Mode.NONE) {
-                        System.out.println("Redundant option -c after mode was already set");
-                        return;
-                    }
-                    mode = Mode.CLIENT;
+                    cFlag = true;
                     break;
                 case "-h":
-                    if (mode != Mode.NONE) {
-                        System.out.println("Redundant option -h after mode was already set");
-                        return;
-                    }
-                    mode = Mode.HOST;
+                    hFlag = true;
                     break;
                 case "-s":
-                    if (mode != Mode.NONE) {
-                        System.out.println("Redundant option -s after mode was already set");
-                        return;
-                    }
-                    mode = Mode.SERVER;
+                    sFlag = true;
                     break;
                 case "-i":
                     if (i + 1 < args.length) {
                         ip = args[++i];
                     } else {
-                        throw new IllegalArgumentException("IP address not provided after -i");
+                        throw new IllegalArgumentException("ip address not provided after -i");
                     }
+                    iFlag = true;
                     break;
                 case "-p":
                     if (i + 1 < args.length) {
                         try {
                             port = Integer.parseInt(args[++i]);
-                        } catch (NumberFormatException e) {
-                            throw new IllegalArgumentException("Port must be an integer");
+                        } catch (NumberFormatException exception) {
+                            throw new IllegalArgumentException("port must be an integer");
                         }
                     } else {
-                        throw new IllegalArgumentException("Port not provided after -p");
+                        throw new IllegalArgumentException("port not provided after -p");
                     }
+                    pFlag = true;
+                    break;
+                case "-cn":
+                    if (i + 1 < args.length) {
+                        clientName = args[++i];
+                    } else {
+                        throw new IllegalArgumentException("client name not provided after -n");
+                    }
+                    cnFlag = true;
+                    break;
+                case "-sn":
+                    if (i + 1 < args.length) {
+                        serverName = args[++i];
+                    } else {
+                        throw new IllegalArgumentException("server name not provided after -n");
+                    }
+                    snFlag = true;
                     break;
                 default:
-                    System.out.println("Unknown option: " + args[i]);
+                    System.out.println("unknown option: " + args[i]);
                     return;
             }
         }
-    }
 
-    public Mode getMode()
-    {
-        return mode;
-    }
+        int modeFlagCount = 0;
 
-    public String getIp() {
-        return ip;
-    }
+        if (cFlag) {
+            modeFlagCount++;
+            mode = Mode.CLIENT;
+        }
+        
+        if (hFlag) {
+            modeFlagCount++;
+            mode = Mode.HOST;
+        }
 
-    public int getPort() {
-        return port;
+        if (sFlag) {
+            modeFlagCount++;
+            mode = Mode.SERVER;
+        }
+
+        if (modeFlagCount > 1) {
+            throw new IllegalArgumentException("only one mode flag (c/h/s) allowed");
+        }
+        
+        if (cFlag) {
+            if (snFlag) {
+                throw new IllegalArgumentException("server mode does not allow -sn flag");
+            }
+        }
+
+        if (hFlag) {
+            if (iFlag) {
+                throw new IllegalArgumentException("host mode does not allow -i flag");
+            }
+
+            if (pFlag) {
+                throw new IllegalArgumentException("host mode does not allow -p flag");
+            }
+        }
+        
+        if (sFlag) {
+            if (iFlag) {
+                throw new IllegalArgumentException("server mode does not allow -i flag");
+            }
+
+            if (cnFlag) {
+                throw new IllegalArgumentException("server mode does not allow -cn flag");
+            }
+        }
     }
 }

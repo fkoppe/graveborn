@@ -8,7 +8,7 @@ public class Configurator {
     public static Mode askForMode(Scanner scanner) {
         Mode mode = Mode.NONE;
 
-        System.out.println("Please select a mode:");
+        System.out.println("Select a mode:");
         System.out.println("1. Client");
         System.out.println("2. Host");
         System.out.println("3. Server");
@@ -53,23 +53,22 @@ public class Configurator {
             if (Pattern.matches(ipPattern, ipAddress)) {
                 break;
             } else {
-                System.out.println("Invalid IP address. Please enter a valid IPv4 address (e.g., 192.168.1.1) or press Enter to use 'localhost'.");
+                System.out.println("Invalid IP address. Enter a valid IPv4 address or press Enter to use 'localhost'.");
             }
         }
 
         return ipAddress;
     }
     
-    public static int askForPort(Scanner scanner) {
-        final int DEFAULT_PORT = 6143;
+    public static int askForPort(Scanner scanner, int defaultPort) {
         int port = -1;
 
         while (true) {
-            System.out.print("Enter a port number (1-65535) or press Enter to use the default port (" + DEFAULT_PORT + "): ");
+            System.out.print("Enter a port number (1-65535) or press Enter to use the default port (" + defaultPort + "): ");
             String input = scanner.nextLine();
 
             if (input.isEmpty()) {
-                port = DEFAULT_PORT;
+                port = defaultPort;
                 break;
             }
 
@@ -78,13 +77,30 @@ public class Configurator {
                 if (port >= 1 && port <= 65535) {
                     break;
                 } else {
-                    System.out.println("Invalid port number. Please enter a value between 1 and 65535.");
+                    System.out.println("Invalid port number. Enter a value between 1 and 65535.");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a numeric value.");
+                System.out.println("Invalid input. Enter a numeric value.");
             }
         }
 
         return port;
+    }
+
+    public static String askForName(Scanner scanner, String what) {
+        String name = null;
+
+        while (true) {
+            System.out.print("Enter " + what + " name: ");
+            name = scanner.nextLine();
+
+            if (!name.isEmpty()) {
+                break;
+            }
+
+            System.out.println("Invalid input. Enter a " + what + " name.");
+        }
+
+        return name;
     }
 }
