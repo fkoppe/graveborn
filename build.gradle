@@ -60,22 +60,22 @@ dependencies {
   implementation "org.jmonkeyengine:jme3-plugins:$jmeVer"
   
   // GUI Library
-  implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
+  //implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
   
   // Physics Library
-  implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
+  //implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
   
   // Networking Library
   implementation "org.jmonkeyengine:jme3-networking:$jmeVer"
 
   // Additional Libraries
-  implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
-  implementation "com.github.stephengold:Heart:9.1.0"
-  implementation "com.epagagames:particlemonkey:1.1.0"
-  implementation "com.simsilica:sio2:1.8.0"
-  implementation "com.simsilica:zay-es:1.5.0"
-  implementation "com.simsilica:zay-es-net:1.5.2"
+  //implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
+  //implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
+  //implementation "com.github.stephengold:Heart:9.1.0"
+  //implementation "com.epagagames:particlemonkey:1.1.0"
+  //implementation "com.simsilica:sio2:1.8.0"
+  //implementation "com.simsilica:zay-es:1.5.0"
+  //implementation "com.simsilica:zay-es-net:1.5.2"
 
   // Assets sub-project
   runtimeOnly project(':assets')
