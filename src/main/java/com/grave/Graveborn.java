@@ -1,11 +1,11 @@
 package com.grave;
 
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Object.Objectmanager;
 import com.grave.Networking.NetClient;
-import com.grave.Networking.NetSerializer;
 import com.grave.Networking.NetServer;
 
 import com.jme3.app.SimpleApplication;
@@ -104,8 +104,6 @@ public class Graveborn extends SimpleApplication {
     public void simpleInitApp() {
         objectmanager.init();
 
-        //NetSerializer.serializeAll();
-
         switch (mode) {
             case CLIENT:
                 client.init();
@@ -120,6 +118,8 @@ public class Graveborn extends SimpleApplication {
             default:
                 throw new RuntimeException("invalid mode");
         }
+
+        LOGGER.log(Level.INFO, "finished initialisation");
     }
 
     @Override
@@ -144,7 +144,24 @@ public class Graveborn extends SimpleApplication {
     
     @Override
     public void destroy() {
-        
+        LOGGER.log(Level.INFO, "begin destruction");
+
+        switch (mode) {
+            case CLIENT:
+                client.shutdown();
+                break;
+            case SERVER:
+                server.shutdown();
+                break;
+            case HOST:
+                client.shutdown();
+                server.shutdown();
+                break;
+            default:
+                throw new RuntimeException("invalid mode");
+        }
+
+        objectmanager.shutdown();
     }
 
     public Objectmanager getObjectmanager()

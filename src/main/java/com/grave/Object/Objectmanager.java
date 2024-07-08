@@ -14,4 +14,8 @@ public class Objectmanager {
     public void update() {
 
     }
+
+    public void shutdown() {
+
+    }
 }
