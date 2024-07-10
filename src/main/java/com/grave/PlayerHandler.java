@@ -1,21 +1,16 @@
 package com.grave;
 
-import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
@@ -23,24 +18,22 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
-public class PlayerHandler {
+public class PlayerHandler implements UpdateHandler{
     private final float SPEED = 5f;
 
     private Geometry player;
     private final InputManager inputManager;
     private final AssetManager assetManager;
     private final Node rootNode;
-    private final BulletAppState bulletAppState;
-    public PlayerHandler(InputManager inputManager, AssetManager assetManager, Node rootNode, AppStateManager stateManager){
+    private final PhysicsSpace physicsSpace;
+    public PlayerHandler(InputManager inputManager, AssetManager assetManager, Node rootNode, PhysicsSpace physicsSpace){
         this.inputManager = inputManager;
         this.assetManager = assetManager;
         this.rootNode = rootNode;
-        this.bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
-        bulletAppState.getPhysicsSpace().setGravity(Vector3f.ZERO);
+        this.physicsSpace = physicsSpace;
+
         initKeys();
         initPlayer();
-
 
         //Test Obstacle
         Box o_box = new Box(1, 1, 0.1f);
@@ -49,12 +42,10 @@ public class PlayerHandler {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
         o.setMaterial(mat);
-
         CollisionShape o_shape = CollisionShapeFactory.createBoxShape(o);
         RigidBody2DControl o_rig = new RigidBody2DControl(o_shape, 0);
         o.addControl(o_rig);
-        bulletAppState.getPhysicsSpace().add(o_rig);
-
+        physicsSpace.add(o_rig);
         rootNode.attachChild(o);
     }
 
@@ -105,18 +96,17 @@ public class PlayerHandler {
         CollisionShape player_shape = CollisionShapeFactory.createBoxShape(player);
 
         player_rig = new RigidBody2DControl(player_shape, 10);
+        player_rig.setRotation(false);
         player.addControl(player_rig);
-        bulletAppState.getPhysicsSpace().add(player_rig);
+        physicsSpace.add(player_rig);
         rootNode.attachChild(player);
     }
 
     public void update(float tpf){
         //TODO: Implement Input in update
-
-        //Fix for white lines while applying velocity to player
-        player_rig.setAngularFactor(0);
-        player_rig.setPhysicsRotation(new Quaternion(0,0,0,1));
     }
 
-
+    public Vector3f getPosition(){
+        return player.getLocalTranslation();
+    }
 }
