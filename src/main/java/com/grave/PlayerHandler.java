@@ -111,10 +111,11 @@ public class PlayerHandler {
     }
 
     public void update(float tpf){
-        player.setLocalRotation(Quaternion.ZERO);
-
         //TODO: Implement Input in update
 
+        //Fix for white lines while applying velocity to player
+        player_rig.setAngularFactor(0);
+        player_rig.setPhysicsRotation(new Quaternion(0,0,0,1));
     }
 
 

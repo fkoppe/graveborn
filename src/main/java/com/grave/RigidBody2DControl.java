@@ -20,7 +20,5 @@ public class RigidBody2DControl extends RigidBodyControl {
         Vector3f loc = this.getPhysicsLocation();
         loc.setZ(0f);
         this.setPhysicsLocation(loc);
-        this.setAngularVelocity(Vector3f.ZERO);
-        this.setPhysicsRotation(Quaternion.ZERO);
     }
 }
