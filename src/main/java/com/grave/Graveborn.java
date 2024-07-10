@@ -26,7 +26,7 @@ import com.jme3.texture.Texture2D;
  * @author normenhansen
  */
 public class Graveborn extends SimpleApplication {
-
+    private final float ZOOM = 8f;
     private Geometry bg;
     private Geometry player;
 
@@ -48,6 +48,12 @@ public class Graveborn extends SimpleApplication {
 
         cam.setLocation(new Vector3f(0,0,20));
         cam.lookAt(Vector3f.ZERO,Vector3f.UNIT_Z);
+        cam.setParallelProjection(true);
+        float aspect = (float) cam.getWidth() / cam.getHeight();
+        float size = ZOOM;
+        cam.setFrustum(-1000,1000, - aspect*size, aspect*size, size, -size);
+
+
 
         Box b = new Box(10, 10, 0);
         bg = new Geometry("Plane", b);

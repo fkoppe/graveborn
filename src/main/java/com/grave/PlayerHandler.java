@@ -24,7 +24,7 @@ import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
 public class PlayerHandler {
-    private final float SPEED = 15f;
+    private final float SPEED = 5f;
 
     private Geometry player;
     private final InputManager inputManager;
@@ -56,9 +56,6 @@ public class PlayerHandler {
         bulletAppState.getPhysicsSpace().add(o_rig);
 
         rootNode.attachChild(o);
-
-
-
     }
 
     private void initKeys() {
@@ -68,39 +65,33 @@ public class PlayerHandler {
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addListener(actionListener, "Up", "Down", "Left", "Right");
     }
+
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            if(isPressed){
-                //KEY DOWN
-                Vector3f velocity = player_rig.getLinearVelocity();
-                velocity.setZ(0);
-                switch(name){
-                    case "Up":
-                        velocity.setY(3);
-                        break;
-                    case "Down":
-                        velocity.setY(-3);
-                        break;
-                    case "Left":
-                        velocity.setX(-3);
-                        break;
-                    case "Right":
-                        velocity.setX(3);
-                        break;
-                    default:
-                        break;
-                }
-                player_rig.setLinearVelocity(velocity);
+            Vector3f velocity = Vector3f.ZERO;
+            switch(name){
+                case "Up":
+                    velocity.setY(isPressed ? 1 : 0);
+                    break;
+                case "Down":
+                    velocity.setY(isPressed ? -1 : 0);
+                    break;
+                case "Left":
+                    velocity.setX(isPressed ? -1 : 0);
+                    break;
+                case "Right":
+                    velocity.setX(isPressed ? 1 : 0);
+                    break;
+                default:
+                    break;
             }
-            else{
-                player_rig.setLinearVelocity(Vector3f.ZERO);
-            }
+            player_rig.setLinearVelocity(velocity.normalize().mult(SPEED));
         }
     };
     private RigidBody2DControl player_rig;
     private void initPlayer(){
-        Box p = new Box(1,1,0.1f);
+        Box p = new Box(1,1,1);
         player = new Geometry("Player", p);
         player.setLocalTranslation(0,0,0);
         Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -113,15 +104,16 @@ public class PlayerHandler {
 
         CollisionShape player_shape = CollisionShapeFactory.createBoxShape(player);
 
-        player_rig = new RigidBody2DControl(player_shape, 1);
+        player_rig = new RigidBody2DControl(player_shape, 10);
         player.addControl(player_rig);
         bulletAppState.getPhysicsSpace().add(player_rig);
         rootNode.attachChild(player);
     }
 
     public void update(float tpf){
-        System.out.println(player.getLocalRotation());
         player.setLocalRotation(Quaternion.ZERO);
+
+        //TODO: Implement Input in update
 
     }
 
