@@ -43,7 +43,7 @@ public class GameClient implements UpdateHandler {
         float size = ZOOM;
         application.getCamera().setFrustum(-1000, 1000, -aspect * size, aspect * size, size, -size);
     }
-    
+
     @Override
     public void init() {
         BulletAppState bulletAppState = new BulletAppState();

@@ -4,7 +4,6 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Game.GameClient;
 import com.grave.Game.ObjectManager;
 import com.grave.Networking.NetClient;
 import com.grave.Networking.NetServer;
@@ -55,7 +54,7 @@ public class Graveborn extends SimpleApplication {
         {
             arguments.mode = Configurator.askForMode(scanner);
         }
-        
+
         switch (arguments.mode) {
             case CLIENT:
                 context = JmeContext.Type.Display;
@@ -95,7 +94,7 @@ public class Graveborn extends SimpleApplication {
                 if (null == arguments.serverName) {
                     arguments.serverName = Configurator.askForName(scanner, "server");
                 }
-                
+
                 server = new NetServer(this, arguments.serverName, arguments.port);
                 arguments.ip = server.getIp();
 
@@ -155,7 +154,7 @@ public class Graveborn extends SimpleApplication {
                 throw new RuntimeException("invalid mode");
         }
     }
-    
+
     @Override
     public void destroy() {
         LOGGER.log(Level.INFO, "begin destruction");
