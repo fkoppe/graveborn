@@ -19,7 +19,15 @@ public class NetClientListener implements MessageListener<Client> {
     public void messageReceived(Client source, Message message) {
         if (message instanceof ServerJoinMessage) {
             ServerJoinMessage joinMessage = (ServerJoinMessage) message;
-            LOGGER.log(Level.INFO, "connected to server '" + joinMessage.getServerName() + "'");
+            LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getServerName() + "'");
+        }
+        else if (message instanceof ChatMessage) {
+            ChatMessage chatMessage = (ChatMessage) message;
+            
+            if(!client.clientName.equals(chatMessage.getName()))
+            {
+                LOGGER.log(Level.INFO, "CLIENT: " + chatMessage.getName() + ": " + chatMessage.getData());
+            }
         }
     }
 }

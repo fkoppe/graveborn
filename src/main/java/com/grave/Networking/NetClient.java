@@ -22,7 +22,7 @@ public class NetClient {
     private boolean connected = false;
     private NanoTimer lastTry = new NanoTimer();
 
-    private String clientName;
+    String clientName;
     private String ip;
     private int port;
 
@@ -48,6 +48,12 @@ public class NetClient {
         assert (initialised);
 
         initialised = false;
+
+        if(null != instance)
+        {
+            LOGGER.log(Level.FINE, "CLIENT: closing connection...");
+            instance.close();
+        }
     }
 
     public void update() {
@@ -55,26 +61,26 @@ public class NetClient {
             return;
         }
 
-        if(!connected && lastTry.getTimeInSeconds() >= RETRY_DELAY)
-        {
+        if (!connected && lastTry.getTimeInSeconds() >= RETRY_DELAY) {
             lastTry.reset();
-            LOGGER.log(Level.INFO, "trying to connect to " + ip + ":" + port);
+            LOGGER.log(Level.INFO, "CLIENT: trying to connect to " + ip + ":" + port);
 
             try {
                 instance = Network.connectToServer(ip, port);
                 connected = true;
             } catch (IOException exception) {
-                LOGGER.log(Level.WARNING, "failed to connect to server");
+                LOGGER.log(Level.WARNING, "CLIENT: failed to connect to server");
             }
 
-            if(connected)
-            {
-                LOGGER.log(Level.FINE, "establishing connection...");
+            if (connected) {
+                LOGGER.log(Level.FINE, "CLIENT: establishing connection...");
 
                 NetSerializer.serializeAll();
-                
+
                 instance.addMessageListener(new NetClientListener(this), ServerJoinMessage.class);
-                instance.addMessageListener(new NetClientListener(this), ServerSyncMessage.class);
+                //instance.addMessageListener(new NetClientListener(this), ServerSyncMessage.class);
+
+                instance.addMessageListener(new NetClientListener(this), ChatMessage.class);
 
                 instance.start();
 
@@ -82,5 +88,10 @@ public class NetClient {
                 instance.send(message);
             }
         }
+    }
+    
+    public void chat(String data) {
+        Message message = new ChatMessage(clientName, data);
+        instance.send(message);
     }
 }
