@@ -52,7 +52,7 @@ public class GameClient implements UpdateHandler {
         application.getPhysicsSpace().setGravity(Vector3f.ZERO);
 
         playerHandler = new PlayerHandler(application);
-        application.getObjectManager().addPlayer(playerHandler);
+        application.getObjectManager().add(playerHandler.getPlayer());
 
         initCam();
         initBG();
