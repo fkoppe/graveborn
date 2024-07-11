@@ -1,4 +1,4 @@
-package com.grave;
+package com.grave.Game;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;

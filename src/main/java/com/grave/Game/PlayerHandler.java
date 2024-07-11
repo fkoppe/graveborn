@@ -1,5 +1,7 @@
-package com.grave;
+package com.grave.Game;
 
+import com.grave.Graveborn;
+import com.grave.UpdateHandler;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.KeyInput;
@@ -99,6 +101,14 @@ public class PlayerHandler implements UpdateHandler{
         o.addControl(o_rig);
         application.getPhysicsSpace().add(o_rig);
         application.getRootNode().attachChild(o);
+    }
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void shutdown() {
     }
 
     public void update(float tpf){

@@ -1,5 +1,7 @@
-package com.grave;
+package com.grave.Game;
 
+import com.grave.Graveborn;
+import com.grave.UpdateHandler;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -18,23 +20,6 @@ public class GameClient implements UpdateHandler {
 
     public GameClient(Graveborn application_){
         application = application_;
-
-        BulletAppState bulletAppState = new BulletAppState();
-        application.getStateManager().attach(bulletAppState);
-        application.setPhysicsSpace(bulletAppState.getPhysicsSpace());
-        application.getPhysicsSpace().setGravity(Vector3f.ZERO);
-
-        playerHandler = new PlayerHandler(application);
-        application.getObjectManager().add(playerHandler.getPlayer());
-
-        initCam();
-        initBG();
-
-        //On Space_Key spawn Zombie
-        application.getInputManager().addMapping("spawn", new KeyTrigger(KeyInput.KEY_SPACE));
-        application.getInputManager().addListener((ActionListener) (name, isPressed, tpf) -> {
-            if(isPressed) application.getObjectManager().spawnZombie();
-        }, "spawn");
     }
 
     private void initBG(){
@@ -49,14 +34,38 @@ public class GameClient implements UpdateHandler {
         application.getRootNode().attachChild(bg);
     }
 
-    private void initCam(){
+    private void initCam() {
         application.getFlyByCamera().setEnabled(false);
-        application.getCamera().setLocation(new Vector3f(0,0,20));
-        application.getCamera().lookAt(Vector3f.ZERO,Vector3f.UNIT_Z);
+        application.getCamera().setLocation(new Vector3f(0, 0, 20));
+        application.getCamera().lookAt(Vector3f.ZERO, Vector3f.UNIT_Z);
         application.getCamera().setParallelProjection(true);
         float aspect = (float) application.getCamera().getWidth() / application.getCamera().getHeight();
         float size = ZOOM;
-        application.getCamera().setFrustum(-1000,1000, -aspect*size, aspect*size, size, -size);
+        application.getCamera().setFrustum(-1000, 1000, -aspect * size, aspect * size, size, -size);
+    }
+
+    @Override
+    public void init() {
+        BulletAppState bulletAppState = new BulletAppState();
+        application.getStateManager().attach(bulletAppState);
+        application.setPhysicsSpace(bulletAppState.getPhysicsSpace());
+        application.getPhysicsSpace().setGravity(Vector3f.ZERO);
+
+        playerHandler = new PlayerHandler(application);
+        application.getObjectManager().addPlayer(playerHandler);
+
+        initCam();
+        initBG();
+
+        // On Space_Key spawn Zombie
+        application.getInputManager().addMapping("spawn", new KeyTrigger(KeyInput.KEY_SPACE));
+        application.getInputManager().addListener((ActionListener) (name, isPressed, tpf) -> {
+            if (isPressed) application.getObjectManager().spawnZombie();
+        }, "spawn");
+    }
+
+    @Override
+    public void shutdown() {
     }
 
     @Override

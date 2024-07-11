@@ -2,6 +2,7 @@
 /.nb-gradle/
 /build/
 /bin/
+/assets/bin/
 /target/
 /private/
 /*.dll

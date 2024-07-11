@@ -8,20 +8,22 @@
 
 Graveborn is a multiplayer game written in Java currently under early development.
 
+Graveborn is licensed under the **GNU Affero General Public License v3.0**.
+
 ## Getting Started
 
 To get started with Graveborn, follow these steps:
 
 ### Prerequisites
 
-- **Java Development Kit (JDK) 17** or higher
+- **Java Development Kit (JDK) 17**
 - **Gradle** 6.0 or higher
 
 ### Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/graveborn.git
+   git clone https://github.com/fkoppe/graveborn.git
    cd graveborn
    ```
 2. **Build the project:**

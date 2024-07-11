@@ -12,7 +12,14 @@
 ### Variables
 - Use camelCase for variable names.
 - Example: `totalPrice`.
-
+- In Constructors use an underscore after argument names.
+```java
+    SomeClass(int a_)
+    {
+      a = a_; //member a does not get shaddowed
+    }
+```
+  
 ### Constants
 - Use UPPER_CASE for constants.
 - Example: `MAX_USERS`.
@@ -72,6 +79,7 @@
   if (condition) {
       // code
   }
+  ```
 
 ## Git Commit Messages
 ### Guidelines

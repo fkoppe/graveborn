@@ -1,5 +1,7 @@
-package com.grave;
+package com.grave.Game;
 
+import com.grave.Graveborn;
+import com.grave.UpdateHandler;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
@@ -31,6 +33,13 @@ public class Zombie extends Geometry implements UpdateHandler{
         application.getPhysicsSpace().add(zombieRig);
     }
 
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void shutdown() {
+    }
 
     @Override
     public void update(float tpf) {
