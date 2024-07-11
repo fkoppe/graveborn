@@ -89,6 +89,9 @@ public class ObjectManager implements UpdateHandler{
     }
 
     public void moveClientPlayer(Vector3f pos) {
-        clientPlayer.setLocalTranslation(pos);
+        if(null != clientPlayer)
+        {
+            clientPlayer.setLocalTranslation(pos);
+        }
     }
 }
