@@ -1,7 +1,6 @@
 package com.grave;
 
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -20,15 +19,13 @@ public class GameClient implements UpdateHandler {
     public GameClient(Graveborn application_){
         application = application_;
 
-
         BulletAppState bulletAppState = new BulletAppState();
         application.getStateManager().attach(bulletAppState);
         application.setPhysicsSpace(bulletAppState.getPhysicsSpace());
         application.getPhysicsSpace().setGravity(Vector3f.ZERO);
 
         playerHandler = new PlayerHandler(application);
-        application.getObjectManager().addPlayer(playerHandler);
-
+        application.getObjectManager().add(playerHandler.getPlayer());
 
         initCam();
         initBG();

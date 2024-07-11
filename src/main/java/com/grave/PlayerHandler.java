@@ -1,10 +1,7 @@
 package com.grave;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -14,7 +11,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
@@ -25,6 +21,8 @@ public class PlayerHandler implements UpdateHandler{
     private RigidBody2DControl player_rig;
     private Graveborn application;
 
+    private int moveVert;
+    private int moveHori;
 
     public PlayerHandler(Graveborn application_){
         application = application_;
@@ -32,6 +30,9 @@ public class PlayerHandler implements UpdateHandler{
         initKeys();
         initPlayer();
         initTestObstacle();
+
+        moveVert = 0;
+        moveHori = 0;
     }
 
     private void initKeys() {
@@ -45,24 +46,22 @@ public class PlayerHandler implements UpdateHandler{
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            Vector3f velocity = new Vector3f(0,0,0);
             switch(name){
                 case "Up":
-                    velocity.setY(isPressed ? 1 : 0);
+                    moveVert = isPressed ? 1 : 0;
                     break;
                 case "Down":
-                    velocity.setY(isPressed ? -1 : 0);
+                    moveVert = isPressed ? -1 : 0;
                     break;
                 case "Left":
-                    velocity.setX(isPressed ? -1 : 0);
+                    moveHori = isPressed ? -1 : 0;
                     break;
                 case "Right":
-                    velocity.setX(isPressed ? 1 : 0);
+                    moveHori = isPressed ? 1 : 0;
                     break;
                 default:
                     break;
             }
-            player_rig.setLinearVelocity(velocity.normalize().mult(SPEED));
         }
     };
     private void initPlayer(){
@@ -77,12 +76,13 @@ public class PlayerHandler implements UpdateHandler{
         player.setQueueBucket(RenderQueue.Bucket.Transparent);
         player.setMaterial(p_mat);
 
-        CollisionShape player_shape = CollisionShapeFactory.createBoxShape(player);
 
+        CollisionShape player_shape = CollisionShapeFactory.createBoxShape(player);
         player_rig = new RigidBody2DControl(player_shape, 10);
         player_rig.setRotation(false);
         player.addControl(player_rig);
         application.getPhysicsSpace().add(player_rig);
+
         application.getRootNode().attachChild(player);
     }
 
@@ -102,10 +102,10 @@ public class PlayerHandler implements UpdateHandler{
     }
 
     public void update(float tpf){
-        //TODO: Implement Input in update
+        player_rig.setLinearVelocity(new Vector3f(moveHori,moveVert,0).normalize().mult(SPEED));
     }
 
-    public Vector3f getPosition(){
-        return player.getLocalTranslation();
+    public Geometry getPlayer() {
+        return player;
     }
 }

@@ -1,7 +1,5 @@
 package com.grave;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
