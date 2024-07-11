@@ -6,7 +6,7 @@ package com.grave;
 
 import com.grave.Networking.NetClient;
 import com.grave.Networking.NetServer;
-import com.grave.Object.Objectmanager;
+import com.grave.Object.ObjectManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,8 +95,8 @@ public class GravebornTest {
     public void testGetObjectmanager() {
         System.out.println("getObjectmanager");
         Graveborn instance = null;
-        Objectmanager expResult = null;
-        Objectmanager result = instance.getObjectmanager();
+        ObjectManager expResult = null;
+        ObjectManager result = instance.getObjectManager();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

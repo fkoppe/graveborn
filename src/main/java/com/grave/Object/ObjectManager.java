@@ -1,8 +1,8 @@
 package com.grave.Object;
 
-public class Objectmanager {
+public class ObjectManager {
 
-    public Objectmanager()
+    public ObjectManager()
     {
 
     }

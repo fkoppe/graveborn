@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Object.Objectmanager;
+import com.grave.Object.ObjectManager;
 import com.grave.Networking.NetClient;
 import com.grave.Networking.NetServer;
 
@@ -17,7 +17,7 @@ public class Graveborn extends SimpleApplication {
 
     private static JmeContext.Type context;
 
-    private Objectmanager objectmanager = null;
+    private ObjectManager objectManager = null;
 
     private NetServer server = null;
     private NetClient client = null;
@@ -33,7 +33,7 @@ public class Graveborn extends SimpleApplication {
 
     public Graveborn(Arguments arguments)
     {
-        objectmanager = new Objectmanager();
+        objectManager = new ObjectManager();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -102,7 +102,7 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        objectmanager.init();
+        objectManager.init();
 
         switch (mode) {
             case CLIENT:
@@ -124,7 +124,7 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        objectmanager.update();
+        objectManager.update();
 
         switch (mode) {
             case CLIENT:
@@ -161,12 +161,12 @@ public class Graveborn extends SimpleApplication {
                 throw new RuntimeException("invalid mode");
         }
 
-        objectmanager.shutdown();
+        objectManager.shutdown();
     }
 
-    public Objectmanager getObjectmanager()
+    public ObjectManager getObjectManager()
     {
-        return objectmanager;
+        return objectManager;
     }
 
     public NetServer getServer() {
