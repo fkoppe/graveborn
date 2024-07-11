@@ -18,6 +18,8 @@ public class ObjectManager implements UpdateHandler{
     private int idCounter;
     private Geometry clientPlayer;
 
+    private Vector3f clientPosBuffer = new Vector3f( 0, 0, 0 );
+
     public ObjectManager(Graveborn application_){
         application = application_;
         this.objectSet = new HashSet<>();
@@ -49,11 +51,13 @@ public class ObjectManager implements UpdateHandler{
 
     @Override
     public void update(float tpf) {
-        for(Geometry obj: objectSet){
-            if(obj instanceof UpdateHandler){
+        for (Geometry obj : objectSet) {
+            if (obj instanceof UpdateHandler) {
                 ((UpdateHandler) obj).update(tpf);
             }
         }
+        
+        clientPlayer.setLocalTranslation(clientPosBuffer);
     }
 
     private Geometry getPlayer(){
@@ -89,9 +93,7 @@ public class ObjectManager implements UpdateHandler{
     }
 
     public void moveClientPlayer(Vector3f pos) {
-        if(null != clientPlayer)
-        {
-            clientPlayer.setLocalTranslation(pos);
-        }
+
+        clientPosBuffer = pos;
     }
 }
