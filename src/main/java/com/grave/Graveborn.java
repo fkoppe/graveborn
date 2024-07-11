@@ -29,8 +29,6 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        //TODO:
-        //PlayerHandler Input Fix
         physicsSpace = null;
         objectManager = new ObjectManager(this);
         gameClient = new GameClient(this);
