@@ -44,41 +44,53 @@ project(":assets") {
     }
 }
 
+tasks.withType(Test) {
+    useJUnitPlatform()
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
+
 dependencies {
 
-  // Core JME
-  implementation "org.jmonkeyengine:jme3-core:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-desktop:$jmeVer"
-  // Mac OS with LWJGL 3 doesn't allow AWT/Swing
-  if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
-    implementation "org.jmonkeyengine:jme3-awt-dialogs:$jmeVer"
-  }
-  implementation "org.jmonkeyengine:jme3-lwjgl3:$jmeVer"
+    // Core JME
+    implementation "org.jmonkeyengine:jme3-core:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-desktop:$jmeVer"
+    // Mac OS with LWJGL 3 doesn't allow AWT/Swing
+    if (!System.getProperty("os.name").toLowerCase().contains("mac")) {
+        implementation "org.jmonkeyengine:jme3-awt-dialogs:$jmeVer"
+    }
+    implementation "org.jmonkeyengine:jme3-lwjgl3:$jmeVer"
 
-  // Suppress errors / warnings building in SDK
-  implementation "org.jmonkeyengine:jme3-jogg:$jmeVer"
-  implementation "org.jmonkeyengine:jme3-plugins:$jmeVer"
-  
-  // GUI Library
-  //implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
-  
-  // Physics Library
-  //implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
-  
-  // Networking Library
-  implementation "org.jmonkeyengine:jme3-networking:$jmeVer"
+    // Suppress errors / warnings building in SDK
+    implementation "org.jmonkeyengine:jme3-jogg:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-plugins:$jmeVer"
 
-  // Additional Libraries
-  //implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
-  //implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
-  //implementation "com.github.stephengold:Heart:9.1.0"
-  //implementation "com.epagagames:particlemonkey:1.1.0"
-  //implementation "com.simsilica:sio2:1.8.0"
-  //implementation "com.simsilica:zay-es:1.5.0"
-  //implementation "com.simsilica:zay-es-net:1.5.2"
+    // GUI Library
+    //implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
 
-  // Assets sub-project
-  runtimeOnly project(':assets')
+    // Physics Library
+    //implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
+
+    // Networking Library
+    implementation "org.jmonkeyengine:jme3-networking:$jmeVer"
+
+    // Additional Libraries
+    //implementation "org.jmonkeyengine:jme3-effects:$jmeVer"
+    //implementation "org.jmonkeyengine:jme3-terrain:$jmeVer"
+    //implementation "com.github.stephengold:Heart:9.1.0"
+    //implementation "com.epagagames:particlemonkey:1.1.0"
+    //implementation "com.simsilica:sio2:1.8.0"
+    //implementation "com.simsilica:zay-es:1.5.0"
+    //implementation "com.simsilica:zay-es-net:1.5.2"
+
+    // Assets sub-project
+    runtimeOnly project(':assets')
+
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 jar {
