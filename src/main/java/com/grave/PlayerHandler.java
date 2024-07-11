@@ -60,7 +60,7 @@ public class PlayerHandler implements UpdateHandler{
     final private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
-            Vector3f velocity = Vector3f.ZERO;
+            Vector3f velocity = new Vector3f(0,0,0);
             switch(name){
                 case "Up":
                     velocity.setY(isPressed ? 1 : 0);
@@ -104,6 +104,9 @@ public class PlayerHandler implements UpdateHandler{
 
     public void update(float tpf){
         //TODO: Implement Input in update
+
+        System.out.println(player_rig.getLinearVelocity());
+
     }
 
     public Vector3f getPosition(){
