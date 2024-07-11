@@ -57,7 +57,10 @@ public class ObjectManager implements UpdateHandler{
             }
         }
         
-        clientPlayer.setLocalTranslation(clientPosBuffer);
+        if(null != clientPlayer)
+        {
+            clientPlayer.setLocalTranslation(clientPosBuffer);
+        }
     }
 
     private Geometry getPlayer(){
