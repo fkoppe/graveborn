@@ -22,39 +22,24 @@ public class PlayerHandler implements UpdateHandler{
     private final float SPEED = 5f;
 
     private Geometry player;
-    private final InputManager inputManager;
-    private final AssetManager assetManager;
-    private final Node rootNode;
-    private final PhysicsSpace physicsSpace;
-    public PlayerHandler(InputManager inputManager, AssetManager assetManager, Node rootNode, PhysicsSpace physicsSpace){
-        this.inputManager = inputManager;
-        this.assetManager = assetManager;
-        this.rootNode = rootNode;
-        this.physicsSpace = physicsSpace;
+    private RigidBody2DControl player_rig;
+    private Graveborn application;
+
+
+    public PlayerHandler(Graveborn application_){
+        application = application_;
 
         initKeys();
         initPlayer();
-
-        //Test Obstacle
-        Box o_box = new Box(1, 1, 0.1f);
-        Geometry o = new Geometry("Plane", o_box);
-        o.setLocalTranslation(3f, 3f, 0);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Black);
-        o.setMaterial(mat);
-        CollisionShape o_shape = CollisionShapeFactory.createBoxShape(o);
-        RigidBody2DControl o_rig = new RigidBody2DControl(o_shape, 0);
-        o.addControl(o_rig);
-        physicsSpace.add(o_rig);
-        rootNode.attachChild(o);
+        initTestObstacle();
     }
 
     private void initKeys() {
-        inputManager.addMapping("Up",  new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addListener(actionListener, "Up", "Down", "Left", "Right");
+        application.getInputManager().addMapping("Up",  new KeyTrigger(KeyInput.KEY_W));
+        application.getInputManager().addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
+        application.getInputManager().addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+        application.getInputManager().addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        application.getInputManager().addListener(actionListener, "Up", "Down", "Left", "Right");
     }
 
     final private ActionListener actionListener = new ActionListener() {
@@ -80,13 +65,12 @@ public class PlayerHandler implements UpdateHandler{
             player_rig.setLinearVelocity(velocity.normalize().mult(SPEED));
         }
     };
-    private RigidBody2DControl player_rig;
     private void initPlayer(){
         Box p = new Box(1,1,1);
         player = new Geometry("Player", p);
         player.setLocalTranslation(0,0,0);
-        Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture characterTex = assetManager.loadTexture("Textures/character.png");
+        Material p_mat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture characterTex = application.getAssetManager().loadTexture("Textures/character.png");
         characterTex.setMagFilter(Texture.MagFilter.Nearest);
         p_mat.setTexture("ColorMap", characterTex);
         p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
@@ -98,15 +82,27 @@ public class PlayerHandler implements UpdateHandler{
         player_rig = new RigidBody2DControl(player_shape, 10);
         player_rig.setRotation(false);
         player.addControl(player_rig);
-        physicsSpace.add(player_rig);
-        rootNode.attachChild(player);
+        application.getPhysicsSpace().add(player_rig);
+        application.getRootNode().attachChild(player);
+    }
+
+    private void initTestObstacle(){
+        //Test Obstacle
+        Box o_box = new Box(1, 1, 0.1f);
+        Geometry o = new Geometry("Plane", o_box);
+        o.setLocalTranslation(3f, 3f, 0);
+        Material mat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Black);
+        o.setMaterial(mat);
+        CollisionShape o_shape = CollisionShapeFactory.createBoxShape(o);
+        RigidBody2DControl o_rig = new RigidBody2DControl(o_shape, 0);
+        o.addControl(o_rig);
+        application.getPhysicsSpace().add(o_rig);
+        application.getRootNode().attachChild(o);
     }
 
     public void update(float tpf){
         //TODO: Implement Input in update
-
-        System.out.println(player.getLocalTranslation());
-
     }
 
     public Vector3f getPosition(){

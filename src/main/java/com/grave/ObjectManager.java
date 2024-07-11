@@ -12,33 +12,27 @@ import java.util.HashSet;
 import java.util.List;
 
 public class ObjectManager implements UpdateHandler{
-    private final AssetManager assetManager;
-    private final Node rootNode;
-    private final PhysicsSpace physicsSpace;
+    private Graveborn application;
     private HashSet<Geometry> objectSet;
-    private List<Integer> idList;
-    private final PlayerHandler playerHandler;
-    public ObjectManager(AssetManager assetManager, Node rootNode, PhysicsSpace physicsSpace, PlayerHandler playerHandler){
-        this.assetManager = assetManager;
-        this.rootNode = rootNode;
+    private int idCounter;
+    private PlayerHandler playerHandler;
+
+    public ObjectManager(Graveborn application_){
+        application = application_;
         this.objectSet = new HashSet<>();
-        this.physicsSpace = physicsSpace;
-        this.playerHandler = playerHandler;
-        idList = new ArrayList<>();
+        idCounter = 0;
     }
 
     public void spawnZombie(){
         String zombieName = "zombie"+getId();
-        Zombie zombie = new Zombie(zombieName,new Vector3f(-2,-5,0), this, assetManager, physicsSpace);
+        Zombie zombie = new Zombie(zombieName,new Vector3f(-2,-5,0), application);
         objectSet.add(zombie);
-        rootNode.attachChild(zombie);
+        application.getRootNode().attachChild(zombie);
         System.out.println(zombieName + " spawned");
     }
 
     public int getId(){
-        int o = idList.size();
-        idList.add(o);
-        return o;
+        return idCounter++;
     }
 
 
@@ -53,5 +47,9 @@ public class ObjectManager implements UpdateHandler{
 
     public Vector3f getPlayerPos(){
         return playerHandler.getPosition();
+    }
+
+    public void addPlayer(PlayerHandler playerHandler_){
+        playerHandler = playerHandler_;
     }
 }
