@@ -22,13 +22,18 @@ public class NetServerListener implements MessageListener<HostedConnection> {
             ClientHandshakeMessage handshakeMessage = (ClientHandshakeMessage) message;
             LOGGER.log(Level.INFO, "SERVER: client #" + source.getId() + " established connection as '" + handshakeMessage.getClientName() + "'");
 
-            server.clientList.put(handshakeMessage.getClientName(), source.getId());
-
             Message responce = new ServerHandshakeMessage(server.name);
             server.instance.getConnection(source.getId()).send(responce);
 
+            server.clientList.forEach((name, cid) -> {
+                Message standup = new ClientJoinMessage(name);
+                server.instance.getConnection(source.getId()).send(standup);
+            });
+
             Message joinMessage = new ClientJoinMessage(handshakeMessage.getClientName());
             server.relay(source, joinMessage);
+
+            server.clientList.put(handshakeMessage.getClientName(), source.getId());
         }
         else {
             server.relay(source, message);

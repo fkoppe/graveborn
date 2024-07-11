@@ -89,8 +89,14 @@ public class NetServer {
         //...
     }
 
-    void relay(HostedConnection source, Message message) {       
-        clientList.forEach((name, cid) -> { if (cid != source.getId()) instance.getConnection(cid).send(message); });
+    void relay(HostedConnection source, Message message) {
+        clientList.forEach((name, cid) -> {
+            if (cid != source.getId()) instance.getConnection(cid).send(message);
+        });
+    }
+    
+    void relayTo(HostedConnection source, String name, Message message) {
+        instance.getConnection(clientList.get(name)).send(message);
     }
 
     public String getIp()
