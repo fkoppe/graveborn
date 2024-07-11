@@ -13,7 +13,7 @@ import com.jme3.system.JmeContext;
 
 public class Graveborn extends SimpleApplication {
     private static final Logger LOGGER = Logger.getLogger(Graveborn.class.getName());
-    private static final int DEFAULT_PORT = 6143;
+    public static final int DEFAULT_PORT = 6143;
 
     private static JmeContext.Type context;
 
