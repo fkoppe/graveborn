@@ -7,7 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Graveborn;
-
+import com.jme3.network.HostedConnection;
+import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 
@@ -49,10 +50,12 @@ public class NetServer {
 
         NetSerializer.serializeAll();
 
-        instance.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
+        instance.addMessageListener(new NetServerListener(this), ClientHandshakeMessage.class);
         //instance.addMessageListener(new NetServerListener(this), ClientSyncMessage.class);
 
         instance.addMessageListener(new NetServerListener(this), ChatMessage.class);
+        instance.addMessageListener(new NetServerListener(this), PlayerPositionMessage.class);
+        instance.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
 
         instance.addConnectionListener(new NetServerConnectionListener(this));
     }
@@ -84,6 +87,10 @@ public class NetServer {
         }
 
         //...
+    }
+
+    void relay(HostedConnection source, Message message) {       
+        clientList.forEach((name, cid) -> { if (cid != source.getId()) instance.getConnection(cid).send(message); });
     }
 
     public String getIp()

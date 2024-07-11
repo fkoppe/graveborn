@@ -112,7 +112,9 @@ public class PlayerHandler implements UpdateHandler{
     }
 
     public void update(float tpf){
-        player_rig.setLinearVelocity(new Vector3f(moveHori,moveVert,0).normalize().mult(SPEED));
+        player_rig.setLinearVelocity(new Vector3f(moveHori, moveVert, 0).normalize().mult(SPEED));
+        
+        application.getNetClient().setPlayerPosition(player_rig.getPhysicsLocation());
     }
 
     public Geometry getPlayer() {
