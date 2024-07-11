@@ -45,8 +45,14 @@ public class Graveborn extends SimpleApplication {
     }
     private PlayerHandler playerHandler;
     private ObjectManager objectManager;
+
     @Override
     public void simpleInitApp() {
+        //TODO:
+        //InitKlasse (GameClient) -- ObjectManager außerhalb
+        //Player in ObjectManager
+        //PlayerHandler Input Fix
+
         initCam();
         initBG();
 
@@ -84,12 +90,11 @@ public class Graveborn extends SimpleApplication {
         cam.setParallelProjection(true);
         float aspect = (float) cam.getWidth() / cam.getHeight();
         float size = ZOOM;
-        cam.setFrustum(-1000,1000, - aspect*size, aspect*size, size, -size);
+        cam.setFrustum(-1000,1000, -aspect*size, aspect*size, size, -size);
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-//        System.out.println(cam.getLocation());
         playerHandler.update(tpf);
         objectManager.update(tpf);
     }
