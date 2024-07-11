@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Graveborn;
-
+import com.grave.Game.GameClient;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.system.NanoTimer;
@@ -17,6 +17,8 @@ public class NetClient {
     private static final int RETRY_DELAY = 3;
 
     Graveborn application;
+    
+    private GameClient gameClient = null;
     
     private Client instance = null;
     private boolean connected = false;
@@ -34,6 +36,8 @@ public class NetClient {
         clientName = clientName_;
         ip = ip_;
         port = port_;
+
+        gameClient = new GameClient(application_);
     }
 
     public void init()
@@ -41,6 +45,8 @@ public class NetClient {
         assert (!initialised);
 
         initialised = true;
+
+        gameClient.init();
     }
 
     public void shutdown()
@@ -49,6 +55,8 @@ public class NetClient {
 
         initialised = false;
 
+        gameClient.shutdown();
+
         if(null != instance)
         {
             LOGGER.log(Level.FINE, "CLIENT: closing connection...");
@@ -56,7 +64,7 @@ public class NetClient {
         }
     }
 
-    public void update() {
+    public void update(float tpf) {
         if (!initialised) {
             return;
         }
@@ -88,6 +96,8 @@ public class NetClient {
                 instance.send(message);
             }
         }
+
+        gameClient.update(tpf);
     }
     
     public void chat(String data) {

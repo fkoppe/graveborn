@@ -71,7 +71,7 @@ dependencies {
     //implementation "org.jmonkeyengine:jme3-niftygui:$jmeVer"
 
     // Physics Library
-    //implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
+    implementation "org.jmonkeyengine:jme3-jbullet:$jmeVer"
 
     // Networking Library
     implementation "org.jmonkeyengine:jme3-networking:$jmeVer"

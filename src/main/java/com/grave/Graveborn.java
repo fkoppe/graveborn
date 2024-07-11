@@ -4,12 +4,15 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Object.ObjectManager;
+import com.grave.Game.GameClient;
+import com.grave.Game.ObjectManager;
 import com.grave.Networking.NetClient;
 import com.grave.Networking.NetServer;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
+import com.jme3.bullet.PhysicsSpace;
 
 public class Graveborn extends SimpleApplication {
     private static final Logger LOGGER = Logger.getLogger(Graveborn.class.getName());
@@ -21,19 +24,30 @@ public class Graveborn extends SimpleApplication {
 
     private NetServer server = null;
     private NetClient client = null;
+    //private GameClient gameClient = null;
 
     public Mode mode = Mode.NONE;
 
+    private PhysicsSpace physicsSpace = null;
+
     public static void main(String[] args) {
+
         Arguments arguments = new Arguments(args);
 
+        AppSettings settings = new AppSettings(true);
+        settings.setCenterWindow(true);
+        settings.setHeight(800);
+        settings.setWidth(1000);
+
         Graveborn app = new Graveborn(arguments);
+        app.setSettings(settings);
+        app.setShowSettings(false);
         app.start(context);
     }
 
     public Graveborn(Arguments arguments)
     {
-        objectManager = new ObjectManager();
+        objectManager = new ObjectManager(this);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -124,18 +138,18 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        objectManager.update();
+        objectManager.update(tpf);
 
         switch (mode) {
             case CLIENT:
-                client.update();
+                client.update(tpf);
                 break;
             case SERVER:
                 server.update();
                 break;
             case HOST:
                 server.update();
-                client.update();
+                client.update(tpf);
                 break;
             default:
                 throw new RuntimeException("invalid mode");
@@ -164,17 +178,23 @@ public class Graveborn extends SimpleApplication {
         objectManager.shutdown();
     }
 
-    public ObjectManager getObjectManager()
-    {
-        return objectManager;
-    }
-
-    public NetServer getServer() {
+    public NetServer getNetServer() {
         return server;
     }
 
-    public NetClient getClient() {
+    public NetClient getNetClient() {
         return client;
     }
-}
 
+    public ObjectManager getObjectManager(){
+        return objectManager;
+    }
+
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
+    }
+
+    public void setPhysicsSpace(PhysicsSpace physicsSpace_) {
+        physicsSpace = physicsSpace_;
+    }
+}
