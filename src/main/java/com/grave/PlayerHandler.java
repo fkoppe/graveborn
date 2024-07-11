@@ -105,7 +105,7 @@ public class PlayerHandler implements UpdateHandler{
     public void update(float tpf){
         //TODO: Implement Input in update
 
-        System.out.println(player_rig.getLinearVelocity());
+        System.out.println(player.getLocalTranslation());
 
     }
 
