@@ -7,6 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Graveborn;
+import com.grave.Networking.Message.ChatMessage;
+import com.grave.Networking.Message.ClientHandshakeMessage;
+import com.grave.Networking.Message.ClientJoinMessage;
+import com.grave.Networking.Message.PlayerPositionMessage;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.Network;
@@ -33,7 +37,7 @@ public class NetServer {
         port = port_;
 
         clientList = new HashMap<String, Integer>();
-        
+
         InetAddress localHost;
         try {
             localHost = InetAddress.getLocalHost();
@@ -60,7 +64,7 @@ public class NetServer {
         instance.addConnectionListener(new NetServerConnectionListener(this));
     }
 
-    
+
     public void init()
     {
         assert (!initialised);
@@ -94,7 +98,7 @@ public class NetServer {
             if (cid != source.getId()) instance.getConnection(cid).send(message);
         });
     }
-    
+
     void relayTo(HostedConnection source, String name, Message message) {
         instance.getConnection(clientList.get(name)).send(message);
     }

@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.text.Position;
-
 import com.grave.Graveborn;
 import com.grave.Game.GameClient;
+import com.grave.Networking.Message.*;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
@@ -20,9 +19,9 @@ public class NetClient {
     private static final int RETRY_DELAY = 3;
 
     Graveborn application;
-    
+
     private GameClient gameClient = null;
-    
+
     private Client instance = null;
     private boolean connected = false;
     private NanoTimer lastTry = new NanoTimer();
@@ -104,7 +103,7 @@ public class NetClient {
 
         gameClient.update(tpf);
     }
-    
+
     public void chat(String data) {
         Message message = new ChatMessage(clientName, data);
 
@@ -115,8 +114,8 @@ public class NetClient {
     }
 
     public void setPlayerPosition(Vector3f position) {
-        Message message = new PlayerPositionMessage(position);
-        
+        Message message = new PlayerPositionMessage(clientName, position);
+
         if (connected) {
             instance.send(message);
         }

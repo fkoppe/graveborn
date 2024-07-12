@@ -1,5 +1,6 @@
 package com.grave.Networking;
 
+import com.grave.Networking.Message.*;
 import com.jme3.network.serializing.Serializer;
 
 public class NetSerializer {

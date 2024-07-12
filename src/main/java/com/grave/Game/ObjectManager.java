@@ -10,7 +10,9 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class ObjectManager implements UpdateHandler{
     private Graveborn application;
@@ -18,8 +20,10 @@ public class ObjectManager implements UpdateHandler{
     private int idCounter;
     private Geometry clientPlayer;
 
+    private HashMap<String, Geometry> clientPlayerMap;
+    private HashMap<String, Vector3f> clientPosBufferMap;
     private Vector3f clientPosBuffer = new Vector3f(0, 0, 0);
-    
+
     boolean oldAddedIs = false;
     boolean addedIs = false;
 
@@ -28,6 +32,8 @@ public class ObjectManager implements UpdateHandler{
         this.objectSet = new HashSet<>();
         idCounter = 0;
         clientPlayer = null;
+        clientPlayerMap = new HashMap<>();
+        clientPosBufferMap = new HashMap<>();
     }
 
     public void spawnZombie(){
@@ -59,29 +65,30 @@ public class ObjectManager implements UpdateHandler{
                 ((UpdateHandler) obj).update(tpf);
             }
         }
-        
-        if(null != clientPlayer)
-        {
-            clientPlayer.setLocalTranslation(clientPosBuffer);
+
+        System.out.println(clientPlayerMap);
+        System.out.println(clientPosBufferMap);
+
+
+        for(Map.Entry<String, Geometry> entry: clientPlayerMap.entrySet()){
+            String clientName = entry.getKey();
+            Vector3f bufferPos = clientPosBufferMap.get(clientName);
+            clientPlayerMap.get(clientName).setLocalTranslation(bufferPos);
         }
+    }
 
-        if(addedIs == true && oldAddedIs == false)
-        {
-            clientPlayer = new Geometry("ClientPlayer", new Box(1, 1, 1));
-            clientPlayer.setLocalTranslation(0, 0, 0);
-            Material clientPlayerMat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-            Texture characterTex = application.getAssetManager().loadTexture("Textures/character.png");
-            characterTex.setMagFilter(Texture.MagFilter.Nearest);
-            clientPlayerMat.setTexture("ColorMap", characterTex);
-            clientPlayerMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-            clientPlayer.setQueueBucket(RenderQueue.Bucket.Transparent);
-            clientPlayer.setMaterial(clientPlayerMat);
-            application.getRootNode().attachChild(clientPlayer);
-
-            objectSet.add(clientPlayer);
-
-            oldAddedIs = true;
-        }
+    private Geometry createClientPlayer(String name){
+        Geometry o = new Geometry(name, new Box(1, 1, 1));
+        o.setLocalTranslation(0, 0, 0);
+        Material oMat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture oTex = application.getAssetManager().loadTexture("Textures/character.png");
+        oTex.setMagFilter(Texture.MagFilter.Nearest);
+        oMat.setTexture("ColorMap", oTex);
+        oMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        o.setQueueBucket(RenderQueue.Bucket.Transparent);
+        o.setMaterial(oMat);
+        application.getRootNode().attachChild(o);
+        return o;
     }
 
     private Geometry getPlayer(){
@@ -101,12 +108,11 @@ public class ObjectManager implements UpdateHandler{
         objectSet.add(g);
     }
 
-    public void addClientPlayer() {
-        addedIs = true;
+    public void addClientPlayer(String clientName) {
+        clientPlayerMap.put(clientName, createClientPlayer(clientName));
     }
 
-    public void moveClientPlayer(Vector3f pos) {
-
-        clientPosBuffer = pos;
+    public void moveClientPlayer(String clientName, Vector3f pos) {
+        clientPosBufferMap.put(clientName, pos);
     }
 }

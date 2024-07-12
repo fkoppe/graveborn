@@ -1,4 +1,4 @@
-package com.grave.Networking;
+package com.grave.Networking.Message;
 
 import com.jme3.network.serializing.Serializable;
 import com.jme3.network.AbstractMessage;

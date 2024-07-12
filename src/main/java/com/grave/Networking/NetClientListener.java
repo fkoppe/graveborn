@@ -3,6 +3,10 @@ package com.grave.Networking;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.grave.Networking.Message.ChatMessage;
+import com.grave.Networking.Message.ClientJoinMessage;
+import com.grave.Networking.Message.PlayerPositionMessage;
+import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.jme3.network.Client;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Message;
@@ -16,7 +20,9 @@ public class NetClientListener implements MessageListener<Client> {
         client = client_;
     }
 
+    @Override
     public void messageReceived(Client source, Message message) {
+        System.out.println("source: "+source.getId());
         if (message instanceof ServerHandshakeMessage) {
             ServerHandshakeMessage joinMessage = (ServerHandshakeMessage) message;
             LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getServerName() + "'");
@@ -32,12 +38,12 @@ public class NetClientListener implements MessageListener<Client> {
         {
             PlayerPositionMessage playerPositionMessage = (PlayerPositionMessage) message;
 
-            client.application.getObjectManager().moveClientPlayer(playerPositionMessage.getPlayerPosition());
+            client.application.getObjectManager().moveClientPlayer(playerPositionMessage.getSenderName(), playerPositionMessage.getPlayerPosition());
         }
         else if (message instanceof ClientJoinMessage) {
             ClientJoinMessage clientJoinMessage = (ClientJoinMessage) message;
 
-            client.application.getObjectManager().addClientPlayer();
+            client.application.getObjectManager().addClientPlayer(clientJoinMessage.getName());
         }
     }
 }
