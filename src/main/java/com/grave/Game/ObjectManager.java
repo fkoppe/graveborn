@@ -2,9 +2,6 @@ package com.grave.Game;
 
 import com.grave.Graveborn;
 import com.grave.UpdateHandler;
-import com.jme3.app.state.AppStateManager;
-import com.jme3.asset.AssetManager;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
@@ -20,6 +17,11 @@ public class ObjectManager implements UpdateHandler{
     private HashSet<Geometry> objectSet;
     private int idCounter;
     private Geometry clientPlayer;
+
+    private Vector3f clientPosBuffer = new Vector3f(0, 0, 0);
+    
+    boolean oldAddedIs = false;
+    boolean addedIs = false;
 
     public ObjectManager(Graveborn application_){
         application = application_;
@@ -52,10 +54,33 @@ public class ObjectManager implements UpdateHandler{
 
     @Override
     public void update(float tpf) {
-        for(Geometry obj: objectSet){
-            if(obj instanceof UpdateHandler){
+        for (Geometry obj : objectSet) {
+            if (obj instanceof UpdateHandler) {
                 ((UpdateHandler) obj).update(tpf);
             }
+        }
+        
+        if(null != clientPlayer)
+        {
+            clientPlayer.setLocalTranslation(clientPosBuffer);
+        }
+
+        if(addedIs == true && oldAddedIs == false)
+        {
+            clientPlayer = new Geometry("ClientPlayer", new Box(1, 1, 1));
+            clientPlayer.setLocalTranslation(0, 0, 0);
+            Material clientPlayerMat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+            Texture characterTex = application.getAssetManager().loadTexture("Textures/character.png");
+            characterTex.setMagFilter(Texture.MagFilter.Nearest);
+            clientPlayerMat.setTexture("ColorMap", characterTex);
+            clientPlayerMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+            clientPlayer.setQueueBucket(RenderQueue.Bucket.Transparent);
+            clientPlayer.setMaterial(clientPlayerMat);
+            application.getRootNode().attachChild(clientPlayer);
+
+            objectSet.add(clientPlayer);
+
+            oldAddedIs = true;
         }
     }
 
@@ -76,22 +101,12 @@ public class ObjectManager implements UpdateHandler{
         objectSet.add(g);
     }
 
-    public void addClientPlayer(){
-        clientPlayer = new Geometry("ClientPlayer", new Box(1,1,1));
-        clientPlayer.setLocalTranslation(0,0,0);
-        Material clientPlayerMat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture characterTex = application.getAssetManager().loadTexture("Textures/character.png");
-        characterTex.setMagFilter(Texture.MagFilter.Nearest);
-        clientPlayerMat.setTexture("ColorMap", characterTex);
-        clientPlayerMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        clientPlayer.setQueueBucket(RenderQueue.Bucket.Transparent);
-        clientPlayer.setMaterial(clientPlayerMat);
-        application.getRootNode().attachChild(clientPlayer);
-
-        objectSet.add(clientPlayer);
+    public void addClientPlayer() {
+        addedIs = true;
     }
 
     public void moveClientPlayer(Vector3f pos) {
-        clientPlayer.setLocalTranslation(pos);
+
+        clientPosBuffer = pos;
     }
 }

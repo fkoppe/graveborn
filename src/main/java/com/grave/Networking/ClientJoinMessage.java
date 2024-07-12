@@ -5,18 +5,17 @@ import com.jme3.network.AbstractMessage;
 
 @Serializable
 public class ClientJoinMessage extends AbstractMessage {
-    private final String clientName;
+    private String name;
 
     public ClientJoinMessage() {
-        clientName = null;
+        name = null;
     }
 
-    public ClientJoinMessage(String clientName_)
-    {
-        clientName = clientName_;
+    public ClientJoinMessage(String name_) {
+        name = name_;
     }
 
-    public String getClientName() {
-        return clientName;
+    public String getName() {
+        return name;
     }
 }

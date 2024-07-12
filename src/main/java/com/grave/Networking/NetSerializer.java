@@ -7,12 +7,12 @@ public class NetSerializer {
     {
         Serializer.setReadOnly(false);
 
-        Serializer.registerClass(ServerJoinMessage.class);
-        Serializer.registerClass(ServerSyncMessage.class);
+        Serializer.registerClass(ServerHandshakeMessage.class);
 
-        Serializer.registerClass(ClientJoinMessage.class);
-        Serializer.registerClass(ClientSyncMessage.class);
+        Serializer.registerClass(ClientHandshakeMessage.class);
 
         Serializer.registerClass(ChatMessage.class);
+        Serializer.registerClass(PlayerPositionMessage.class);
+        Serializer.registerClass(ClientJoinMessage.class);
     }
 }

@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.text.Position;
+
 import com.grave.Graveborn;
 import com.grave.Game.GameClient;
+import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.system.NanoTimer;
@@ -27,6 +30,7 @@ public class NetClient {
     String clientName;
     private String ip;
     private int port;
+    String serverName;
 
     private boolean initialised = false;
 
@@ -85,14 +89,15 @@ public class NetClient {
 
                 NetSerializer.serializeAll();
 
-                instance.addMessageListener(new NetClientListener(this), ServerJoinMessage.class);
-                //instance.addMessageListener(new NetClientListener(this), ServerSyncMessage.class);
+                instance.addMessageListener(new NetClientListener(this), ServerHandshakeMessage.class);
 
                 instance.addMessageListener(new NetClientListener(this), ChatMessage.class);
+                instance.addMessageListener(new NetClientListener(this), PlayerPositionMessage.class);
+                instance.addMessageListener(new NetClientListener(this), ClientJoinMessage.class);
 
                 instance.start();
 
-                Message message = new ClientJoinMessage(clientName);
+                Message message = new ClientHandshakeMessage(clientName);
                 instance.send(message);
             }
         }
@@ -102,6 +107,18 @@ public class NetClient {
     
     public void chat(String data) {
         Message message = new ChatMessage(clientName, data);
-        instance.send(message);
+
+        if(connected)
+        {
+            instance.send(message);
+        }
+    }
+
+    public void setPlayerPosition(Vector3f position) {
+        Message message = new PlayerPositionMessage(position);
+        
+        if (connected) {
+            instance.send(message);
+        }
     }
 }

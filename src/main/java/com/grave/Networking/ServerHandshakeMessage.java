@@ -4,14 +4,14 @@ import com.jme3.network.serializing.Serializable;
 import com.jme3.network.AbstractMessage;
 
 @Serializable
-public class ServerJoinMessage extends AbstractMessage {
+public class ServerHandshakeMessage extends AbstractMessage {
     private final String serverName;
 
-    public ServerJoinMessage() {
+    public ServerHandshakeMessage() {
         serverName = null;
     }
 
-    public ServerJoinMessage(String serverName_)
+    public ServerHandshakeMessage(String serverName_)
     {
         serverName = serverName_;
     }
