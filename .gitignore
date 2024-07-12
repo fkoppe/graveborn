@@ -1,5 +1,6 @@
 /.gradle/
 /.nb-gradle/
+/nbproject/
 /build/
 /bin/
 /assets/bin/
