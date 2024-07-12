@@ -111,4 +111,7 @@ public class NetServer {
     public int getPort() {
         return port;
     }
+
+    //TODO: remove client
+
 }

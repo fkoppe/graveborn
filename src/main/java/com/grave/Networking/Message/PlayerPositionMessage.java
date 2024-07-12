@@ -9,6 +9,11 @@ public class PlayerPositionMessage extends AbstractMessage {
     private Vector3f playerPosition;
     private String senderName;
 
+    public PlayerPositionMessage(){
+        playerPosition = null;
+        senderName = null;
+    }
+
     public PlayerPositionMessage(String senderName_, Vector3f playerPosition_) {
         senderName = senderName_;
         playerPosition = playerPosition_;

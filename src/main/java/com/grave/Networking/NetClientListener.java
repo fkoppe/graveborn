@@ -22,7 +22,6 @@ public class NetClientListener implements MessageListener<Client> {
 
     @Override
     public void messageReceived(Client source, Message message) {
-        System.out.println("source: "+source.getId());
         if (message instanceof ServerHandshakeMessage) {
             ServerHandshakeMessage joinMessage = (ServerHandshakeMessage) message;
             LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getServerName() + "'");

@@ -18,20 +18,15 @@ public class ObjectManager implements UpdateHandler{
     private Graveborn application;
     private HashSet<Geometry> objectSet;
     private int idCounter;
-    private Geometry clientPlayer;
 
     private HashMap<String, Geometry> clientPlayerMap;
     private HashMap<String, Vector3f> clientPosBufferMap;
-    private Vector3f clientPosBuffer = new Vector3f(0, 0, 0);
 
-    boolean oldAddedIs = false;
-    boolean addedIs = false;
 
     public ObjectManager(Graveborn application_){
         application = application_;
         this.objectSet = new HashSet<>();
         idCounter = 0;
-        clientPlayer = null;
         clientPlayerMap = new HashMap<>();
         clientPosBufferMap = new HashMap<>();
     }
@@ -65,10 +60,6 @@ public class ObjectManager implements UpdateHandler{
                 ((UpdateHandler) obj).update(tpf);
             }
         }
-
-        System.out.println(clientPlayerMap);
-        System.out.println(clientPosBufferMap);
-
 
         for(Map.Entry<String, Geometry> entry: clientPlayerMap.entrySet()){
             String clientName = entry.getKey();
@@ -109,10 +100,18 @@ public class ObjectManager implements UpdateHandler{
     }
 
     public void addClientPlayer(String clientName) {
+        if(clientPlayerMap.containsKey(clientName)) throw new RuntimeException("clientName is already in Map");
         clientPlayerMap.put(clientName, createClientPlayer(clientName));
+        clientPosBufferMap.put(clientName, new Vector3f(0,0,0));
     }
 
     public void moveClientPlayer(String clientName, Vector3f pos) {
         clientPosBufferMap.put(clientName, pos);
+    }
+
+    public void removeClientPlayer(String clientName){
+        application.getRootNode().detachChild(clientPlayerMap.get(clientName));
+        clientPlayerMap.remove(clientName);
+        clientPosBufferMap.remove(clientName);
     }
 }
