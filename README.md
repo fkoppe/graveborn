@@ -61,7 +61,7 @@ We appreciate your contributions to Graveborn! If you would like to contribute, 
 5. **Create a pull request:** Go to the original repository on GitHub, navigate to the "Pull requests" tab, and click "New pull request". Select your branch to compare and create the pull request.
 
 ### Coding Standards
-Ensure that your code follows the coding standards outlined in the [style.md](styleguide) file.
+Ensure that your code follows the coding standards outlined in the [styleguide](style.md) file.
 
 ## Structure
-To better understand the gamestructure see the [doc/structure.md](structure) file.
+To better understand the gamestructure see the [structure](doc/structure.md) file.
