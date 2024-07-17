@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Networking.Message.ChatMessage;
-import com.grave.Networking.Message.ClientJoinMessage;
 import com.grave.Networking.Message.PlayerPositionMessage;
 import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.jme3.network.Client;
@@ -38,11 +37,6 @@ public class NetClientListener implements MessageListener<Client> {
             PlayerPositionMessage playerPositionMessage = (PlayerPositionMessage) message;
 
             //client.application.getObjectManager().moveClientPlayer(playerPositionMessage.getSenderName(), playerPositionMessage.getPlayerPosition());
-        }
-        else if (message instanceof ClientJoinMessage) {
-            ClientJoinMessage clientJoinMessage = (ClientJoinMessage) message;
-
-            //client.application.getObjectManager().addClientPlayer(clientJoinMessage.getName());
         }
     }
 }

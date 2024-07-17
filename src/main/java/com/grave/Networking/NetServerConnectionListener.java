@@ -3,12 +3,14 @@ package com.grave.Networking;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
+import com.jme3.network.Message;
 import com.jme3.network.Server;
 
 public class NetServerConnectionListener implements ConnectionListener {
-    private static final Logger LOGGER = Logger.getLogger(NetServerListener.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(NetServerConnectionListener.class.getName());
 
     private NetServer server;
 
@@ -18,12 +20,15 @@ public class NetServerConnectionListener implements ConnectionListener {
     }
 
     @Override
-    public void connectionAdded(Server s, HostedConnection c) {
-        LOGGER.log(Level.INFO, "SERVER: added connection to client #" + c.getId());
+    public void connectionAdded(Server instance, HostedConnection hostConnection) {
+        LOGGER.log(Level.INFO, "SERVER: connection #" + hostConnection.getId() + " added");
+
+        Message responce = new ServerHandshakeMessage(server.name);
+        hostConnection.send(responce);
     }
 
     @Override
-    public void connectionRemoved(Server s, HostedConnection c) {
-        LOGGER.log(Level.INFO, "SERVER: lost connection to client #" + c.getId());
+    public void connectionRemoved(Server instance, HostedConnection hostConnection) {
+        LOGGER.log(Level.INFO, "SERVER: connection #" + hostConnection.getId() + " removed");
     }
 }

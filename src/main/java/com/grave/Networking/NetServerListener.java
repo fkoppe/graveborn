@@ -1,7 +1,7 @@
 package com.grave.Networking;
 
+import com.grave.Networking.Message.ChatMessage;
 import com.grave.Networking.Message.ClientHandshakeMessage;
-import com.grave.Networking.Message.ClientJoinMessage;
 import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.jme3.network.MessageListener;
 
@@ -23,24 +23,25 @@ public class NetServerListener implements MessageListener<HostedConnection> {
     @Override
     public void messageReceived(HostedConnection source, Message message) {
         if (message instanceof ClientHandshakeMessage) {
-            ClientHandshakeMessage handshakeMessage = (ClientHandshakeMessage) message;
-            LOGGER.log(Level.INFO, "client #" + source.getId() + " established connection as \"" + handshakeMessage.getClientName() + "\"");
+            ClientHandshakeMessage handshakeMessage = (ClientHandshakeMessage)message;
+            LOGGER.log(Level.INFO, "SERVER: client #" + source.getId() + " established connection as \"" + handshakeMessage.getClientName() + "\"");
 
-            Message responce = new ServerHandshakeMessage(server.name);
-            //server.instance.getConnection(source.getId()).send(responce);
-
-            //server.clientList.forEach((name, cid) -> {
-            //    Message standup = new ClientJoinMessage(name);
-            //    server.instance.getConnection(source.getId()).send(standup);
-            //});
-
-            //Message joinMessage = new ClientJoinMessage(handshakeMessage.getClientName());
-            //server.relay(source, joinMessage);
-
-            //server.clientList.put(handshakeMessage.getClientName(), source.getId());
+            Message joinMessage = new ChatMessage(handshakeMessage.getClientName(), "joined the game");
+            server.broadcast(joinMessage);
+        }
+        if(message instanceof ChatMessage)
+        {
+            ChatMessage chatMessage = (ChatMessage)message;
+            if(chatMessage.isPrivate())
+            {
+                server.relayTo(chatMessage.getTargetId(), chatMessage);
+            }
+            else {
+                server.relay(source.getId(), message);
+            }
         }
         else {
-            server.relay(source, message);
+            LOGGER.log(Level.WARNING, "SERVER: received unknown message from client #" + source.getId());
         }
     }
 }

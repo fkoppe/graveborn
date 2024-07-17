@@ -14,6 +14,5 @@ public class NetSerializer {
 
         Serializer.registerClass(ChatMessage.class);
         Serializer.registerClass(PlayerPositionMessage.class);
-        Serializer.registerClass(ClientJoinMessage.class);
     }
 }

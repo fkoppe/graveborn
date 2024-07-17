@@ -43,7 +43,7 @@ public class NetClient extends Net {
     {
         if(null != instance)
         {
-            LOGGER.log(Level.FINE, "closing connection...");
+            LOGGER.log(Level.FINE, "CLIENT: closing connection...");
             instance.close();
         }
     }
@@ -51,17 +51,17 @@ public class NetClient extends Net {
     public void update(float tpf) {
         if (!connected && lastTry.getTimeInSeconds() >= RETRY_DELAY) {
             lastTry.reset();
-            LOGGER.log(Level.INFO, "trying to connect to " + ip + ":" + port);
+            LOGGER.log(Level.INFO, "CLIENT: trying to connect to " + ip + ":" + port);
 
             try {
                 instance = Network.connectToServer(ip, port);
                 connected = true;
             } catch (IOException exception) {
-                LOGGER.log(Level.WARNING, "failed to connect to server");
+                LOGGER.log(Level.WARNING, "CLIENT: failed to connect to server");
             }
 
             if (connected) {
-                LOGGER.log(Level.FINE, "establishing connection...");
+                LOGGER.log(Level.FINE, "CLIENT: establishing connection...");
 
                 NetSerializer.serializeAll();
 
@@ -71,12 +71,10 @@ public class NetClient extends Net {
                 //from clients
                 instance.addMessageListener(new NetClientListener(this), ChatMessage.class);
                 instance.addMessageListener(new NetClientListener(this), PlayerPositionMessage.class);
-                instance.addMessageListener(new NetClientListener(this), ClientJoinMessage.class);
+
+                instance.addClientStateListener(new NetClientStateListener(this));
 
                 instance.start();
-
-                Message message = new ClientHandshakeMessage(name);
-                instance.send(message);
             }
         }
     }
