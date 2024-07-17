@@ -51,18 +51,20 @@ __Recessive__:
 __Dominant__:
 - will prepare SyncMessage data (not the message itself)
 
-## Objectmanager Details
-![objectmanager_details](./structure_img/objectmanager_details.png)
-
-## Entities
-![entity](./structure_img/entity_details.png)
-
-## Updates
-![update](./structure_img/update_details.png)
-
 ## Networking
 ![netserver](./structure_img/netserver.png)
 ![netclient](./structure_img/netclient.png)
 
 - handles network connection
 - sync with others
+
+## Details
+
+### Objectmanager
+![objectmanager_details](./structure_img/objectmanager_details.png)
+
+### Entities
+![entity](./structure_img/entity_details.png)
+
+### Updates
+![update](./structure_img/update_details.png)
