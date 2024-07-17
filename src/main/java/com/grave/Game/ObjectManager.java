@@ -126,7 +126,7 @@ public class ObjectManager {
         return assetManager;
     }
 
-    public RootNode getRootNode() {
+    public Node getRootNode() {
         return rootNode;
     }
 }

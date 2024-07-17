@@ -87,6 +87,8 @@ public class Graveborn extends SimpleApplication {
                 }
 
                 net = new NetClient(objectManager, arguments.clientName, arguments.ip, arguments.port);
+
+                player = new Player(this, objectManager);
                 break;
             case HOST:
                 throw new RuntimeException("host mode not implemented");
