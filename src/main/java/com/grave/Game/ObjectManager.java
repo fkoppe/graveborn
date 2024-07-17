@@ -1,12 +1,14 @@
 package com.grave.Game;
 
 import com.grave.Graveborn;
-import com.grave.UpdateHandler;
+import com.jme3.asset.AssetManager;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
@@ -14,28 +16,36 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class ObjectManager implements UpdateHandler{
-    private Graveborn application;
+public class ObjectManager {
     private HashSet<Geometry> objectSet;
     private int idCounter;
 
     private HashMap<String, Geometry> clientPlayerMap;
     private HashMap<String, Vector3f> clientPosBufferMap;
 
+    //TODO make private
+    protected PhysicsSpace physicsSpace = null;
 
-    public ObjectManager(Graveborn application_){
-        application = application_;
-        this.objectSet = new HashSet<>();
+    private AssetManager assetManager;
+    private Node rootNode;
+
+    public ObjectManager(Graveborn app){
+        objectSet = new HashSet<>();
         idCounter = 0;
         clientPlayerMap = new HashMap<>();
         clientPosBufferMap = new HashMap<>();
+
+        //physicspace???
+
+        assetManager = app.getAssetManager();
+        rootNode = app.getRootNode();
     }
 
     public void spawnZombie(){
         String zombieName = "zombie"+getId();
-        Zombie zombie = new Zombie(zombieName,new Vector3f(-2,-5,0), application);
+        Zombie zombie = new Zombie(this, zombieName, new Vector3f(-2,-5,0));
         objectSet.add(zombie);
-        application.getRootNode().attachChild(zombie);
+        rootNode.attachChild(zombie);
         System.out.println(zombieName + " spawned");
     }
 
@@ -43,42 +53,39 @@ public class ObjectManager implements UpdateHandler{
         return idCounter++;
     }
 
-    @Override
     public void init() {
 
     }
 
-    @Override
-    public void shutdown() {
-
-    }
-
-    @Override
     public void update(float tpf) {
         for (Geometry obj : objectSet) {
-            if (obj instanceof UpdateHandler) {
-                ((UpdateHandler) obj).update(tpf);
+            if (obj instanceof Entity) {
+                ((Entity) obj).onUpdate(tpf);
             }
         }
 
-        for(Map.Entry<String, Geometry> entry: clientPlayerMap.entrySet()){
+        for (Map.Entry<String, Geometry> entry : clientPlayerMap.entrySet()) {
             String clientName = entry.getKey();
             Vector3f bufferPos = clientPosBufferMap.get(clientName);
             clientPlayerMap.get(clientName).setLocalTranslation(bufferPos);
         }
     }
 
+    public void shutdown() {
+
+    }
+
     private Geometry createClientPlayer(String name){
         Geometry o = new Geometry(name, new Box(1, 1, 1));
         o.setLocalTranslation(0, 0, 0);
-        Material oMat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture oTex = application.getAssetManager().loadTexture("Textures/character.png");
+        Material oMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture oTex = assetManager.loadTexture("Textures/character.png");
         oTex.setMagFilter(Texture.MagFilter.Nearest);
         oMat.setTexture("ColorMap", oTex);
         oMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
         o.setQueueBucket(RenderQueue.Bucket.Transparent);
         o.setMaterial(oMat);
-        application.getRootNode().attachChild(o);
+        rootNode.attachChild(o);
         return o;
     }
 
@@ -109,9 +116,17 @@ public class ObjectManager implements UpdateHandler{
         clientPosBufferMap.put(clientName, pos);
     }
 
-    public void removeClientPlayer(String clientName){
-        application.getRootNode().detachChild(clientPlayerMap.get(clientName));
+    public void removeClientPlayer(String clientName) {
+        rootNode.detachChild(clientPlayerMap.get(clientName));
         clientPlayerMap.remove(clientName);
         clientPosBufferMap.remove(clientName);
+    }
+    
+    public AssetManager getAssetManager() {
+        return assetManager;
+    }
+
+    public RootNode getRootNode() {
+        return rootNode;
     }
 }

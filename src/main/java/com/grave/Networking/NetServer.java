@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Graveborn;
+import com.grave.Game.ObjectManager;
 import com.grave.Networking.Message.ChatMessage;
 import com.grave.Networking.Message.ClientHandshakeMessage;
 import com.grave.Networking.Message.ClientJoinMessage;
@@ -16,24 +16,18 @@ import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 
-public class NetServer {
+public class NetServer extends Net {
     private static final Logger LOGGER = Logger.getLogger(NetServer.class.getName());
 
-    Graveborn application;
+    private int port;
+    private String ip;
 
-    Server instance = null;
-    HashMap<String, Integer> clientList = null;
+    private Server instance = null;
+    private HashMap<String, Integer> clientList = null;
 
-    String name;
-    String ip;
-    int port;
-
-    private boolean initialised = false;
-
-    public NetServer(Graveborn application_, String name_, int port_)
+    public NetServer(ObjectManager objectmanager_, String name_, int port_)
     {
-        application = application_;
-        name = name_;
+        super(objectmanager_, name_);
         port = port_;
 
         clientList = new HashMap<String, Integer>();
@@ -67,30 +61,18 @@ public class NetServer {
 
     public void init()
     {
-        assert (!initialised);
-
         instance.start();
 
         LOGGER.log(Level.INFO, "SERVER: server listening on " + ip + ":" + port);
+    }
 
-        initialised = true;
+    public void update(float tpf) {
+        // ...
     }
 
     public void shutdown()
     {
-        assert (initialised);
-
         LOGGER.log(Level.INFO, "SERVER: server stopped");
-
-        initialised = false;
-    }
-
-    public void update() {
-        if (!initialised) {
-            return;
-        }
-
-        //...
     }
 
     void relay(HostedConnection source, Message message) {
@@ -112,6 +94,6 @@ public class NetServer {
         return port;
     }
 
-    //TODO: remove client
+    //TODO: on remove client
 
 }

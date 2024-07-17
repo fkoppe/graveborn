@@ -37,12 +37,12 @@ public class NetClientListener implements MessageListener<Client> {
         {
             PlayerPositionMessage playerPositionMessage = (PlayerPositionMessage) message;
 
-            client.application.getObjectManager().moveClientPlayer(playerPositionMessage.getSenderName(), playerPositionMessage.getPlayerPosition());
+            //client.application.getObjectManager().moveClientPlayer(playerPositionMessage.getSenderName(), playerPositionMessage.getPlayerPosition());
         }
         else if (message instanceof ClientJoinMessage) {
             ClientJoinMessage clientJoinMessage = (ClientJoinMessage) message;
 
-            client.application.getObjectManager().addClientPlayer(clientJoinMessage.getName());
+            //client.application.getObjectManager().addClientPlayer(clientJoinMessage.getName());
         }
     }
 }

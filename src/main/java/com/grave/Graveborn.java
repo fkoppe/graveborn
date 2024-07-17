@@ -5,38 +5,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Game.ObjectManager;
+import com.grave.Game.Player;
+import com.grave.Game.World;
+import com.grave.Networking.Net;
 import com.grave.Networking.NetClient;
 import com.grave.Networking.NetServer;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
-import com.jme3.bullet.PhysicsSpace;
 
 public class Graveborn extends SimpleApplication {
     private static final Logger LOGGER = Logger.getLogger(Graveborn.class.getName());
     private static final int DEFAULT_PORT = 6143;
+    private static final int DEFAULT_WIDTH = 1280;
+    private static final int DEFAULT_HEIGHT = 720;
 
     private static JmeContext.Type context;
 
-    private ObjectManager objectManager = null;
+    private Mode mode = Mode.NONE;
 
-    private NetServer server = null;
-    private NetClient client = null;
-    //private GameClient gameClient = null;
+    private Net net = null;
+    private Player player = null;
 
-    public Mode mode = Mode.NONE;
-
-    private PhysicsSpace physicsSpace = null;
+    private ObjectManager objectManager;
+    private World world;
 
     public static void main(String[] args) {
 
         Arguments arguments = new Arguments(args);
 
-        AppSettings settings = new AppSettings(true);
+        AppSettings settings = new AppSettings(false);
         settings.setCenterWindow(true);
-        settings.setHeight(800);
-        settings.setWidth(1000);
+        settings.setWidth(DEFAULT_WIDTH);
+        settings.setHeight(DEFAULT_HEIGHT);
 
         Graveborn app = new Graveborn(arguments);
         app.setSettings(settings);
@@ -47,6 +49,7 @@ public class Graveborn extends SimpleApplication {
     public Graveborn(Arguments arguments)
     {
         objectManager = new ObjectManager(this);
+        world = new World(objectManager);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -56,6 +59,19 @@ public class Graveborn extends SimpleApplication {
         }
 
         switch (arguments.mode) {
+            case SERVER:
+                context = JmeContext.Type.Headless;
+
+                if (-1 == arguments.port) {
+                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                }
+                if (null == arguments.serverName) {
+                    arguments.serverName = Configurator.askForName(scanner, "server");
+                }
+
+                net = new NetServer(objectManager, arguments.serverName, arguments.port);
+                arguments.ip = ((NetServer)net).getIp();
+                break;
             case CLIENT:
                 context = JmeContext.Type.Display;
 
@@ -70,40 +86,12 @@ public class Graveborn extends SimpleApplication {
                     arguments.clientName = Configurator.askForName(scanner, "client");
                 }
 
-                client = new NetClient(this, arguments.clientName, arguments.ip, arguments.port);
-                break;
-            case SERVER:
-                context = JmeContext.Type.Headless;
-
-                if (-1 == arguments.port) {
-                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
-                }
-                if (null == arguments.serverName) {
-                    arguments.serverName = Configurator.askForName(scanner, "server");
-                }
-
-                server = new NetServer(this, arguments.serverName, arguments.port);
-                arguments.ip = server.getIp();
+                net = new NetClient(objectManager, arguments.clientName, arguments.ip, arguments.port);
                 break;
             case HOST:
-                context = JmeContext.Type.Display;
-
-                if (-1 == arguments.port) {
-                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
-                }
-                if (null == arguments.serverName) {
-                    arguments.serverName = Configurator.askForName(scanner, "server");
-                }
-
-                server = new NetServer(this, arguments.serverName, arguments.port);
-                arguments.ip = server.getIp();
-
-                if (null == arguments.clientName) {
-                    arguments.clientName = Configurator.askForName(scanner, "client");
-                }
-
-                client = new NetClient(this, arguments.clientName, arguments.ip, arguments.port);
-                break;
+                throw new RuntimeException("host mode not implemented");
+            case STANDALONE:
+                throw new RuntimeException("standalone mode not implemented");
             default:
                 throw new RuntimeException("invalid mode");
         }
@@ -116,20 +104,15 @@ public class Graveborn extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         objectManager.init();
+        world.init();
 
-        switch (mode) {
-            case CLIENT:
-                client.init();
-                break;
-            case SERVER:
-                server.init();
-                break;
-            case HOST:
-                server.init();
-                client.init();
-                break;
-            default:
-                throw new RuntimeException("invalid mode");
+        if (null != player) {
+            player.init();
+        }
+
+        if(null != net)
+        {
+            net.init();
         }
 
         LOGGER.log(Level.INFO, "finished initialisation");
@@ -138,20 +121,14 @@ public class Graveborn extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         objectManager.update(tpf);
+        world.update(tpf);
 
-        switch (mode) {
-            case CLIENT:
-                client.update(tpf);
-                break;
-            case SERVER:
-                server.update();
-                break;
-            case HOST:
-                server.update();
-                client.update(tpf);
-                break;
-            default:
-                throw new RuntimeException("invalid mode");
+        if (null != player) {
+            player.update(tpf);
+        }
+
+        if (null != net) {
+            net.update(tpf);
         }
     }
 
@@ -159,41 +136,15 @@ public class Graveborn extends SimpleApplication {
     public void destroy() {
         LOGGER.log(Level.INFO, "begin destruction");
 
-        switch (mode) {
-            case CLIENT:
-                client.shutdown();
-                break;
-            case SERVER:
-                server.shutdown();
-                break;
-            case HOST:
-                client.shutdown();
-                server.shutdown();
-                break;
-            default:
-                throw new RuntimeException("invalid mode");
+        if (null != net) {
+            net.init();
         }
 
+        if (null != player) {
+            player.init();
+        }
+
+        world.shutdown();
         objectManager.shutdown();
-    }
-
-    public NetServer getNetServer() {
-        return server;
-    }
-
-    public NetClient getNetClient() {
-        return client;
-    }
-
-    public ObjectManager getObjectManager(){
-        return objectManager;
-    }
-
-    public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
-    }
-
-    public void setPhysicsSpace(PhysicsSpace physicsSpace_) {
-        physicsSpace = physicsSpace_;
     }
 }
