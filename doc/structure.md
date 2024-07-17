@@ -3,21 +3,21 @@
 ## Modes
 
 ### Server
-![server](/server.png)
+![server](server.png)
 
 ### Client
-![client](/client.png)
+![client](client.png)
 
 ### Host
-![host](/host.png)
+![host](host.png)
 
 ### Standalone
-![standalone](/standalone.png)
+![standalone](standalone.png)
 
 ## Game
 
 ### Player
-![player](/player.png)
+![player](player.png)
 
 - is responsible for window settings
 - is responsible for audio
@@ -26,7 +26,7 @@
 - submits Objectmanager updates
 -
 ### World
-![world](/world.png)
+![world](world.png)
 
 - is responsible for npc movement
 - is responsible for rewards and score
@@ -34,7 +34,7 @@
 - submits Objectmanager updates
 
 ### Objectmanager
-![objectmanager](/objectmanager.png)
+![objectmanager](objectmanager.png)
 
 - is responsible for physics/collision
 - hold all entity related data (e.g position, name, health)
@@ -51,8 +51,8 @@ __Dominant__:
 - will prepare SyncMessage data (not the message it self)
 
 ## Networking
-![netserver](/netserver.png)
-![netclient](/netclient.png)
+![netserver](netserver.png)
+![netclient](netclient.png)
 
 - handle network connection
 - sync with others
