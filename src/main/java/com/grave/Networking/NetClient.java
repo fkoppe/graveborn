@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Game.ObjectManager;
-import com.grave.Game.Player;
 import com.grave.Networking.Message.*;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;

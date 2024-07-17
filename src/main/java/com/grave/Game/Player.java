@@ -70,11 +70,11 @@ public class Player {
         viewPort = app.getViewPort();
         flyByCamera = app.getFlyByCamera();
         camera = app.getCamera();
-        rootNode = app.getRootNode();
-
-        assetManager = objectManager.getAssetManager();
 
         objectManager = objectManager_;
+
+        assetManager = objectManager.getAssetManager();
+        rootNode = objectManager.getRootNode();
     }
 
     public void init() {
