@@ -92,6 +92,7 @@ public class ObjectManager {
         o.setQueueBucket(RenderQueue.Bucket.Transparent);
         o.setMaterial(oMat);
         rootNode.attachChild(o);
+        
         return o;
     }
 
