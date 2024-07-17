@@ -35,7 +35,7 @@ public class Zombie extends Entity {
         zombieRig = new RigidBody2DControl(zombieShape, 1);
         zombieRig.setRotation(false);
         this.addControl(zombieRig);
-        objectManager.physicsSpace.add(zombieRig);
+        objectManager.getPhysicsSpace().add(zombieRig);
     }
 
     @Override

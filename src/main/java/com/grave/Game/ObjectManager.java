@@ -1,6 +1,7 @@
 package com.grave.Game;
 
 import com.grave.Graveborn;
+
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.material.Material;
@@ -11,6 +12,10 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
+
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.util.CollisionShapeFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,8 +28,7 @@ public class ObjectManager {
     private HashMap<String, Geometry> clientPlayerMap;
     private HashMap<String, Vector3f> clientPosBufferMap;
 
-    //TODO make private
-    protected PhysicsSpace physicsSpace = null;
+    private PhysicsSpace physicsSpace = null;
 
     private AssetManager assetManager;
     private Node rootNode;
@@ -35,7 +39,10 @@ public class ObjectManager {
         clientPlayerMap = new HashMap<>();
         clientPosBufferMap = new HashMap<>();
 
-        //physicspace???
+        BulletAppState bulletAppState = new BulletAppState();
+        app.getStateManager().attach(bulletAppState);
+        physicsSpace = bulletAppState.getPhysicsSpace();
+        physicsSpace.setGravity(Vector3f.ZERO);
 
         assetManager = app.getAssetManager();
         rootNode = app.getRootNode();
@@ -49,12 +56,11 @@ public class ObjectManager {
         System.out.println(zombieName + " spawned");
     }
 
-    public int getId(){
+    public int getId() {
         return idCounter++;
     }
 
     public void init() {
-
     }
 
     public void update(float tpf) {
@@ -128,5 +134,9 @@ public class ObjectManager {
 
     public Node getRootNode() {
         return rootNode;
+    }
+
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
     }
 }

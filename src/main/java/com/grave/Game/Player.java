@@ -2,7 +2,6 @@ package com.grave.Game;
 
 import com.grave.Graveborn;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.FlyByCamera;
@@ -30,9 +29,8 @@ public class Player {
 
     //belong of Graveborn
     private InputManager inputManager;
-    private ViewPort viewPort;
-    private FlyByCamera flyByCamera;
     private Camera camera;
+    private ViewPort viewPort;
 
     //belong of Objectmanager
     private AssetManager assetManager;
@@ -68,24 +66,17 @@ public class Player {
     public Player(Graveborn app, ObjectManager objectManager_) {
         inputManager = app.getInputManager();
         viewPort = app.getViewPort();
-        flyByCamera = app.getFlyByCamera();
         camera = app.getCamera();
 
         objectManager = objectManager_;
 
         assetManager = objectManager.getAssetManager();
         rootNode = objectManager.getRootNode();
+
+        app.getFlyByCamera().setEnabled(false);
     }
 
     public void init() {
-        //BulletAppState bulletAppState = new BulletAppState();
-        //application.getStateManager().attach(bulletAppState);
-        //objectManager.setPhysicsSpace(bulletAppState.getPhysicsSpace());
-        //objectManager.getPhysicsSpace().setGravity(Vector3f.ZERO);
-
-        //playerHandler = new OldPlayerHandler(application);
-        //application.getObjectManager().add(playerHandler.getPlayer());
-
         initCamera();
         initBackground();
         
@@ -125,8 +116,6 @@ public class Player {
     }
 
     private void initCamera() {
-        flyByCamera.setEnabled(false);
-
         camera.setLocation(new Vector3f(0, 0, 20));
         camera.lookAt(Vector3f.ZERO, Vector3f.UNIT_Z);
         camera.setParallelProjection(true);
@@ -164,7 +153,7 @@ public class Player {
         rootNode.attachChild(player);
 
         //TODO
-        objectManager.physicsSpace.add(playerRig);
+        objectManager.getPhysicsSpace().add(playerRig);
     }
 
     private void initTestObstacle(){
@@ -181,6 +170,6 @@ public class Player {
         rootNode.attachChild(o);
 
         //TODO
-        objectManager.physicsSpace.add(o_rig);
+        objectManager.getPhysicsSpace().add(o_rig);
     }
 }
