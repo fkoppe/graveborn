@@ -3,56 +3,57 @@
 ## Modes
 
 ### Server
-![server](server.png)
+![server](./structure_img/server.png)
 
 ### Client
-![client](client.png)
+![client](./structure_img/client.png)
 
 ### Host
-![host](host.png)
+![host](./structure_img/host.png)
 
 ### Standalone
-![standalone](standalone.png)
+![standalone](./structure_img/standalone.png)
 
 ## Game
 
 ### Player
-![player](player.png)
+![player](./structure_img/player.png)
 
 - is responsible for window settings
 - is responsible for audio
 - collects player input
-- tranlates player input to Objectmanager updates
+- translates player input to Objectmanager updates
 - submits Objectmanager updates
--
+
 ### World
-![world](world.png)
+![world](./structure_img/world.png)
 
 - is responsible for npc movement
 - is responsible for rewards and score
-- calculates nps actions and position updates
+- calculates npc actions and position updates
 - submits Objectmanager updates
 
 ### Objectmanager
-![objectmanager](objectmanager.png)
+![objectmanager](./structure_img/objectmanager.png)
 
 - is responsible for physics/collision
-- hold all entity related data (e.g position, name, health)
-- updates entities according to submited updates from
+- holds all entity related data (e.g. position, name, health)
+- updates entities according to submitted updates from
 player and/or World
-- bundels all submited updates for sync
-- can take bundeled updates from other Objecmanagers
+- bundles all submitted updates for sync
+- can take bundled updates from other Objecmanagers
 
 If values do not match:
+
 __Recessive__:
 - will take values of other Objectmanager
 
 __Dominant__:
-- will prepare SyncMessage data (not the message it self)
+- will prepare SyncMessage data (not the message itself)
 
 ## Networking
-![netserver](netserver.png)
-![netclient](netclient.png)
+![netserver](./structure_img/netserver.png)
+![netclient](./structure_img/netclient.png)
 
-- handle network connection
+- handles network connection
 - sync with others
