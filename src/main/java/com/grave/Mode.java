@@ -1,5 +1,5 @@
 package com.grave;
 
 public enum Mode {
-    NONE, CLIENT, SERVER, HOST,
+    NONE, SERVER, CLIENT, HOST, STANDALONE,
 }

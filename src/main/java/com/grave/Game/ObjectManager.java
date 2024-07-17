@@ -1,87 +1,99 @@
 package com.grave.Game;
 
 import com.grave.Graveborn;
-import com.grave.UpdateHandler;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
-import java.util.HashSet;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.util.CollisionShapeFactory;
 
-public class ObjectManager implements UpdateHandler{
-    private Graveborn application;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+public class ObjectManager {
     private HashSet<Geometry> objectSet;
     private int idCounter;
-    private Geometry clientPlayer;
 
-    private Vector3f clientPosBuffer = new Vector3f(0, 0, 0);
-    
-    boolean oldAddedIs = false;
-    boolean addedIs = false;
+    private HashMap<String, Geometry> clientPlayerMap;
+    private HashMap<String, Vector3f> clientPosBufferMap;
 
-    public ObjectManager(Graveborn application_){
-        application = application_;
-        this.objectSet = new HashSet<>();
+    private PhysicsSpace physicsSpace = null;
+
+    private AssetManager assetManager;
+    private Node rootNode;
+
+    public ObjectManager(Graveborn app){
+        objectSet = new HashSet<>();
         idCounter = 0;
-        clientPlayer = null;
+        clientPlayerMap = new HashMap<>();
+        clientPosBufferMap = new HashMap<>();
+
+        BulletAppState bulletAppState = new BulletAppState();
+        app.getStateManager().attach(bulletAppState);
+        physicsSpace = bulletAppState.getPhysicsSpace();
+        physicsSpace.setGravity(Vector3f.ZERO);
+
+        assetManager = app.getAssetManager();
+        rootNode = app.getRootNode();
     }
 
     public void spawnZombie(){
         String zombieName = "zombie"+getId();
-        Zombie zombie = new Zombie(zombieName,new Vector3f(-2,-5,0), application);
+        Zombie zombie = new Zombie(this, zombieName, new Vector3f(-2,-5,0));
         objectSet.add(zombie);
-        application.getRootNode().attachChild(zombie);
+        rootNode.attachChild(zombie);
         System.out.println(zombieName + " spawned");
     }
 
-    public int getId(){
+    public int getId() {
         return idCounter++;
     }
 
-    @Override
     public void init() {
-
     }
 
-    @Override
+    public void update(float tpf) {
+        for (Geometry obj : objectSet) {
+            if (obj instanceof Entity) {
+                ((Entity) obj).onUpdate(tpf);
+            }
+        }
+
+        for (Map.Entry<String, Geometry> entry : clientPlayerMap.entrySet()) {
+            String clientName = entry.getKey();
+            Vector3f bufferPos = clientPosBufferMap.get(clientName);
+            clientPlayerMap.get(clientName).setLocalTranslation(bufferPos);
+        }
+    }
+
     public void shutdown() {
 
     }
 
-    @Override
-    public void update(float tpf) {
-        for (Geometry obj : objectSet) {
-            if (obj instanceof UpdateHandler) {
-                ((UpdateHandler) obj).update(tpf);
-            }
-        }
+    private Geometry createClientPlayer(String name){
+        Geometry o = new Geometry(name, new Box(1, 1, 1));
+        o.setLocalTranslation(0, 0, 0);
+        Material oMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture oTex = assetManager.loadTexture("Textures/character.png");
+        oTex.setMagFilter(Texture.MagFilter.Nearest);
+        oMat.setTexture("ColorMap", oTex);
+        oMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        o.setQueueBucket(RenderQueue.Bucket.Transparent);
+        o.setMaterial(oMat);
+        rootNode.attachChild(o);
         
-        if(null != clientPlayer)
-        {
-            clientPlayer.setLocalTranslation(clientPosBuffer);
-        }
-
-        if(addedIs == true && oldAddedIs == false)
-        {
-            clientPlayer = new Geometry("ClientPlayer", new Box(1, 1, 1));
-            clientPlayer.setLocalTranslation(0, 0, 0);
-            Material clientPlayerMat = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-            Texture characterTex = application.getAssetManager().loadTexture("Textures/character.png");
-            characterTex.setMagFilter(Texture.MagFilter.Nearest);
-            clientPlayerMat.setTexture("ColorMap", characterTex);
-            clientPlayerMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-            clientPlayer.setQueueBucket(RenderQueue.Bucket.Transparent);
-            clientPlayer.setMaterial(clientPlayerMat);
-            application.getRootNode().attachChild(clientPlayer);
-
-            objectSet.add(clientPlayer);
-
-            oldAddedIs = true;
-        }
+        return o;
     }
 
     private Geometry getPlayer(){
@@ -101,12 +113,31 @@ public class ObjectManager implements UpdateHandler{
         objectSet.add(g);
     }
 
-    public void addClientPlayer() {
-        addedIs = true;
+    public void addClientPlayer(String clientName) {
+        if(clientPlayerMap.containsKey(clientName)) throw new RuntimeException("clientName is already in Map");
+        clientPlayerMap.put(clientName, createClientPlayer(clientName));
+        clientPosBufferMap.put(clientName, new Vector3f(0,0,0));
     }
 
-    public void moveClientPlayer(Vector3f pos) {
+    public void moveClientPlayer(String clientName, Vector3f pos) {
+        clientPosBufferMap.put(clientName, pos);
+    }
 
-        clientPosBuffer = pos;
+    public void removeClientPlayer(String clientName) {
+        rootNode.detachChild(clientPlayerMap.get(clientName));
+        clientPlayerMap.remove(clientName);
+        clientPosBufferMap.remove(clientName);
+    }
+    
+    public AssetManager getAssetManager() {
+        return assetManager;
+    }
+
+    public Node getRootNode() {
+        return rootNode;
+    }
+
+    public PhysicsSpace getPhysicsSpace() {
+        return physicsSpace;
     }
 }

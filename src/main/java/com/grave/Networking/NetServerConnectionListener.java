@@ -17,10 +17,12 @@ public class NetServerConnectionListener implements ConnectionListener {
         server = server_;
     }
 
+    @Override
     public void connectionAdded(Server s, HostedConnection c) {
         LOGGER.log(Level.INFO, "SERVER: added connection to client #" + c.getId());
     }
-    
+
+    @Override
     public void connectionRemoved(Server s, HostedConnection c) {
         LOGGER.log(Level.INFO, "SERVER: lost connection to client #" + c.getId());
     }
