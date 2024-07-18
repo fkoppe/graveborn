@@ -1,6 +1,7 @@
 package com.grave.Game;
 
 import com.grave.Graveborn;
+import com.grave.Object.ObjectManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -26,6 +27,7 @@ public class Player {
     private final float PLAYER_SPEED = 5f;
 
     private ObjectManager objectManager;
+    private String playerName;
 
     //belong of Graveborn
     private InputManager inputManager;
@@ -63,17 +65,18 @@ public class Player {
         }
     };
 
-    public Player(Graveborn app, ObjectManager objectManager_) {
-        inputManager = app.getInputManager();
-        viewPort = app.getViewPort();
-        camera = app.getCamera();
+    public Player(Graveborn app_, ObjectManager objectManager_, String playerName_) {
+        inputManager = app_.getInputManager();
+        viewPort = app_.getViewPort();
+        camera = app_.getCamera();
 
         objectManager = objectManager_;
+        playerName = playerName_;
 
         assetManager = objectManager.getAssetManager();
         rootNode = objectManager.getRootNode();
 
-        app.getFlyByCamera().setEnabled(false);
+        app_.getFlyByCamera().setEnabled(false);
     }
 
     public void init() {

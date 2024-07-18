@@ -2,16 +2,14 @@ package com.grave.Networking;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Game.ObjectManager;
-import com.grave.Networking.Message.ChatMessage;
 import com.grave.Networking.Message.ClientHandshakeMessage;
-import com.grave.Networking.Message.ClientJoinMessage;
-import com.grave.Networking.Message.PlayerPositionMessage;
-import com.jme3.network.HostedConnection;
+import com.grave.Networking.Message.NoticeMessage;
+import com.grave.Networking.Message.ServerShutdownMessage;
+import com.grave.Networking.Message.SyncMessage;
+import com.grave.Object.ObjectManager;
 import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
@@ -22,15 +20,12 @@ public class NetServer extends Net {
     private int port;
     private String ip;
 
-    private Server instance = null;
-    private HashMap<String, Integer> clientList = null;
+    private Server instance;
 
     public NetServer(ObjectManager objectmanager_, String name_, int port_)
     {
         super(objectmanager_, name_);
         port = port_;
-
-        clientList = new HashMap<String, Integer>();
 
         InetAddress localHost;
         try {
@@ -49,11 +44,8 @@ public class NetServer extends Net {
         NetSerializer.serializeAll();
 
         instance.addMessageListener(new NetServerListener(this), ClientHandshakeMessage.class);
-        //instance.addMessageListener(new NetServerListener(this), ClientSyncMessage.class);
-
-        instance.addMessageListener(new NetServerListener(this), ChatMessage.class);
-        instance.addMessageListener(new NetServerListener(this), PlayerPositionMessage.class);
-        instance.addMessageListener(new NetServerListener(this), ClientJoinMessage.class);
+        instance.addMessageListener(new NetServerListener(this), SyncMessage.class);
+        instance.addMessageListener(new NetServerListener(this), NoticeMessage.class);
 
         instance.addConnectionListener(new NetServerConnectionListener(this));
     }
@@ -67,22 +59,47 @@ public class NetServer extends Net {
     }
 
     public void update(float tpf) {
-        // ...
+        //fetch tcp updates...
+        //send
+
+        //fetch udp pdates...
+        //send
     }
 
     public void shutdown()
     {
+        Message message = new ServerShutdownMessage();
+        instance.broadcast(message);
+
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.INFO, "thread sleep interrupt");
+        }
+
         LOGGER.log(Level.INFO, "SERVER: server stopped");
     }
 
-    void relay(HostedConnection source, Message message) {
-        clientList.forEach((name, cid) -> {
-            if (cid != source.getId()) instance.getConnection(cid).send(message);
+    void broadcast(Message message)
+    {
+        instance.broadcast(message);
+    }
+
+    void relay(int senderId, Message message) {
+        instance.getConnections().forEach((hostedConnection) -> {
+            if (hostedConnection.getId() != senderId) hostedConnection.send(message);
         });
     }
 
-    void relayTo(HostedConnection source, String name, Message message) {
-        instance.getConnection(clientList.get(name)).send(message);
+    void relayTo(int targetId, Message message) {
+        instance.getConnection(targetId).send(message);
+    }
+
+    void kick(int targetId, String reason)
+    {
+        instance.getConnection(targetId).close(reason);
     }
 
     public String getIp()
@@ -93,7 +110,4 @@ public class NetServer extends Net {
     public int getPort() {
         return port;
     }
-
-    //TODO: on remove client
-
 }

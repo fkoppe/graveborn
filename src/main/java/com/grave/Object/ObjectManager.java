@@ -1,7 +1,8 @@
-package com.grave.Game;
+package com.grave.Object;
 
 import com.grave.Graveborn;
-
+import com.grave.Game.Entity;
+import com.grave.Game.Zombie;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.material.Material;
@@ -127,6 +128,34 @@ public class ObjectManager {
         rootNode.detachChild(clientPlayerMap.get(clientName));
         clientPlayerMap.remove(clientName);
         clientPosBufferMap.remove(clientName);
+    }
+
+    public void takeNotice(Notice notice) {
+        //...
+    }
+
+    public void forceNotice(Notice notice) {
+        // ...
+    }
+
+    public Notice giveNotice() {
+        Notice notice = new Notice();
+
+        return notice;
+    }
+    
+    public void takeSync(Sync sync) {
+        //...
+    }
+
+    public void forceSync(Sync sync) {
+        // ...
+    }
+    
+    public Sync giveSync() {
+        Sync sync = new Sync();
+
+        return sync;
     }
     
     public AssetManager getAssetManager() {
