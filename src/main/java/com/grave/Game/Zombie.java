@@ -36,6 +36,7 @@ public class Zombie extends Entity {
         zombieRig.setRotation(false);
         this.addControl(zombieRig);
         objectManager.getPhysicsSpace().add(zombieRig);
+        objectManager.getRootNode().attachChild(this);
     }
 
     @Override

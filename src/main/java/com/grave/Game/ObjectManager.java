@@ -20,24 +20,23 @@ import com.jme3.bullet.util.CollisionShapeFactory;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 
 public class ObjectManager {
-    private HashSet<Geometry> objectSet;
-    private int idCounter;
+    private HashMap<String, Entity> entityMap;
+    private HashMap<String, Vector3f> entiyPosBufferMap;
 
-    private HashMap<String, Geometry> clientPlayerMap;
-    private HashMap<String, Vector3f> clientPosBufferMap;
-
-    private PhysicsSpace physicsSpace = null;
+    private PhysicsSpace physicsSpace;
 
     private AssetManager assetManager;
     private Node rootNode;
 
-    public ObjectManager(Graveborn app){
-        objectSet = new HashSet<>();
-        idCounter = 0;
-        clientPlayerMap = new HashMap<>();
-        clientPosBufferMap = new HashMap<>();
+    private String humanId;
+
+    public ObjectManager(Graveborn app) {
+        entityMap = new HashMap<>();
+        entiyPosBufferMap = new HashMap<>();
+        humanId = null;
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -48,32 +47,30 @@ public class ObjectManager {
         rootNode = app.getRootNode();
     }
 
-    public void spawnZombie(){
-        String zombieName = "zombie"+getId();
-        Zombie zombie = new Zombie(this, zombieName, new Vector3f(-2,-5,0));
-        objectSet.add(zombie);
-        rootNode.attachChild(zombie);
-        System.out.println(zombieName + " spawned");
+    public void spawnZombie() {
+        String id = getId();
+        Zombie zombie = new Zombie(this, id, new Vector3f(-2, -5, 0));
+        entityMap.put(id, zombie);
+        System.out.println("zombie: " + id + " spawned");
     }
 
-    public int getId() {
-        return idCounter++;
+
+    public String getId() {
+        return UUID.randomUUID().toString();
     }
 
     public void init() {
     }
 
     public void update(float tpf) {
-        for (Geometry obj : objectSet) {
-            if (obj instanceof Entity) {
-                ((Entity) obj).onUpdate(tpf);
-            }
-        }
+        for (Map.Entry<String, Entity> entry : entityMap.entrySet()) {
+            entry.getValue().onUpdate(tpf);
 
-        for (Map.Entry<String, Geometry> entry : clientPlayerMap.entrySet()) {
-            String clientName = entry.getKey();
-            Vector3f bufferPos = clientPosBufferMap.get(clientName);
-            clientPlayerMap.get(clientName).setLocalTranslation(bufferPos);
+            if(entiyPosBufferMap.containsKey(entry.getKey())){
+                String clientName = entry.getKey();
+                Vector3f bufferPos = entiyPosBufferMap.get(clientName);
+                entityMap.get(clientName).setLocalTranslation(bufferPos);
+            }
         }
     }
 
@@ -81,54 +78,45 @@ public class ObjectManager {
 
     }
 
-    private Geometry createClientPlayer(String name){
-        Geometry o = new Geometry(name, new Box(1, 1, 1));
-        o.setLocalTranslation(0, 0, 0);
-        Material oMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture oTex = assetManager.loadTexture("Textures/character.png");
-        oTex.setMagFilter(Texture.MagFilter.Nearest);
-        oMat.setTexture("ColorMap", oTex);
-        oMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        o.setQueueBucket(RenderQueue.Bucket.Transparent);
-        o.setMaterial(oMat);
-        rootNode.attachChild(o);
-        
-        return o;
-    }
-
-    private Geometry getPlayer(){
-        for(Geometry g: objectSet){
-            if(g.getName().equals("Player")){
-                return g;
-            }
-        }
+    private Geometry getPlayer() {
+        if(entityMap.containsKey(humanId)) return entityMap.get(humanId);
         throw new RuntimeException("Player is not in objectSet");
     }
 
-    public Vector3f getPlayerPos(){
+    public Vector3f getPlayerPos() {
         return getPlayer().getLocalTranslation();
     }
 
-    public void add(Geometry g){
-        objectSet.add(g);
+    public String addEntity(Entity entity){
+        String id = getId();
+        entityMap.put(id, entity);
+        return id;
     }
 
     public void addClientPlayer(String clientName) {
-        if(clientPlayerMap.containsKey(clientName)) throw new RuntimeException("clientName is already in Map");
-        clientPlayerMap.put(clientName, createClientPlayer(clientName));
-        clientPosBufferMap.put(clientName, new Vector3f(0,0,0));
+        if (entityMap.containsKey(clientName)) throw new RuntimeException("clientName is already in Map");
+
+        ClientPlayer cp = new ClientPlayer(clientName, this);
+        entityMap.put(clientName, cp);
+        entiyPosBufferMap.put(clientName, new Vector3f(0, 0, 0));
     }
 
-    public void moveClientPlayer(String clientName, Vector3f pos) {
-        clientPosBufferMap.put(clientName, pos);
+    public void moveEntity(String entityId, Vector3f pos) {
+        entiyPosBufferMap.put(entityId, pos);
     }
 
-    public void removeClientPlayer(String clientName) {
-        rootNode.detachChild(clientPlayerMap.get(clientName));
-        clientPlayerMap.remove(clientName);
-        clientPosBufferMap.remove(clientName);
+    public void removeEntity(String entityId) {
+        rootNode.detachChild(entityMap.get(entityId));
+        entityMap.remove(entityId);
+        entiyPosBufferMap.remove(entityId);
     }
-    
+
+    public void setHuman(Entity human){
+        String id = getId();
+        humanId = id;
+        entityMap.put(id, human);
+    }
+
     public AssetManager getAssetManager() {
         return assetManager;
     }

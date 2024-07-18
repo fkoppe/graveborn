@@ -36,7 +36,7 @@ public class Player {
     private AssetManager assetManager;
     private Node rootNode;
 
-    private Geometry player;
+    private Entity player;
     private RigidBody2DControl playerRig;
     private int moveVertical = 0;
     private int moveHorizontal = 0;
@@ -133,15 +133,29 @@ public class Player {
     }
 
     private void initPlayer(){
-        Box p = new Box(1, 1, 1);
-        
+
         Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture characterTex = assetManager.loadTexture("Textures/character.png");
         characterTex.setMagFilter(Texture.MagFilter.Nearest);
         p_mat.setTexture("ColorMap", characterTex);
         p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
-        player = new Geometry("Player", p);
+        player = new Entity("Player", new Box(1, 1, 1)) {
+            @Override
+            public void onInit() {
+
+            }
+
+            @Override
+            public void onShutdown() {
+
+            }
+
+            @Override
+            public void onUpdate(float tpf) {
+
+            }
+        };
         player.setLocalTranslation(0, 0, 0);
         player.setQueueBucket(RenderQueue.Bucket.Transparent);
         player.setMaterial(p_mat);
@@ -152,7 +166,7 @@ public class Player {
         player.addControl(playerRig);
         rootNode.attachChild(player);
 
-        //TODO
+        objectManager.setHuman(player);
         objectManager.getPhysicsSpace().add(playerRig);
     }
 
