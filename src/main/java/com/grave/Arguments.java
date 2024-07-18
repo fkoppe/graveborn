@@ -5,7 +5,7 @@ public class Arguments {
     public String ip = null;
     public int port = -1;
     public String serverName = null;
-    public String clientName = null;
+    public String playerName = null;
 
     private boolean cFlag = false;
     private boolean hFlag = false;
@@ -50,7 +50,7 @@ public class Arguments {
                     break;
                 case "-cn":
                     if (i + 1 < args.length) {
-                        clientName = args[++i];
+                        playerName = args[++i];
                     } else {
                         throw new IllegalArgumentException("client name not provided after -n");
                     }

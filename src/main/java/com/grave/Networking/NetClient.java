@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Game.ObjectManager;
 import com.grave.Networking.Message.*;
+import com.grave.Object.ObjectManager;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
@@ -65,36 +65,16 @@ public class NetClient extends Net {
 
                 NetSerializer.serializeAll();
 
-                //from server
                 instance.addMessageListener(new NetClientListener(this), ServerHandshakeMessage.class);
+                instance.addMessageListener(new NetClientListener(this), ServerShutdownMessage.class);
 
-                //from clients
-                instance.addMessageListener(new NetClientListener(this), ChatMessage.class);
-                instance.addMessageListener(new NetClientListener(this), PlayerPositionMessage.class);
+                instance.addMessageListener(new NetClientListener(this), SyncMessage.class);
+                instance.addMessageListener(new NetClientListener(this), NoticeMessage.class);
 
                 instance.addClientStateListener(new NetClientStateListener(this));
 
                 instance.start();
             }
-        }
-    }
-
-    //TODO revisit: shouldnt chat be objectmanager handeled?
-    public void sendChat(String data) {
-        Message message = new ChatMessage(name, data);
-
-        if(connected)
-        {
-            instance.send(message);
-        }
-    }
-
-    //TODO replace by general sendUpdate
-    public void setPlayerPosition(Vector3f position) {
-        Message message = new PlayerPositionMessage(name, position);
-
-        if (connected) {
-            instance.send(message);
         }
     }
 }

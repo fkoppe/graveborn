@@ -9,10 +9,11 @@ public class NetSerializer {
         Serializer.setReadOnly(false);
 
         Serializer.registerClass(ServerHandshakeMessage.class);
+        Serializer.registerClass(ServerShutdownMessage.class);
 
         Serializer.registerClass(ClientHandshakeMessage.class);
 
-        Serializer.registerClass(ChatMessage.class);
-        Serializer.registerClass(PlayerPositionMessage.class);
+        Serializer.registerClass(SyncMessage.class);
+        Serializer.registerClass(NoticeMessage.class);
     }
 }

@@ -5,10 +5,11 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Game.ObjectManager;
-import com.grave.Networking.Message.ChatMessage;
 import com.grave.Networking.Message.ClientHandshakeMessage;
-import com.grave.Networking.Message.PlayerPositionMessage;
+import com.grave.Networking.Message.NoticeMessage;
+import com.grave.Networking.Message.ServerShutdownMessage;
+import com.grave.Networking.Message.SyncMessage;
+import com.grave.Object.ObjectManager;
 import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
@@ -43,9 +44,8 @@ public class NetServer extends Net {
         NetSerializer.serializeAll();
 
         instance.addMessageListener(new NetServerListener(this), ClientHandshakeMessage.class);
-
-        instance.addMessageListener(new NetServerListener(this), ChatMessage.class);
-        instance.addMessageListener(new NetServerListener(this), PlayerPositionMessage.class);
+        instance.addMessageListener(new NetServerListener(this), SyncMessage.class);
+        instance.addMessageListener(new NetServerListener(this), NoticeMessage.class);
 
         instance.addConnectionListener(new NetServerConnectionListener(this));
     }
@@ -59,12 +59,27 @@ public class NetServer extends Net {
     }
 
     public void update(float tpf) {
-        // ...
+        //fetch tcp updates...
+        //send
+
+        //fetch udp pdates...
+        //send
     }
 
     public void shutdown()
     {
-        LOGGER.log(Level.INFO, "server stopped");
+        Message message = new ServerShutdownMessage();
+        instance.broadcast(message);
+
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.log(Level.INFO, "thread sleep interrupt");
+        }
+
+        LOGGER.log(Level.INFO, "SERVER: server stopped");
     }
 
     void broadcast(Message message)

@@ -1,6 +1,6 @@
 package com.grave.Networking;
 
-import com.grave.Game.ObjectManager;
+import com.grave.Object.ObjectManager;
 
 public abstract class Net {
     protected ObjectManager objectmanager;
