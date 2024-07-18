@@ -6,11 +6,9 @@ import java.util.logging.Logger;
 
 import com.grave.Networking.Message.*;
 import com.grave.Object.ObjectManager;
-import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.system.NanoTimer;
-import com.jme3.network.Message;
 
 public class NetClient extends Net {
     private static final Logger LOGGER = Logger.getLogger(NetClient.class.getName());
@@ -26,9 +24,9 @@ public class NetClient extends Net {
 
     String serverName;
 
-    public NetClient(ObjectManager objectManager_, String name, String ip_, int port_)
+    public NetClient(ObjectManager objectManager_, String name_, String ip_, int port_)
     {
-        super(objectManager_, name);
+        super(objectManager_, name_);
 
         ip = ip_;
         port = port_;
@@ -43,8 +41,7 @@ public class NetClient extends Net {
     {
         if(null != instance)
         {
-            LOGGER.log(Level.FINE, "CLIENT: closing connection...");
-            instance.close();
+            disconnect();
         }
     }
 
@@ -76,5 +73,15 @@ public class NetClient extends Net {
                 instance.start();
             }
         }
+    }
+
+    void disconnect() {
+        if (instance.isConnected()) {
+            LOGGER.log(Level.FINE, "CLIENT: closing connection...");
+
+            instance.close();
+        }
+
+        connected = false;
     }
 }

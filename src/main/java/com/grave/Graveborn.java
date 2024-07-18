@@ -101,6 +101,7 @@ public class Graveborn extends SimpleApplication {
                     arguments.playerName = Configurator.askForName(scanner, "player");
                 }
 
+                serverName = arguments.serverName;
                 playerName = arguments.playerName;
                 ip = arguments.ip;
                 port = arguments.port;

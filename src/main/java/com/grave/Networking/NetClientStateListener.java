@@ -18,11 +18,18 @@ public class NetClientStateListener implements ClientStateListener {
     }
 
     public void clientConnected(Client instance) {
-        Message message = new ClientHandshakeMessage(client.name);
+        Message message = new ClientHandshakeMessage(client.getName());
         instance.send(message);
     }
 
     public void clientDisconnected(Client instance, DisconnectInfo info) {
-        LOGGER.log(Level.INFO, "CLIENT: disconnected unexpextedly because \"" + info.reason + "\"");
+        if(null != info) {
+            LOGGER.log(Level.INFO, "CLIENT: disconnected because \"" + info.reason + "\"");
+        }
+        else {
+            LOGGER.log(Level.INFO, "CLIENT: disconnected");
+        }
+
+        client.disconnect();
     }
 }

@@ -30,7 +30,9 @@ public class NetClientListener implements MessageListener<Client> {
         }
         else if(message instanceof ServerShutdownMessage)
         {
-            client.shutdown();
+            client.disconnect();
+            
+            LOGGER.log(Level.INFO, "CLIENT: disconnected from server");
         }
         else if (message instanceof SyncMessage) {
             SyncMessage syncMessage = (SyncMessage) message;
