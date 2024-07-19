@@ -1,10 +1,11 @@
 package com.grave.Game;
 
+import java.util.UUID;
+
 import com.grave.Graveborn;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.input.FlyByCamera;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -31,13 +32,11 @@ public class Player {
     private InputManager inputManager;
     private Camera camera;
     private ViewPort viewPort;
-
-    //belong of Objectmanager
     private AssetManager assetManager;
     private Node rootNode;
 
-    private Entity player;
-    private RigidBody2DControl playerRig;
+    private UUID selfID;
+
     private int moveVertical = 0;
     private int moveHorizontal = 0;
 
@@ -64,14 +63,13 @@ public class Player {
     };
 
     public Player(Graveborn app, ObjectManager objectManager_) {
+        objectManager = objectManager_;
+
         inputManager = app.getInputManager();
         viewPort = app.getViewPort();
         camera = app.getCamera();
-
-        objectManager = objectManager_;
-
-        assetManager = objectManager.getAssetManager();
-        rootNode = objectManager.getRootNode();
+        assetManager = app.getAssetManager();
+        rootNode = app.getRootNode();
 
         app.getFlyByCamera().setEnabled(false);
     }
@@ -86,19 +84,32 @@ public class Player {
 
         //TODO
         // On Space_Key spawn Zombie
-        inputManager.addMapping("spawn", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addListener((ActionListener) (name, isPressed, tpf) -> {
-            if (isPressed) objectManager.spawnZombie();
-        }, "spawn");
+        //inputManager.addMapping("spawn", new KeyTrigger(KeyInput.KEY_SPACE));
+        //inputManager.addListener((ActionListener) (name, isPressed, tpf) -> {
+        //    if (isPressed) objectManager.spawnZombie();
+        //}, "spawn");
     }
 
     public void update(float tpf) {
-        playerRig.setLinearVelocity(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
+        proccessNew();
+        proccessDeleted();
 
-        //application.getNetClient().setPlayerPosition(player_rig.getPhysicsLocation());
+        objectManager.setEntityVelocity(selfID, new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
     }
 
     public void shutdown() {
+    }
+
+    private void proccessNew() {
+        objectManager.getLocalEntitiesNew().forEach((uuid, entity) -> {
+            rootNode.attachChild(entity);
+        });
+    }
+
+    private void proccessDeleted() {
+        objectManager.getLocalEntitiesDeleted().forEach((uuid, entity) -> {
+            
+        });
     }
 
     private void initBackground() {
@@ -140,7 +151,7 @@ public class Player {
         p_mat.setTexture("ColorMap", characterTex);
         p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
-        player = new Entity("Player", new Box(1, 1, 1)) {
+        Entity player = new Entity("Player", new Box(1, 1, 1)) {
             @Override
             public void onInit() {
 
@@ -160,30 +171,39 @@ public class Player {
         player.setQueueBucket(RenderQueue.Bucket.Transparent);
         player.setMaterial(p_mat);
 
-        CollisionShape player_shape = CollisionShapeFactory.createBoxShape(player);
-        playerRig = new RigidBody2DControl(player_shape, 10);
-        playerRig.setRotation(false);
-        player.addControl(playerRig);
-        rootNode.attachChild(player);
+        selfID = objectManager.createEntity(player);
 
-        objectManager.setHuman(player);
-        objectManager.getPhysicsSpace().add(playerRig);
+        //objectManager.getPhysicsSpace().add(playerRig);
     }
 
-    private void initTestObstacle(){
-        //Test Obstacle
-        Box o_box = new Box(1, 1, 0.1f);
-        Geometry o = new Geometry("Plane", o_box);
-        o.setLocalTranslation(3f, 3f, 0);
+    private void initTestObstacle() {
+        
+        Entity obstacle = new Entity("Obstacle", new Box(1, 1, 0.1f)) {
+            @Override
+            public void onInit() {
+
+            }
+
+            @Override
+            public void onShutdown() {
+
+            }
+
+            @Override
+            public void onUpdate(float tpf) {
+
+            }
+        };
+
+        obstacle.setLocalTranslation(3f, 3f, 0);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
-        o.setMaterial(mat);
-        CollisionShape o_shape = CollisionShapeFactory.createBoxShape(o);
+        obstacle.setMaterial(mat);
+        CollisionShape o_shape = CollisionShapeFactory.createBoxShape(obstacle);
         RigidBody2DControl o_rig = new RigidBody2DControl(o_shape, 0);
-        o.addControl(o_rig);
-        rootNode.attachChild(o);
+        obstacle.addControl(o_rig);
+        rootNode.attachChild(obstacle);
 
-        //TODO
-        objectManager.getPhysicsSpace().add(o_rig);
+        objectManager.createEntity(obstacle);
     }
 }

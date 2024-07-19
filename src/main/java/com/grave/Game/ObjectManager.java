@@ -2,130 +2,122 @@ package com.grave.Game;
 
 import com.grave.Graveborn;
 
-import com.jme3.asset.AssetManager;
 import com.jme3.bullet.PhysicsSpace;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
-import com.jme3.scene.shape.Box;
-import com.jme3.texture.Texture;
 
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.util.CollisionShapeFactory;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ObjectManager {
-    private HashMap<String, Entity> entityMap;
-    private HashMap<String, Vector3f> entiyPosBufferMap;
+    private static final Logger LOGGER = Logger.getLogger(ObjectManager.class.getName());
+
+    private HashMap<UUID, Entity> entityMap;
+    private HashMap<UUID, Vector3f> entityPositionBuffer;
+
+    private HashMap<UUID, Entity> localEntitiesNew;
+    private HashMap<UUID, Entity> localEntitiesDeleted;
 
     private PhysicsSpace physicsSpace;
 
-    private AssetManager assetManager;
-    private Node rootNode;
-
-    private String humanId;
-
     public ObjectManager(Graveborn app) {
-        entityMap = new HashMap<>();
-        entiyPosBufferMap = new HashMap<>();
-        humanId = null;
+        entityMap = new HashMap<UUID, Entity>();
+        entityPositionBuffer = new HashMap<UUID, Vector3f>();
+
+        localEntitiesNew = new HashMap<UUID, Entity>();
+        localEntitiesDeleted = new HashMap<UUID, Entity>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(Vector3f.ZERO);
-
-        assetManager = app.getAssetManager();
-        rootNode = app.getRootNode();
-    }
-
-    public void spawnZombie() {
-        String id = getId();
-        Zombie zombie = new Zombie(this, id, new Vector3f(-2, -5, 0));
-        entityMap.put(id, zombie);
-        System.out.println("zombie: " + id + " spawned");
-    }
-
-
-    public String getId() {
-        return UUID.randomUUID().toString();
     }
 
     public void init() {
+
     }
 
     public void update(float tpf) {
-        for (Map.Entry<String, Entity> entry : entityMap.entrySet()) {
-            entry.getValue().onUpdate(tpf);
+        //process updates
+        
+        entityMap.forEach((uuid, entity) -> {
+            if (entityPositionBuffer.containsKey(uuid)) {
+                Vector3f position = entityPositionBuffer.get(uuid);
 
-            if(entiyPosBufferMap.containsKey(entry.getKey())){
-                String clientName = entry.getKey();
-                Vector3f bufferPos = entiyPosBufferMap.get(clientName);
-                entityMap.get(clientName).setLocalTranslation(bufferPos);
+                entity.setLocalTranslation(position);
             }
-        }
+
+            entity.onUpdate(tpf);
+        });
+
+        entityPositionBuffer.clear();
+
+        //send updates
     }
 
     public void shutdown() {
 
     }
 
-    private Geometry getPlayer() {
-        if(entityMap.containsKey(humanId)) return entityMap.get(humanId);
-        throw new RuntimeException("Player is not in objectSet");
+    public void moveEntity(UUID uuid, Vector3f position) {
+        entityPositionBuffer.put(uuid, position);
     }
 
-    public Vector3f getPlayerPos() {
-        return getPlayer().getLocalTranslation();
+    public void setEntityVelocity(UUID uuid, Vector3f velocity) {
+        if (entityMap.containsKey(uuid)) {
+            Entity entity = entityMap.get(uuid);
+
+            entity.getRig().setLinearVelocity(velocity);
+            
+        } else {
+            LOGGER.log(Level.WARNING, "OM: unknown entity");
+        }
     }
 
-    public String addEntity(Entity entity){
-        String id = getId();
+    public UUID createEntity(Entity entity) {
+        UUID id = UUID.randomUUID();
+
         entityMap.put(id, entity);
+        localEntitiesNew.put(id, entity);
+
+        physicsSpace.add(entity.getRig());
+
+        entity.onInit();
+
         return id;
     }
 
-    public void addClientPlayer(String clientName) {
-        if (entityMap.containsKey(clientName)) throw new RuntimeException("clientName is already in Map");
+    public void deleteEntity(UUID uuid) {
+        if (entityMap.containsKey(uuid)) {
+            Entity entity = entityMap.get(uuid);
 
-        ClientPlayer cp = new ClientPlayer(clientName, this);
-        entityMap.put(clientName, cp);
-        entiyPosBufferMap.put(clientName, new Vector3f(0, 0, 0));
+            entity.onShutdown();
+
+            localEntitiesDeleted.put(uuid, entity);
+            entityMap.remove(uuid);
+        } else {
+            LOGGER.log(Level.WARNING, "OM: unknown entity");
+        }
+    }
+    
+    public HashMap<UUID, Entity> getLocalEntitiesNew() {
+        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>)localEntitiesNew.clone();
+        assert(null != copy);
+
+        localEntitiesNew.clear();
+
+        return copy;
     }
 
-    public void moveEntity(String entityId, Vector3f pos) {
-        entiyPosBufferMap.put(entityId, pos);
-    }
+    public HashMap<UUID, Entity> getLocalEntitiesDeleted() {
+        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesDeleted.clone();
+        assert (null != copy);
 
-    public void removeEntity(String entityId) {
-        rootNode.detachChild(entityMap.get(entityId));
-        entityMap.remove(entityId);
-        entiyPosBufferMap.remove(entityId);
-    }
+        localEntitiesDeleted.clear();
 
-    public void setHuman(Entity human){
-        String id = getId();
-        humanId = id;
-        entityMap.put(id, human);
-    }
-
-    public AssetManager getAssetManager() {
-        return assetManager;
-    }
-
-    public Node getRootNode() {
-        return rootNode;
-    }
-
-    public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
+        return copy;
     }
 }

@@ -21,22 +21,22 @@ public class Zombie extends Entity {
     public Zombie(ObjectManager objectManager_, String name_, Vector3f pos_){
         super(name_, new Box(1, 1, 1));
 
-        objectManager = objectManager_;
+        //objectManager = objectManager_;
 
-        assetManager = objectManager.getAssetManager();
+        //assetManager = objectManager.getAssetManager();
         
-        this.setLocalTranslation(pos_);
+        //this.setLocalTranslation(pos_);
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Green);
-        this.setMaterial(mat);
+        //Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        //mat.setColor("Color", ColorRGBA.Green);
+        //this.setMaterial(mat);
 
-        CollisionShape zombieShape = CollisionShapeFactory.createBoxShape(this);
-        zombieRig = new RigidBody2DControl(zombieShape, 1);
-        zombieRig.setRotation(false);
-        this.addControl(zombieRig);
-        objectManager.getPhysicsSpace().add(zombieRig);
-        objectManager.getRootNode().attachChild(this);
+        //CollisionShape zombieShape = CollisionShapeFactory.createBoxShape(this);
+        //zombieRig = new RigidBody2DControl(zombieShape, 1);
+        //zombieRig.setRotation(false);
+        //this.addControl(zombieRig);
+        //objectManager.getPhysicsSpace().add(zombieRig);
+        //objectManager.getRootNode().attachChild(this);
     }
 
     @Override
@@ -46,9 +46,9 @@ public class Zombie extends Entity {
 
     @Override
     public void onUpdate(float tpf) {
-        Vector3f playerPos = objectManager.getPlayerPos();
-        Vector3f moveVector = playerPos.subtract(this.getLocalTranslation()).normalize();
-        zombieRig.setLinearVelocity(moveVector.mult(SPEED));
+        //Vector3f playerPos = objectManager.getPlayerPos();
+        //Vector3f moveVector = playerPos.subtract(this.getLocalTranslation()).normalize();
+        //zombieRig.setLinearVelocity(moveVector.mult(SPEED));
     }
 
     @Override
