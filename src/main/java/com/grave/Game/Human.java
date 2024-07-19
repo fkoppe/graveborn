@@ -11,7 +11,7 @@ import com.jme3.texture.Texture;
 
 public class Human extends Entity{
     public Human(String name_, ObjectManager objectmanager_) {
-        super(name_, new Box(1, 1, 1));
+        super(name_, new Box(1, 1, 1), 10);
 
         //this.setLocalTranslation(0, 0, 0);
         //Material oMat = new Material(objectmanager_.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");

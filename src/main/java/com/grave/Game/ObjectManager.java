@@ -47,7 +47,7 @@ public class ObjectManager {
             if (entityPositionBuffer.containsKey(uuid)) {
                 Vector3f position = entityPositionBuffer.get(uuid);
 
-                entity.setLocalTranslation(position);
+                //entity.setLocalTranslation(position);
             }
 
             entity.onUpdate(tpf);

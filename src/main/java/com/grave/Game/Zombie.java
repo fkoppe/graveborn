@@ -19,7 +19,7 @@ public class Zombie extends Entity {
     private RigidBody2DControl zombieRig;
 
     public Zombie(ObjectManager objectManager_, String name_, Vector3f pos_){
-        super(name_, new Box(1, 1, 1));
+        super(name_, new Box(1, 1, 1), 5);
 
         //objectManager = objectManager_;
 

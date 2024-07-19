@@ -151,7 +151,7 @@ public class Player {
         p_mat.setTexture("ColorMap", characterTex);
         p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
-        Entity player = new Entity("Player", new Box(1, 1, 1)) {
+        Entity player = new Entity("Player", new Box(1, 1, 1), 10) {
             @Override
             public void onInit() {
 
@@ -167,9 +167,11 @@ public class Player {
 
             }
         };
-        player.setLocalTranslation(0, 0, 0);
+
         player.setQueueBucket(RenderQueue.Bucket.Transparent);
         player.setMaterial(p_mat);
+
+        player.setPosition(-3, -3, 0);
 
         selfID = objectManager.createEntity(player);
 
@@ -178,7 +180,7 @@ public class Player {
 
     private void initTestObstacle() {
         
-        Entity obstacle = new Entity("Obstacle", new Box(1, 1, 0.1f)) {
+        Entity obstacle = new Entity("Obstacle", new Box(1, 1, 0.1f), 0) {
             @Override
             public void onInit() {
 
@@ -195,14 +197,11 @@ public class Player {
             }
         };
 
-        obstacle.setLocalTranslation(3f, 3f, 0);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
         obstacle.setMaterial(mat);
-        CollisionShape o_shape = CollisionShapeFactory.createBoxShape(obstacle);
-        RigidBody2DControl o_rig = new RigidBody2DControl(o_shape, 0);
-        obstacle.addControl(o_rig);
-        rootNode.attachChild(obstacle);
+
+        obstacle.setPosition(3, 3, 0);
 
         objectManager.createEntity(obstacle);
     }
