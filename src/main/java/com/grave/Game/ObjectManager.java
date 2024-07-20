@@ -70,7 +70,12 @@ public class ObjectManager {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
-            entity.getRig().setLinearVelocity(velocity);
+            if(entity instanceof RigEntity)
+            {
+                RigEntity rigEntity = (RigEntity) entity;
+
+                rigEntity.getRig().setLinearVelocity(velocity);
+            }
             
         } else {
             LOGGER.log(Level.WARNING, "OM: unknown entity");
@@ -83,7 +88,11 @@ public class ObjectManager {
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
-        physicsSpace.add(entity.getRig());
+        if (entity instanceof RigEntity) {
+            RigEntity rigEntity = (RigEntity) entity;
+
+            physicsSpace.add(rigEntity.getRig());
+        }
 
         entity.onInit();
 

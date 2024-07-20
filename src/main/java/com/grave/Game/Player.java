@@ -102,7 +102,7 @@ public class Player {
 
     private void proccessNew() {
         objectManager.getLocalEntitiesNew().forEach((uuid, entity) -> {
-            rootNode.attachChild(entity);
+            rootNode.attachChild(entity.getGeometry());
         });
     }
 
@@ -147,11 +147,13 @@ public class Player {
 
         Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         Texture characterTex = assetManager.loadTexture("Textures/character.png");
+
         characterTex.setMagFilter(Texture.MagFilter.Nearest);
+
         p_mat.setTexture("ColorMap", characterTex);
         p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
-        Entity player = new Entity("Player", new Box(1, 1, 1), 10) {
+        Entity player = new Human("Player", p_mat) {
             @Override
             public void onInit() {
 
@@ -167,9 +169,6 @@ public class Player {
 
             }
         };
-
-        player.setQueueBucket(RenderQueue.Bucket.Transparent);
-        player.setMaterial(p_mat);
 
         player.setPosition(-3, -3, 0);
 
@@ -180,7 +179,10 @@ public class Player {
 
     private void initTestObstacle() {
         
-        Entity obstacle = new Entity("Obstacle", new Box(1, 1, 0.1f), 0) {
+        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Black);
+
+        Entity obstacle = new RigEntity("Obstacle", new Box(1, 1, 0.1f), material, 0) {
             @Override
             public void onInit() {
 
@@ -196,10 +198,6 @@ public class Player {
 
             }
         };
-
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Black);
-        obstacle.setMaterial(mat);
 
         obstacle.setPosition(3, 3, 0);
 

@@ -8,8 +8,9 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.shape.Box;
 
-public class Zombie extends Entity {
-    private final float SPEED = 3f;
+public class Zombie extends RigEntity {
+    private static final float SPEED = 3f;
+    private static final float MASS = 5;
 
     private ObjectManager objectManager;
 
@@ -18,8 +19,8 @@ public class Zombie extends Entity {
 
     private RigidBody2DControl zombieRig;
 
-    public Zombie(ObjectManager objectManager_, String name_, Vector3f pos_){
-        super(name_, new Box(1, 1, 1), 5);
+    public Zombie(String name_, Material material_) {
+        super(name_, new Box(1, 1, 1), material_, MASS);
 
         //objectManager = objectManager_;
 

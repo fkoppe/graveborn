@@ -1,35 +1,30 @@
 package com.grave.Game;
 
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.math.Vector3f;
+import com.jme3.material.Material;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 
-public abstract class Entity extends Geometry {
-    private RigidBody2DControl rig;
+public abstract class Entity {
+    protected Geometry geometry;
 
-    public Entity(String name_, Mesh mesh_, float mass_)
+    public Entity(String name_, Mesh mesh_, Material material_)
     {
-        super(name_, mesh_);
+        geometry = new Geometry(name_, mesh_);
 
-        CollisionShape shape = CollisionShapeFactory.createBoxShape(this);
-        rig = new RigidBody2DControl(shape, mass_);
-        rig.setRotation(false);
-        addControl(rig);
+        geometry.setMaterial(material_);
     }
 
     abstract public void onInit();
+    
     abstract public void onUpdate(float tpf);
 
     abstract public void onShutdown();
 
     public void setPosition(float x, float y, float z) {
-        rig.setPhysicsLocation(new Vector3f(x, y, z));
+        geometry.setLocalTranslation(x, y, z);
     }
-    
-    public RigidBodyControl getRig() {
-        return rig;
+
+    public Geometry getGeometry() {
+        return geometry;
     }
 }
