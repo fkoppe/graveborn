@@ -1,7 +1,8 @@
-package com.grave.Game;
+package com.grave.Object;
 
 import com.grave.Graveborn;
-
+import com.grave.Game.Entities.Entity;
+import com.grave.Game.Entities.RigEntity;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 
@@ -41,13 +42,13 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
-        //process updates
-        
+        // process updates
+
         entityMap.forEach((uuid, entity) -> {
             if (entityPositionBuffer.containsKey(uuid)) {
                 Vector3f position = entityPositionBuffer.get(uuid);
 
-                //entity.setLocalTranslation(position);
+                // entity.setLocalTranslation(position);
             }
 
             entity.onUpdate(tpf);
@@ -55,7 +56,7 @@ public class ObjectManager {
 
         entityPositionBuffer.clear();
 
-        //send updates
+        // send updates
     }
 
     public void shutdown() {
@@ -70,13 +71,12 @@ public class ObjectManager {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
-            if(entity instanceof RigEntity)
-            {
+            if (entity instanceof RigEntity) {
                 RigEntity rigEntity = (RigEntity) entity;
 
                 rigEntity.getRig().setLinearVelocity(velocity);
             }
-            
+
         } else {
             LOGGER.log(Level.WARNING, "OM: unknown entity");
         }
@@ -111,10 +111,10 @@ public class ObjectManager {
             LOGGER.log(Level.WARNING, "OM: unknown entity");
         }
     }
-    
+
     public HashMap<UUID, Entity> getLocalEntitiesNew() {
-        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>)localEntitiesNew.clone();
-        assert(null != copy);
+        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesNew.clone();
+        assert (null != copy);
 
         localEntitiesNew.clear();
 
@@ -128,5 +128,33 @@ public class ObjectManager {
         localEntitiesDeleted.clear();
 
         return copy;
+    }
+
+    public void takeNotice(Notice notice) {
+        // ...
+    }
+
+    public void forceNotice(Notice notice) {
+        // ...
+    }
+
+    public Notice giveNotice() {
+        Notice notice = new Notice();
+
+        return notice;
+    }
+
+    public void takeSync(Sync sync) {
+        // ...
+    }
+
+    public void forceSync(Sync sync) {
+        // ...
+    }
+
+    public Sync giveSync() {
+        Sync sync = new Sync();
+
+        return sync;
     }
 }

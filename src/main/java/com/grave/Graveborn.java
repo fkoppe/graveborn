@@ -4,13 +4,12 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Game.ObjectManager;
 import com.grave.Game.Player;
 import com.grave.Game.World;
 import com.grave.Networking.Net;
 import com.grave.Networking.NetClient;
 import com.grave.Networking.NetServer;
-
+import com.grave.Object.ObjectManager;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
@@ -24,10 +23,11 @@ public class Graveborn extends SimpleApplication {
     private static JmeContext.Type context;
 
     private Mode mode = Mode.NONE;
-    private String name;
-    private String ip;
     private int port;
 
+    private String ip = null;
+    private String serverName = null;
+    private String playerName = null;
     private Net net = null;
     private Player player = null;
 
@@ -68,8 +68,7 @@ public class Graveborn extends SimpleApplication {
                     arguments.serverName = Configurator.askForName(scanner, "server");
                 }
 
-                name = arguments.serverName;
-                ip = null;
+                serverName = arguments.serverName;
                 port = arguments.port;
                 break;
             case CLIENT:
@@ -81,18 +80,35 @@ public class Graveborn extends SimpleApplication {
                 if (-1 == arguments.port) {
                     arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
                 }
-                if (null == arguments.clientName) {
-                    arguments.clientName = Configurator.askForName(scanner, "client");
+                if (null == arguments.playerName) {
+                    arguments.playerName = Configurator.askForName(scanner, "player");
                 }
 
-                name = arguments.clientName;
+                playerName = arguments.playerName;
                 ip = arguments.ip;
                 port = arguments.port;
                 break;
             case HOST:
-                throw new RuntimeException("host mode not implemented");
+                context = JmeContext.Type.Display;
+
+                if (-1 == arguments.port) {
+                    arguments.port = Configurator.askForPort(scanner, DEFAULT_PORT);
+                }
+                if (null == arguments.serverName) {
+                    arguments.serverName = Configurator.askForName(scanner, "server");
+                }
+                if (null == arguments.playerName) {
+                    arguments.playerName = Configurator.askForName(scanner, "player");
+                }
+
+                serverName = arguments.serverName;
+                playerName = arguments.playerName;
+                ip = arguments.ip;
+                port = arguments.port;
+                break;
             case STANDALONE:
-                throw new RuntimeException("standalone mode not implemented");
+                context = JmeContext.Type.Display;
+                break;
             default:
                 throw new RuntimeException("invalid mode");
         }
@@ -104,7 +120,29 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        setup();
+        objectManager = new ObjectManager(this);
+        world = new World(objectManager);
+
+        switch (mode) {
+            case SERVER:
+                net = new NetServer(objectManager, serverName, port);
+                ip = ((NetServer) net).getIp();
+                break;
+            case CLIENT:
+                net = new NetClient(objectManager, playerName, ip, port);
+                player = new Player(this, objectManager, playerName);
+                break;
+            case HOST:
+                net = new NetServer(objectManager, serverName, port);
+                ip = ((NetServer) net).getIp();
+                player = new Player(this, objectManager, playerName);
+                break;
+            case STANDALONE:
+                player = new Player(this, objectManager, playerName);
+                break;
+            default:
+                throw new RuntimeException("invalid mode");
+        }
 
         objectManager.init();
         world.init();
@@ -140,37 +178,14 @@ public class Graveborn extends SimpleApplication {
         LOGGER.log(Level.INFO, "begin destruction");
 
         if (null != net) {
-            net.init();
+            net.shutdown();
         }
 
         if (null != player) {
-            player.init();
+            player.shutdown();
         }
 
         world.shutdown();
         objectManager.shutdown();
-    }
-
-    private void setup()
-    {
-        objectManager = new ObjectManager(this);
-        world = new World(objectManager);
-
-        switch (mode) {
-            case SERVER:
-                net = new NetServer(objectManager, name, port);
-                ip = ((NetServer) net).getIp();
-                break;
-            case CLIENT:
-                net = new NetClient(objectManager, name, ip, port);
-                player = new Player(this, objectManager);
-                break;
-            case HOST:
-                throw new RuntimeException("host mode not implemented");
-            case STANDALONE:
-                throw new RuntimeException("standalone mode not implemented");
-            default:
-                throw new RuntimeException("invalid mode");
-        }
     }
 }

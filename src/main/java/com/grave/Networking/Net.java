@@ -1,10 +1,11 @@
 package com.grave.Networking;
 
-import com.grave.Game.ObjectManager;
+import com.grave.Object.ObjectManager;
 
 public abstract class Net {
     protected ObjectManager objectmanager;
-    protected String name;
+    
+    private String name;
 
     public Net(ObjectManager objectmanager_, String name_)
     {

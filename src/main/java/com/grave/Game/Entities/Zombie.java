@@ -1,5 +1,6 @@
 package com.grave.Game;
 
+import com.grave.Object.ObjectManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.util.CollisionShapeFactory;
