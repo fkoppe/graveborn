@@ -1,7 +1,7 @@
 package com.grave.Game.Entities;
 
-import com.grave.Object.Action;
-import com.grave.Object.MoveAction;
+import com.grave.Object.Actions.Action;
+import com.grave.Object.Actions.MoveAction;
 import com.jme3.material.Material;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;

@@ -3,6 +3,7 @@ package com.grave.Object;
 import com.grave.Graveborn;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
+import com.grave.Object.Actions.Action;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 
@@ -76,21 +77,6 @@ public class ObjectManager {
             Entity entity = entityMap.get(uuid);
 
             entity.processAction(action);
-        }
-    }
-
-    public void setEntityVelocity(UUID uuid, Vector3f velocity) {
-        if (entityMap.containsKey(uuid)) {
-            Entity entity = entityMap.get(uuid);
-
-            if (entity instanceof RigEntity) {
-                RigEntity rigEntity = (RigEntity) entity;
-
-                rigEntity.getRig().setLinearVelocity(velocity);
-            }
-
-        } else {
-            LOGGER.log(Level.WARNING, "OM: unknown entity");
         }
     }
 

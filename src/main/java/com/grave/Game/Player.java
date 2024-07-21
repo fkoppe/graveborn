@@ -6,8 +6,9 @@ import com.grave.Graveborn;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
 import com.grave.Game.Entities.RigEntity;
-import com.grave.Object.MoveAction;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Actions.MoveAction;
+import com.grave.Object.Actions.VelocityAction;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -99,7 +100,8 @@ public class Player {
         proccessNew();
         proccessDeleted();
 
-        objectManager.setEntityVelocity(playerID, new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
+        VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
+        objectManager.submitEntityAction(playerID, action);
     }
 
     public void shutdown() {

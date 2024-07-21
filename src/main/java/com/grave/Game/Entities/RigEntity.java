@@ -1,8 +1,9 @@
 package com.grave.Game.Entities;
 
 import com.grave.Game.RigidBody2DControl;
-import com.grave.Object.Action;
-import com.grave.Object.MoveAction;
+import com.grave.Object.Actions.Action;
+import com.grave.Object.Actions.MoveAction;
+import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -39,10 +40,15 @@ public class RigEntity extends Entity {
     
 
     public void processAction(Action action) {
-        if(action instanceof MoveAction) {
+        if (action instanceof MoveAction) {
             MoveAction moveAction = (MoveAction) action;
 
             rig.setPhysicsLocation(moveAction.getPosition());
+        }
+        else if (action instanceof VelocityAction) {
+            VelocityAction velocityAction = (VelocityAction) action;
+
+            rig.setLinearVelocity(velocityAction.getVelocity());
         }
     }
     

@@ -1,4 +1,4 @@
-package com.grave.Object;
+package com.grave.Object.Actions;
 
 public class ChatAction extends Action {
     final private String name;

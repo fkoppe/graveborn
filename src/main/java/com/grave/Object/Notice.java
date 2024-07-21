@@ -2,6 +2,8 @@ package com.grave.Object;
 
 import java.util.ArrayList;
 
+import com.grave.Object.Actions.Action;
+
 public class Notice {
     private ArrayList<Action> actions;
 
