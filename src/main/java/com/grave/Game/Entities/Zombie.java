@@ -28,26 +28,26 @@ public class Zombie extends RigEntity {
     public void onUpdate(float tpf) {
         if(null == targetID)
         {
-            Entity nearestPlayer = null;
-            float nearestPlayerDistance = 0;
+            Entity nearestHuman = null;
+            float nearestHumanDistance = 0;
 
             ArrayList<Entity> players = objectManager.queryEntityByClass(Human.class);
 
             for (Entity player : players) {
-                if (null == nearestPlayer) {
-                    nearestPlayer = player;
+                if (null == nearestHuman) {
+                    nearestHuman = player;
                 } else {
                     float distance = geometry.getLocalTranslation().distance(player.getPosition());
 
-                    if (distance < nearestPlayerDistance) {
-                        nearestPlayer = player;
-                        nearestPlayerDistance = distance;
+                    if (distance < nearestHumanDistance) {
+                        nearestHuman = player;
+                        nearestHumanDistance = distance;
                     }
                 }
             }
 
-            if (null != nearestPlayer) {
-                targetID = nearestPlayer.getID();
+            if (null != nearestHuman) {
+                targetID = nearestHuman.getID();
             }
         }
         
