@@ -121,7 +121,7 @@ public class Graveborn extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         objectManager = new ObjectManager(this);
-        world = new World(objectManager);
+        world = new World(this, objectManager);
 
         switch (mode) {
             case SERVER:
