@@ -8,6 +8,7 @@ import com.jme3.math.Vector3f;
 
 import com.jme3.bullet.BulletAppState;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -17,19 +18,23 @@ public class ObjectManager {
     private static final Logger LOGGER = Logger.getLogger(ObjectManager.class.getName());
 
     private HashMap<UUID, Entity> entityMap;
-    private HashMap<UUID, Vector3f> entityPositionBuffer;
 
+    private HashMap<UUID, Action> localActionBuffer;
     private HashMap<UUID, Entity> localEntitiesNew;
     private HashMap<UUID, Entity> localEntitiesDeleted;
+
+    private HashMap<UUID, Action> actionBuffer;
 
     private PhysicsSpace physicsSpace;
 
     public ObjectManager(Graveborn app) {
         entityMap = new HashMap<UUID, Entity>();
-        entityPositionBuffer = new HashMap<UUID, Vector3f>();
+        localActionBuffer = new HashMap<UUID, Action>();
 
         localEntitiesNew = new HashMap<UUID, Entity>();
         localEntitiesDeleted = new HashMap<UUID, Entity>();
+
+        actionBuffer = new HashMap<UUID, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -42,29 +47,36 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
-        // process updates
+        //send updates
 
+        //fetch updates
+
+        //process updates
         entityMap.forEach((uuid, entity) -> {
-            if (entityPositionBuffer.containsKey(uuid)) {
-                Vector3f position = entityPositionBuffer.get(uuid);
-
-                // entity.setLocalTranslation(position);
+            if (actionBuffer.containsKey(uuid)) {
+                actionBuffer.entrySet().forEach((entry) -> {
+                    entity.processAction(entry.getValue());
+                });
             }
 
             entity.onUpdate(tpf);
         });
 
-        entityPositionBuffer.clear();
-
-        // send updates
+        actionBuffer.clear();
     }
 
     public void shutdown() {
 
     }
 
-    public void moveEntity(UUID uuid, Vector3f position) {
-        entityPositionBuffer.put(uuid, position);
+    public void submitEntityAction(UUID uuid, Action action) {
+        localActionBuffer.put(uuid, action);
+
+        if (entityMap.containsKey(uuid)) {
+            Entity entity = entityMap.get(uuid);
+
+            entity.processAction(action);
+        }
     }
 
     public void setEntityVelocity(UUID uuid, Vector3f velocity) {

@@ -1,10 +1,12 @@
 package com.grave.Game.Entities;
 
+import com.grave.Object.Action;
+import com.grave.Object.MoveAction;
 import com.jme3.material.Material;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 
-public abstract class Entity {
+public class Entity {
     protected Geometry geometry;
 
     public Entity(String name_, Mesh mesh_, Material material_)
@@ -14,14 +16,18 @@ public abstract class Entity {
         geometry.setMaterial(material_);
     }
 
-    abstract public void onInit();
+    public void onInit() {}
     
-    abstract public void onUpdate(float tpf);
+    public void onUpdate(float tpf) {}
 
-    abstract public void onShutdown();
-
-    public void setPosition(float x, float y, float z) {
-        geometry.setLocalTranslation(x, y, z);
+    public void onShutdown() {
+    }
+    
+    public void processAction(Action action) {
+        if(action instanceof MoveAction) {
+            MoveAction moveAction = (MoveAction) action;
+            geometry.setLocalTranslation(moveAction.getPosition());
+        }
     }
 
     public Geometry getGeometry() {

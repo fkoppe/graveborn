@@ -6,10 +6,9 @@ import com.grave.Graveborn;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
 import com.grave.Game.Entities.RigEntity;
+import com.grave.Object.MoveAction;
 import com.grave.Object.ObjectManager;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -20,8 +19,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
-import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 import com.jme3.scene.Node;
@@ -40,7 +37,9 @@ public class Player {
     private AssetManager assetManager;
     private Node rootNode;
 
-    private UUID selfID;
+    private UUID playerID;
+    private UUID backgroundID;
+    private UUID obstacleID;
 
     private int moveVertical = 0;
     private int moveHorizontal = 0;
@@ -100,7 +99,7 @@ public class Player {
         proccessNew();
         proccessDeleted();
 
-        objectManager.setEntityVelocity(selfID, new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
+        objectManager.setEntityVelocity(playerID, new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
     }
 
     public void shutdown() {
@@ -114,28 +113,28 @@ public class Player {
 
     private void proccessDeleted() {
         objectManager.getLocalEntitiesDeleted().forEach((uuid, entity) -> {
-            
+            rootNode.detachChild(entity.getGeometry());
         });
     }
 
     private void initBackground() {
         viewPort.setBackgroundColor(new ColorRGBA(1.0f, 0.8f, 1f, 1f));
 
-        Box b = new Box(10, 10, 0);
+        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Red);
 
-        Geometry bg = new Geometry("Plane", b);
-        bg.setLocalTranslation(0f, 0f, -0.1f);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Red);
-        bg.setMaterial(mat);
+        Entity background = new Entity("background", new Box(10, 10, 0), material);
 
-        rootNode.attachChild(bg);
+        backgroundID = objectManager.createEntity(background);
+
+        objectManager.submitEntityAction(backgroundID, new MoveAction( new Vector3f(0f, 0f, -0.01f)));
     }
 
     private void initCamera() {
         camera.setLocation(new Vector3f(0, 0, 20));
         camera.lookAt(Vector3f.ZERO, Vector3f.UNIT_Z);
         camera.setParallelProjection(true);
+
         float aspect = (float) camera.getWidth() / camera.getHeight();
         float size = CAMERA_ZOOM;
         camera.setFrustum(-1000, 1000, -aspect * size, aspect * size, size, -size);
@@ -146,41 +145,24 @@ public class Player {
         inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+
         inputManager.addListener(actionListener, "Up", "Down", "Left", "Right");
     }
 
     private void initPlayer(){
+        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Texture texture = assetManager.loadTexture("Textures/character.png");
 
-        Material p_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture characterTex = assetManager.loadTexture("Textures/character.png");
+        texture.setMagFilter(Texture.MagFilter.Nearest);
 
-        characterTex.setMagFilter(Texture.MagFilter.Nearest);
+        material.setTexture("ColorMap", texture);
+        material.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
-        p_mat.setTexture("ColorMap", characterTex);
-        p_mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        Entity player = new Human("Player", material);
 
-        Entity player = new Human("Player", p_mat) {
-            @Override
-            public void onInit() {
+        playerID = objectManager.createEntity(player);
 
-            }
-
-            @Override
-            public void onShutdown() {
-
-            }
-
-            @Override
-            public void onUpdate(float tpf) {
-
-            }
-        };
-
-        player.setPosition(-3, -3, 0);
-
-        selfID = objectManager.createEntity(player);
-
-        //objectManager.getPhysicsSpace().add(playerRig);
+        objectManager.submitEntityAction(playerID, new MoveAction(new Vector3f(-3, -3, 0)));
     }
 
     private void initTestObstacle() {
@@ -188,25 +170,10 @@ public class Player {
         Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         material.setColor("Color", ColorRGBA.Black);
 
-        Entity obstacle = new RigEntity("Obstacle", new Box(1, 1, 0.1f), material, 0) {
-            @Override
-            public void onInit() {
+        Entity obstacle = new RigEntity("Obstacle", new Box(1, 1, 0.1f), material, 0);
 
-            }
+        obstacleID = objectManager.createEntity(obstacle);
 
-            @Override
-            public void onShutdown() {
-
-            }
-
-            @Override
-            public void onUpdate(float tpf) {
-
-            }
-        };
-
-        obstacle.setPosition(3, 3, 0);
-
-        objectManager.createEntity(obstacle);
+        objectManager.submitEntityAction(obstacleID, new MoveAction(new Vector3f(3, 3, 0)));
     }
 }
