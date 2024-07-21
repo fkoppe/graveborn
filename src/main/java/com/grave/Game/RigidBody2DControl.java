@@ -8,12 +8,12 @@ import com.jme3.math.Vector3f;
 public class RigidBody2DControl extends RigidBodyControl {
     private boolean rotation = true;
 
-    public RigidBody2DControl(float f){
-        super(f);
+    public RigidBody2DControl(float mass){
+        super(mass);
     }
 
-    public RigidBody2DControl(CollisionShape s, float f){
-        super(s,f);
+    public RigidBody2DControl(CollisionShape shape, float mass){
+        super(shape ,mass);
     }
 
     @Override

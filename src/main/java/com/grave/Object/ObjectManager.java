@@ -1,137 +1,135 @@
 package com.grave.Object;
 
 import com.grave.Graveborn;
-import com.grave.Game.Entity;
-import com.grave.Game.Zombie;
-import com.jme3.asset.AssetManager;
+import com.grave.Game.Entities.Entity;
+import com.grave.Game.Entities.RigEntity;
+import com.grave.Object.Actions.Action;
 import com.jme3.bullet.PhysicsSpace;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
-import com.jme3.scene.shape.Box;
-import com.jme3.texture.Texture;
 
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.util.CollisionShapeFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ObjectManager {
-    private HashSet<Geometry> objectSet;
-    private int idCounter;
+    private static final Logger LOGGER = Logger.getLogger(ObjectManager.class.getName());
 
-    private HashMap<String, Geometry> clientPlayerMap;
-    private HashMap<String, Vector3f> clientPosBufferMap;
+    private HashMap<UUID, Entity> entityMap;
 
-    private PhysicsSpace physicsSpace = null;
+    private HashMap<UUID, Action> localActionBuffer;
+    private HashMap<UUID, Entity> localEntitiesNew;
+    private HashMap<UUID, Entity> localEntitiesDeleted;
 
-    private AssetManager assetManager;
-    private Node rootNode;
+    private HashMap<UUID, Action> actionBuffer;
 
-    public ObjectManager(Graveborn app){
-        objectSet = new HashSet<>();
-        idCounter = 0;
-        clientPlayerMap = new HashMap<>();
-        clientPosBufferMap = new HashMap<>();
+    private PhysicsSpace physicsSpace;
+
+    public ObjectManager(Graveborn app) {
+        entityMap = new HashMap<UUID, Entity>();
+        localActionBuffer = new HashMap<UUID, Action>();
+
+        localEntitiesNew = new HashMap<UUID, Entity>();
+        localEntitiesDeleted = new HashMap<UUID, Entity>();
+
+        actionBuffer = new HashMap<UUID, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(Vector3f.ZERO);
-
-        assetManager = app.getAssetManager();
-        rootNode = app.getRootNode();
-    }
-
-    public void spawnZombie(){
-        String zombieName = "zombie"+getId();
-        Zombie zombie = new Zombie(this, zombieName, new Vector3f(-2,-5,0));
-        objectSet.add(zombie);
-        rootNode.attachChild(zombie);
-        System.out.println(zombieName + " spawned");
-    }
-
-    public int getId() {
-        return idCounter++;
     }
 
     public void init() {
+
     }
 
     public void update(float tpf) {
-        for (Geometry obj : objectSet) {
-            if (obj instanceof Entity) {
-                ((Entity) obj).onUpdate(tpf);
-            }
-        }
+        //send updates
 
-        for (Map.Entry<String, Geometry> entry : clientPlayerMap.entrySet()) {
-            String clientName = entry.getKey();
-            Vector3f bufferPos = clientPosBufferMap.get(clientName);
-            clientPlayerMap.get(clientName).setLocalTranslation(bufferPos);
-        }
+        //fetch updates
+
+        //process updates
+        entityMap.forEach((uuid, entity) -> {
+            if (actionBuffer.containsKey(uuid)) {
+                actionBuffer.entrySet().forEach((entry) -> {
+                    entity.processAction(entry.getValue());
+                });
+            }
+
+            entity.onUpdate(tpf);
+        });
+
+        actionBuffer.clear();
     }
 
     public void shutdown() {
 
     }
 
-    private Geometry createClientPlayer(String name){
-        Geometry o = new Geometry(name, new Box(1, 1, 1));
-        o.setLocalTranslation(0, 0, 0);
-        Material oMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture oTex = assetManager.loadTexture("Textures/character.png");
-        oTex.setMagFilter(Texture.MagFilter.Nearest);
-        oMat.setTexture("ColorMap", oTex);
-        oMat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-        o.setQueueBucket(RenderQueue.Bucket.Transparent);
-        o.setMaterial(oMat);
-        rootNode.attachChild(o);
-        
-        return o;
-    }
+    public void submitEntityAction(UUID uuid, Action action) {
+        localActionBuffer.put(uuid, action);
 
-    private Geometry getPlayer(){
-        for(Geometry g: objectSet){
-            if(g.getName().equals("Player")){
-                return g;
-            }
+        if (entityMap.containsKey(uuid)) {
+            Entity entity = entityMap.get(uuid);
+
+            entity.processAction(action);
         }
-        throw new RuntimeException("Player is not in objectSet");
     }
 
-    public Vector3f getPlayerPos(){
-        return getPlayer().getLocalTranslation();
+    public UUID createEntity(Entity entity) {
+        UUID id = UUID.randomUUID();
+
+        entityMap.put(id, entity);
+        localEntitiesNew.put(id, entity);
+
+        if (entity instanceof RigEntity) {
+            RigEntity rigEntity = (RigEntity) entity;
+
+            physicsSpace.add(rigEntity.getRig());
+        }
+
+        entity.onInit();
+
+        return id;
     }
 
-    public void add(Geometry g){
-        objectSet.add(g);
+    public void deleteEntity(UUID uuid) {
+        if (entityMap.containsKey(uuid)) {
+            Entity entity = entityMap.get(uuid);
+
+            entity.onShutdown();
+
+            localEntitiesDeleted.put(uuid, entity);
+            entityMap.remove(uuid);
+        } else {
+            LOGGER.log(Level.WARNING, "OM: unknown entity");
+        }
     }
 
-    public void addClientPlayer(String clientName) {
-        if(clientPlayerMap.containsKey(clientName)) throw new RuntimeException("clientName is already in Map");
-        clientPlayerMap.put(clientName, createClientPlayer(clientName));
-        clientPosBufferMap.put(clientName, new Vector3f(0,0,0));
+    public HashMap<UUID, Entity> getLocalEntitiesNew() {
+        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesNew.clone();
+        assert (null != copy);
+
+        localEntitiesNew.clear();
+
+        return copy;
     }
 
-    public void moveClientPlayer(String clientName, Vector3f pos) {
-        clientPosBufferMap.put(clientName, pos);
-    }
+    public HashMap<UUID, Entity> getLocalEntitiesDeleted() {
+        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesDeleted.clone();
+        assert (null != copy);
 
-    public void removeClientPlayer(String clientName) {
-        rootNode.detachChild(clientPlayerMap.get(clientName));
-        clientPlayerMap.remove(clientName);
-        clientPosBufferMap.remove(clientName);
+        localEntitiesDeleted.clear();
+
+        return copy;
     }
 
     public void takeNotice(Notice notice) {
-        //...
+        // ...
     }
 
     public void forceNotice(Notice notice) {
@@ -143,30 +141,18 @@ public class ObjectManager {
 
         return notice;
     }
-    
+
     public void takeSync(Sync sync) {
-        //...
+        // ...
     }
 
     public void forceSync(Sync sync) {
         // ...
     }
-    
+
     public Sync giveSync() {
         Sync sync = new Sync();
 
         return sync;
-    }
-    
-    public AssetManager getAssetManager() {
-        return assetManager;
-    }
-
-    public Node getRootNode() {
-        return rootNode;
-    }
-
-    public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
     }
 }
