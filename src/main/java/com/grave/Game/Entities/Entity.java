@@ -1,4 +1,4 @@
-package com.grave.Game;
+package com.grave.Game.Entities;
 
 import com.jme3.material.Material;
 import com.jme3.scene.Geometry;

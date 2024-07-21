@@ -1,5 +1,6 @@
-package com.grave.Game;
+package com.grave.Game.Entities;
 
+import com.grave.Game.RigidBody2DControl;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
