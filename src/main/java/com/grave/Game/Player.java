@@ -31,7 +31,6 @@ public class Player {
     private ObjectManager objectManager;
     private String playerName;
 
-    //belong of Graveborn
     private InputManager inputManager;
     private Camera camera;
     private ViewPort viewPort;
@@ -40,7 +39,6 @@ public class Player {
 
     private UUID playerID;
     private UUID backgroundID;
-    private UUID obstacleID;
 
     private int moveVertical = 0;
     private int moveHorizontal = 0;
@@ -86,7 +84,6 @@ public class Player {
         
         initKeys();
         initPlayer();
-        initTestObstacle();
 
         //TODO
         // On Space_Key spawn Zombie
@@ -109,13 +106,13 @@ public class Player {
 
     private void proccessNew() {
         objectManager.getLocalEntitiesNew().forEach((uuid, entity) -> {
-            rootNode.attachChild(entity.getGeometry());
+            entity.attachToNode(rootNode);
         });
     }
 
     private void proccessDeleted() {
         objectManager.getLocalEntitiesDeleted().forEach((uuid, entity) -> {
-            rootNode.detachChild(entity.getGeometry());
+            entity.detachFromNode(rootNode);
         });
     }
 
@@ -125,7 +122,7 @@ public class Player {
         Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         material.setColor("Color", ColorRGBA.Red);
 
-        Entity background = new Entity("background", new Box(10, 10, 0), material);
+        Entity background = new Entity(objectManager, "background", new Box(10, 10, 0), material);
 
         backgroundID = objectManager.createEntity(background);
 
@@ -160,22 +157,10 @@ public class Player {
         material.setTexture("ColorMap", texture);
         material.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
 
-        Entity player = new Human("Player", material);
+        Entity player = new Human(objectManager, "player", material);
 
         playerID = objectManager.createEntity(player);
 
         objectManager.submitEntityAction(playerID, new MoveAction(new Vector3f(-3, -3, 0)));
-    }
-
-    private void initTestObstacle() {
-        
-        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        material.setColor("Color", ColorRGBA.Black);
-
-        Entity obstacle = new RigEntity("Obstacle", new Box(1, 1, 0.1f), material, 0);
-
-        obstacleID = objectManager.createEntity(obstacle);
-
-        objectManager.submitEntityAction(obstacleID, new MoveAction(new Vector3f(3, 3, 0)));
     }
 }
