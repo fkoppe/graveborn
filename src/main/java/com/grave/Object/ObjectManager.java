@@ -11,6 +11,8 @@ import com.jme3.bullet.BulletAppState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,6 +88,8 @@ public class ObjectManager {
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
+        entity.setID(id);
+
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
 
@@ -108,6 +112,38 @@ public class ObjectManager {
         } else {
             LOGGER.log(Level.WARNING, "OM: unknown entity");
         }
+    }
+
+    public Entity getEntity(UUID uuid) {
+        if (entityMap.containsKey(uuid)) {
+            return entityMap.get(uuid);
+        } else {
+            throw new RuntimeException("unknown entity");
+        }
+    }
+
+    public ArrayList<Entity> queryEntityByName(String name) {
+        ArrayList<Entity> found = new ArrayList<Entity>();
+
+        entityMap.forEach((uuid, entity) -> {
+            if (entity.getName().equals(name)) {
+                found.add(entity);
+            }
+        });
+
+        return found;
+    }
+    
+    public ArrayList<Entity> queryEntityByClass(Class c) {
+        ArrayList<Entity> found = new ArrayList<Entity>();
+
+        entityMap.forEach((uuid, entity) -> {
+            if (entity.getClass().equals(c)) {
+                found.add(entity);
+            }
+        });
+
+        return found;
     }
 
     public HashMap<UUID, Entity> getLocalEntitiesNew() {
