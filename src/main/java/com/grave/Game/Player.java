@@ -1,8 +1,7 @@
 package com.grave.Game;
 
-import java.util.UUID;
-
 import com.grave.Graveborn;
+import com.grave.uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
 import com.grave.Game.Entities.RigEntity;
@@ -37,8 +36,8 @@ public class Player {
     private AssetManager assetManager;
     private Node rootNode;
 
-    private UUID playerID;
-    private UUID backgroundID;
+    private uuid playerID;
+    private uuid backgroundID;
 
     private int moveVertical = 0;
     private int moveHorizontal = 0;

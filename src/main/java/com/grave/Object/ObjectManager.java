@@ -1,6 +1,7 @@
 package com.grave.Object;
 
 import com.grave.Graveborn;
+import com.grave.uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Object.Actions.Action;
@@ -13,31 +14,30 @@ import com.jme3.bullet.BulletAppState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ObjectManager {
     private static final Logger LOGGER = Logger.getLogger(ObjectManager.class.getName());
 
-    private HashMap<UUID, Entity> entityMap;
+    private HashMap<uuid, Entity> entityMap;
 
-    private HashMap<UUID, Action> localActionBuffer;
-    private HashMap<UUID, Entity> localEntitiesNew;
-    private HashMap<UUID, Entity> localEntitiesDeleted;
+    private HashMap<uuid, Action> localActionBuffer;
+    private HashMap<uuid, Entity> localEntitiesNew;
+    private HashMap<uuid, Entity> localEntitiesDeleted;
 
-    private HashMap<UUID, Action> netActionBuffer;
+    private HashMap<uuid, Action> netActionBuffer;
 
     private PhysicsSpace physicsSpace;
 
     public ObjectManager(Graveborn app) {
-        entityMap = new HashMap<UUID, Entity>();
-        localActionBuffer = new HashMap<UUID, Action>();
+        entityMap = new HashMap<uuid, Entity>();
+        localActionBuffer = new HashMap<uuid, Action>();
 
-        localEntitiesNew = new HashMap<UUID, Entity>();
-        localEntitiesDeleted = new HashMap<UUID, Entity>();
+        localEntitiesNew = new HashMap<uuid, Entity>();
+        localEntitiesDeleted = new HashMap<uuid, Entity>();
 
-        netActionBuffer = new HashMap<UUID, Action>();
+        netActionBuffer = new HashMap<uuid, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -87,7 +87,7 @@ public class ObjectManager {
 
     }
 
-    public void submitEntityAction(UUID uuid, Action action) {
+    public void submitEntityAction(uuid uuid, Action action) {
         localActionBuffer.put(uuid, action);
 
         if (entityMap.containsKey(uuid)) {
@@ -97,8 +97,8 @@ public class ObjectManager {
         }
     }
 
-    public UUID createEntity(Entity entity) {
-        UUID id = UUID.randomUUID();
+    public uuid createEntity(Entity entity) {
+        uuid id = new uuid();
 
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
@@ -118,7 +118,7 @@ public class ObjectManager {
         return id;
     }
 
-    public void deleteEntity(UUID uuid) {
+    public void deleteEntity(uuid uuid) {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
@@ -133,7 +133,7 @@ public class ObjectManager {
         }
     }
 
-    public Entity getEntity(UUID uuid) {
+    public Entity getEntity(uuid uuid) {
         if (entityMap.containsKey(uuid)) {
             return entityMap.get(uuid);
         } else {
@@ -165,16 +165,16 @@ public class ObjectManager {
         return found;
     }
 
-    public HashMap<UUID, Entity> getLocalEntitiesNew() {
-        HashMap<UUID, Entity> copy = new HashMap<>(localEntitiesNew);
+    public HashMap<uuid, Entity> getLocalEntitiesNew() {
+        HashMap<uuid, Entity> copy = new HashMap<>(localEntitiesNew);
 
         localEntitiesNew.clear();
 
         return copy;
     }
 
-    public HashMap<UUID, Entity> getLocalEntitiesDeleted() {
-        HashMap<UUID, Entity> copy = new HashMap<>(localEntitiesDeleted);
+    public HashMap<uuid, Entity> getLocalEntitiesDeleted() {
+        HashMap<uuid, Entity> copy = new HashMap<>(localEntitiesDeleted);
 
         localEntitiesDeleted.clear();
 
@@ -192,7 +192,7 @@ public class ObjectManager {
     }
 
     public Update getUpdate() {
-        HashMap<UUID, Action> copy = new HashMap<>(localActionBuffer);
+        HashMap<uuid, Action> copy = new HashMap<>(localActionBuffer);
 
         localActionBuffer.clear();
 

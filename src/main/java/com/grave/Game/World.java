@@ -1,8 +1,7 @@
 package com.grave.Game;
 
-import java.util.UUID;
-
 import com.grave.Graveborn;
+import com.grave.uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Zombie;
@@ -19,8 +18,8 @@ public class World {
 
     private AssetManager assetManager;
 
-    private UUID obstacleID;
-    private UUID zombieID;
+    private uuid obstacleID;
+    private uuid zombieID;
 
     public World(Graveborn app_, ObjectManager objectManager_)
     {

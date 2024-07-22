@@ -1,24 +1,22 @@
 package com.grave.Object.Actions;
 
-import java.util.UUID;
-
-import com.grave.Game.Entities.Entity;
+import com.grave.uuid;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class DeleteAction extends Action {
-    String idString;
+    uuid id;
 
     // necessary
     public DeleteAction() {}
 
-    public DeleteAction(UUID id_)
+    public DeleteAction(uuid id_)
     {
-        idString = id_.toString();
+        id = id_;
     }
 
 
-    public UUID getId() {
-        return UUID.fromString(idString);
+    public uuid getId() {
+        return id;
     }
 }

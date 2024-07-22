@@ -1,8 +1,8 @@
 package com.grave.Game.Entities;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
+import com.grave.uuid;
 import com.grave.Object.ObjectManager;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
@@ -14,7 +14,7 @@ public class Zombie extends RigEntity {
     private static final float SPEED = 2f;
     private static final float MASS = 5;
 
-    UUID targetID = null;
+    uuid targetID = null;
 
     // necessary
     public Zombie() {

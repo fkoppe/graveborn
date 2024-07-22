@@ -2,6 +2,7 @@ package com.grave.Game.Entities;
 
 import java.util.UUID;
 
+import com.grave.uuid;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.MoveAction;
@@ -17,7 +18,7 @@ public class Entity {
     protected Geometry geometry;
     protected ObjectManager objectManager;
 
-    UUID id = null;
+    uuid id = null;
 
     // necessary
     public Entity() {
@@ -64,13 +65,13 @@ public class Entity {
         return geometry.getName();
     }
 
-    public void setId(UUID id_) {
+    public void setId(uuid id_) {
         assert(null == id);
 
         id = id_;
     }
 
-    public UUID getId() {
+    public uuid getId() {
         return id;
     }
 }

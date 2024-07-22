@@ -1,36 +1,28 @@
 package com.grave.Object;
 
 import java.util.HashMap;
-import java.util.UUID;
 
+import com.grave.uuid;
 import com.grave.Object.Actions.Action;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class Update {
-    private HashMap<String, Action> actions;
+    private HashMap<uuid, Action> actions;
 
     public Update() {
-        actions = new HashMap<String, Action>();
+        actions = new HashMap<uuid, Action>();
     }
 
-    public void addAction(UUID uuid, Action action) {
-        actions.put(uuid.toString(), action);
+    public void addAction(uuid uuid, Action action) {
+        actions.put(uuid, action);
     }
     
-    public void addActions(HashMap<UUID, Action> actions_) {
-        actions_.forEach((uuid, action) -> {
-            actions.put(uuid.toString(), action);
-        });
+    public void addActions(HashMap<uuid, Action> actions_) {
+        actions_.putAll(actions);
     }
 
-    public HashMap<UUID, Action> getActions() {
-        HashMap<UUID, Action> map = new HashMap<UUID, Action>();
-
-        actions.forEach((string, action) -> {
-            map.put(UUID.fromString(string), action);
-        });
-
-        return map;
+    public HashMap<uuid, Action> getActions() {
+        return actions;
     }
 }
