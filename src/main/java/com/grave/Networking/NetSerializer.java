@@ -2,6 +2,7 @@ package com.grave.Networking;
 
 import java.util.UUID;
 
+import com.grave.uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
 import com.grave.Game.Entities.RigEntity;
@@ -42,6 +43,6 @@ public class NetSerializer {
         Serializer.registerClass(RigEntity.class);
         Serializer.registerClass(Zombie.class);
 
-        Serializer.registerClass(UUID.class);
+        Serializer.registerClass(uuid.class);
     }
 }
