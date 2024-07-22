@@ -1,8 +1,16 @@
 package com.grave.Object.Actions;
 
+import com.jme3.network.serializing.Serializable;
+
+@Serializable
 public class ChatAction extends Action {
     final private String name;
     final private String data;
+
+    public ChatAction() {
+        name = null;
+        data = null;
+    }
 
     public ChatAction(String name_, String data_)
     {
