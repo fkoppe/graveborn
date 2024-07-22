@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import com.grave.Object.Actions.Action;
+import com.jme3.network.serializing.Serializable;
 
+@Serializable
 public class Update {
     private HashMap<UUID, Action> actions;
 

@@ -165,6 +165,8 @@ public class ObjectManager {
 
     public void takeUpdate(Update update) {
         // ...
+        //TODO
+        forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {

@@ -41,13 +41,14 @@ public class NetClient extends Net {
 
     public void shutdown()
     {
-        if(null != instance)
-        {
-            disconnect();
-        }
+        disconnect();
     }
 
     public void update(float tpf) {
+        if(null == instance) {
+            disconnect();
+        }
+
         if (!connected && lastTry.getTimeInSeconds() >= RETRY_DELAY) {
             lastTry.reset();
             LOGGER.log(Level.INFO, "CLIENT: trying to connect to " + ip + ":" + port);
@@ -84,10 +85,12 @@ public class NetClient extends Net {
     }
 
     void disconnect() {
-        if (instance.isConnected()) {
-            LOGGER.log(Level.FINE, "CLIENT: closing connection...");
+        if(null != instance) {
+            if (instance.isConnected()) {
+                LOGGER.log(Level.FINE, "CLIENT: closing connection...");
 
-            instance.close();
+                instance.close();
+            }
         }
 
         connected = false;
