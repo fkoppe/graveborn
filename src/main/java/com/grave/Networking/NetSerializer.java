@@ -18,6 +18,5 @@ public class NetSerializer {
 
         Serializer.registerClass(UpdateMessage.class);
         Serializer.registerClass(Update.class);
-        Serializer.registerClass(UUID.class);
     }
 }
