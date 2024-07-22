@@ -19,7 +19,7 @@ public class Entity {
 
     UUID id = null;
 
-    //necessary
+    // necessary
     public Entity() {
         geometry = null;
         objectManager = null;

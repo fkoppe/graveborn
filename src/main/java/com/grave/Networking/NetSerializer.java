@@ -1,5 +1,9 @@
 package com.grave.Networking;
 
+import com.grave.Game.Entities.Entity;
+import com.grave.Game.Entities.Human;
+import com.grave.Game.Entities.RigEntity;
+import com.grave.Game.Entities.Zombie;
 import com.grave.Networking.Message.*;
 import com.grave.Object.Update;
 import com.grave.Object.Actions.Action;
@@ -21,12 +25,19 @@ public class NetSerializer {
         Serializer.registerClass(ClientHandshakeMessage.class);
 
         Serializer.registerClass(UpdateMessage.class);
+
         Serializer.registerClass(Update.class);
+
         Serializer.registerClass(Action.class);
         Serializer.registerClass(ChatAction.class);
         Serializer.registerClass(CreateAction.class);
         Serializer.registerClass(DeleteAction.class);
         Serializer.registerClass(MoveAction.class);
         Serializer.registerClass(VelocityAction.class);
+
+        Serializer.registerClass(Entity.class);
+        Serializer.registerClass(Human.class);
+        Serializer.registerClass(RigEntity.class);
+        Serializer.registerClass(Zombie.class);
     }
 }

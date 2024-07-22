@@ -7,7 +7,7 @@ import com.jme3.network.serializing.Serializable;
 public class MoveAction extends Action {
     private Vector3f position;
 
-    // necessaray
+    // necessary
     public MoveAction() {
         position = new Vector3f(0, 0, 0);
     }

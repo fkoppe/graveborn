@@ -7,7 +7,7 @@ public class ChatAction extends Action {
     final private String name;
     final private String data;
 
-    // necessaray
+    // necessary
     public ChatAction() {
         name = null;
         data = null;

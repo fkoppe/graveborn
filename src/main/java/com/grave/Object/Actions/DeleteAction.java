@@ -9,7 +9,7 @@ import com.jme3.network.serializing.Serializable;
 public class DeleteAction extends Action {
     String idString;
 
-    //necessaray
+    // necessary
     public DeleteAction() {}
 
     public DeleteAction(UUID id_)
