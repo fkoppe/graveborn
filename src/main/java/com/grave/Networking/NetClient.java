@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.grave.Networking.Message.*;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Update;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.system.NanoTimer;
@@ -20,6 +21,7 @@ public class NetClient extends Net {
 
     private Client instance = null;
     private boolean connected = false;
+    private boolean serialised = false;
     private NanoTimer lastTry = new NanoTimer();
 
     String serverName;
@@ -61,17 +63,23 @@ public class NetClient extends Net {
                 LOGGER.log(Level.FINE, "CLIENT: establishing connection...");
 
                 NetSerializer.serializeAll();
+                serialised = true;
 
                 instance.addMessageListener(new NetClientListener(this), ServerHandshakeMessage.class);
                 instance.addMessageListener(new NetClientListener(this), ServerShutdownMessage.class);
 
-                instance.addMessageListener(new NetClientListener(this), SyncMessage.class);
-                instance.addMessageListener(new NetClientListener(this), NoticeMessage.class);
+                instance.addMessageListener(new NetClientListener(this), UpdateMessage.class);
 
                 instance.addClientStateListener(new NetClientStateListener(this));
 
                 instance.start();
             }
+        }
+
+        if (connected && serialised) {
+            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
+
+            instance.send(updateMessage);
         }
     }
 

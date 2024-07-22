@@ -49,7 +49,7 @@ public class World {
         Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         material.setColor("Color", ColorRGBA.Black);
 
-        Entity obstacle = new RigEntity(objectManager, "Obstacle", new Box(1, 1, 0f), material, 0);
+        Entity obstacle = new RigEntity(objectManager, "obstacle", new Box(1, 1, 0f), material, 0);
 
         obstacleID = objectManager.createEntity(obstacle);
 
@@ -61,7 +61,7 @@ public class World {
         Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         material.setColor("Color", ColorRGBA.Green);
 
-        Entity zombie = new Zombie(objectManager, "Obstacle", material);
+        Entity zombie = new Zombie(objectManager, "zombie", material);
 
         zombieID = objectManager.createEntity(zombie);
 

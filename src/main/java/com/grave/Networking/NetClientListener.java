@@ -3,10 +3,9 @@ package com.grave.Networking;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Networking.Message.NoticeMessage;
+import com.grave.Networking.Message.UpdateMessage;
 import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.grave.Networking.Message.ServerShutdownMessage;
-import com.grave.Networking.Message.SyncMessage;
 import com.jme3.network.Client;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Message;
@@ -34,15 +33,10 @@ public class NetClientListener implements MessageListener<Client> {
             
             LOGGER.log(Level.INFO, "CLIENT: disconnected from server");
         }
-        else if (message instanceof SyncMessage) {
-            SyncMessage syncMessage = (SyncMessage) message;
+        else if (message instanceof UpdateMessage) {
+            UpdateMessage updateMessage = (UpdateMessage) message;
 
-            client.objectmanager.forceSync(syncMessage.getSync());
-        }
-        else if (message instanceof NoticeMessage) {
-            NoticeMessage noticeMessage = (NoticeMessage) message;
-
-            client.objectmanager.forceNotice(noticeMessage.getNotice());
+            client.objectmanager.forceUpdate(updateMessage.getUpdate());
         }
         else {
             LOGGER.log(Level.WARNING, "CLIENT: received unknown message");

@@ -11,8 +11,6 @@ import com.jme3.bullet.BulletAppState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +24,7 @@ public class ObjectManager {
     private HashMap<UUID, Entity> localEntitiesNew;
     private HashMap<UUID, Entity> localEntitiesDeleted;
 
-    private HashMap<UUID, Action> actionBuffer;
+    private HashMap<UUID, Action> netActionBuffer;
 
     private PhysicsSpace physicsSpace;
 
@@ -37,7 +35,7 @@ public class ObjectManager {
         localEntitiesNew = new HashMap<UUID, Entity>();
         localEntitiesDeleted = new HashMap<UUID, Entity>();
 
-        actionBuffer = new HashMap<UUID, Action>();
+        netActionBuffer = new HashMap<UUID, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -52,12 +50,13 @@ public class ObjectManager {
     public void update(float tpf) {
         //send updates
 
+
         //fetch updates
 
         //process updates
         entityMap.forEach((uuid, entity) -> {
-            if (actionBuffer.containsKey(uuid)) {
-                actionBuffer.entrySet().forEach((entry) -> {
+            if (netActionBuffer.containsKey(uuid)) {
+                netActionBuffer.entrySet().forEach((entry) -> {
                     entity.processAction(entry.getValue());
                 });
             }
@@ -65,7 +64,7 @@ public class ObjectManager {
             entity.onUpdate(tpf);
         });
 
-        actionBuffer.clear();
+        netActionBuffer.clear();
     }
 
     public void shutdown() {
@@ -164,31 +163,30 @@ public class ObjectManager {
         return copy;
     }
 
-    public void takeNotice(Notice notice) {
+    public void takeUpdate(Update update) {
         // ...
     }
 
-    public void forceNotice(Notice notice) {
-        // ...
+    public void forceUpdate(Update update) {
+        entityMap.forEach((uuid, entity) -> {
+            if (update.getActions().containsKey(uuid)) {
+                update.getActions().entrySet().forEach((entry) -> {
+                    entity.processAction(entry.getValue());
+                });
+            }
+        });
     }
 
-    public Notice giveNotice() {
-        Notice notice = new Notice();
+    public Update getUpdate() {
+        HashMap<UUID, Action> copy = (HashMap<UUID, Action>) localActionBuffer.clone();
+        assert (null != copy);
 
-        return notice;
-    }
+        localActionBuffer.clear();
 
-    public void takeSync(Sync sync) {
-        // ...
-    }
+        Update update = new Update();
 
-    public void forceSync(Sync sync) {
-        // ...
-    }
+        update.addActions(localActionBuffer);
 
-    public Sync giveSync() {
-        Sync sync = new Sync();
-
-        return sync;
+        return update;
     }
 }

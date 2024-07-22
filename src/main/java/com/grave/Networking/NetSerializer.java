@@ -13,7 +13,6 @@ public class NetSerializer {
 
         Serializer.registerClass(ClientHandshakeMessage.class);
 
-        Serializer.registerClass(SyncMessage.class);
-        Serializer.registerClass(NoticeMessage.class);
+        Serializer.registerClass(UpdateMessage.class);
     }
 }

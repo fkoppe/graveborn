@@ -1,9 +1,8 @@
 package com.grave.Networking;
 
 import com.grave.Networking.Message.ClientHandshakeMessage;
-import com.grave.Networking.Message.NoticeMessage;
+import com.grave.Networking.Message.UpdateMessage;
 import com.grave.Networking.Message.ServerHandshakeMessage;
-import com.grave.Networking.Message.SyncMessage;
 import com.jme3.network.MessageListener;
 
 import java.util.logging.Level;
@@ -30,15 +29,10 @@ public class NetServerListener implements MessageListener<HostedConnection> {
             //Message joinMessage = new ChatMessage(handshakeMessage.getClientName(), "joined the game");
             //server.broadcast(joinMessage);
         }
-        else if (message instanceof SyncMessage) {
-            SyncMessage syncMessage = (SyncMessage) message;
+        else if (message instanceof UpdateMessage) {
+            UpdateMessage updateMessage = (UpdateMessage) message;
 
-            server.objectmanager.takeSync(syncMessage.getSync());
-        }
-        else if (message instanceof NoticeMessage) {
-            NoticeMessage noticeMessage = (NoticeMessage) message;
-
-            server.objectmanager.takeNotice(noticeMessage.getNotice());
+            server.objectmanager.takeUpdate(updateMessage.getUpdate());
         }
         else {
             LOGGER.log(Level.WARNING, "SERVER: received unknown message from client #" + source.getId());
