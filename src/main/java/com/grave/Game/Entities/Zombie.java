@@ -46,7 +46,7 @@ public class Zombie extends RigEntity {
             }
 
             if (null != nearestHuman) {
-                targetID = nearestHuman.getID();
+                targetID = nearestHuman.getId();
             }
         }
         

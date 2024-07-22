@@ -4,5 +4,6 @@ import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class Action {
-    
+    // necessaray
+    Action() {}
 }

@@ -4,6 +4,8 @@ import com.grave.Graveborn;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Object.Actions.Action;
+import com.grave.Object.Actions.CreateAction;
+import com.grave.Object.Actions.DeleteAction;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 
@@ -53,6 +55,20 @@ public class ObjectManager {
 
         //fetch updates
 
+        netActionBuffer.entrySet().forEach((entry) -> {
+            if (entry.getValue() instanceof CreateAction) {
+                CreateAction createAction = (CreateAction) entry.getValue();
+
+                entityMap.put(entry.getKey(), createAction.getEntity());
+                localEntitiesNew.put(entry.getKey(), createAction.getEntity());
+            }
+            else if (entry.getValue() instanceof DeleteAction) {
+                DeleteAction deleteAction = (DeleteAction) entry.getValue();
+
+                localEntitiesDeleted.put(entry.getKey(), getEntity(deleteAction.getId()));
+            }
+        });
+
         //process updates
         entityMap.forEach((uuid, entity) -> {
             if (netActionBuffer.containsKey(uuid)) {
@@ -87,7 +103,9 @@ public class ObjectManager {
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
-        entity.setID(id);
+        localActionBuffer.put(id, new CreateAction());
+
+        entity.setId(id);
 
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
@@ -105,6 +123,8 @@ public class ObjectManager {
             Entity entity = entityMap.get(uuid);
 
             entity.onShutdown();
+
+            localActionBuffer.put(uuid, new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
             entityMap.remove(uuid);

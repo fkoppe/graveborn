@@ -7,6 +7,7 @@ import com.jme3.network.serializing.Serializable;
 public class VelocityAction extends Action {
     private Vector3f velocity;
 
+    // necessaray
     public VelocityAction() {
         velocity = new Vector3f(0, 0, 0);
     }

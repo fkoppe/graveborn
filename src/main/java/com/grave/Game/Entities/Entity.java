@@ -55,13 +55,13 @@ public class Entity {
         return geometry.getName();
     }
 
-    public void setID(UUID id_) {
+    public void setId(UUID id_) {
         assert(null == id);
 
         id = id_;
     }
 
-    public UUID getID() {
+    public UUID getId() {
         return id;
     }
 }
