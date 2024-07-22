@@ -9,7 +9,6 @@ import com.grave.Networking.Message.ClientHandshakeMessage;
 import com.grave.Networking.Message.UpdateMessage;
 import com.grave.Networking.Message.ServerShutdownMessage;
 import com.grave.Object.ObjectManager;
-import com.grave.Object.Update;
 import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;

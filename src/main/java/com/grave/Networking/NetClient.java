@@ -21,7 +21,6 @@ public class NetClient extends Net {
 
     private Client instance = null;
     private boolean connected = false;
-    private boolean serialised = false;
     private NanoTimer lastTry = new NanoTimer();
 
     String serverName;
@@ -64,7 +63,6 @@ public class NetClient extends Net {
                 LOGGER.log(Level.FINE, "CLIENT: establishing connection...");
 
                 NetSerializer.serializeAll();
-                serialised = true;
 
                 instance.addMessageListener(new NetClientListener(this), ServerHandshakeMessage.class);
                 instance.addMessageListener(new NetClientListener(this), ServerShutdownMessage.class);
@@ -77,7 +75,7 @@ public class NetClient extends Net {
             }
         }
 
-        if (connected && serialised) {
+        if (connected) {
             UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
 
             instance.send(updateMessage);
