@@ -146,8 +146,7 @@ public class ObjectManager {
     }
 
     public HashMap<UUID, Entity> getLocalEntitiesNew() {
-        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesNew.clone();
-        assert (null != copy);
+        HashMap<UUID, Entity> copy = new HashMap<>(localEntitiesNew);
 
         localEntitiesNew.clear();
 
@@ -155,8 +154,7 @@ public class ObjectManager {
     }
 
     public HashMap<UUID, Entity> getLocalEntitiesDeleted() {
-        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesDeleted.clone();
-        assert (null != copy);
+        HashMap<UUID, Entity> copy = new HashMap<>(localEntitiesDeleted);
 
         localEntitiesDeleted.clear();
 
@@ -174,14 +172,13 @@ public class ObjectManager {
     }
 
     public Update getUpdate() {
-        HashMap<UUID, Action> copy = (HashMap<UUID, Action>) localActionBuffer.clone();
-        assert (null != copy);
+        HashMap<UUID, Action> copy = new HashMap<>(localActionBuffer);
 
         localActionBuffer.clear();
 
         Update update = new Update();
 
-        update.addActions(localActionBuffer);
+        update.addActions(copy);
 
         return update;
     }

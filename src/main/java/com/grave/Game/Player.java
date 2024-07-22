@@ -116,6 +116,7 @@ public class Player {
         });
     }
 
+    //TODO
     private void initBackground() {
         viewPort.setBackgroundColor(new ColorRGBA(1.0f, 0.8f, 1f, 1f));
 

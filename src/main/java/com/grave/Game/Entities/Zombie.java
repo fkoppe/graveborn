@@ -3,7 +3,6 @@ package com.grave.Game.Entities;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.grave.Game.Player;
 import com.grave.Object.ObjectManager;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
@@ -56,7 +55,9 @@ public class Zombie extends RigEntity {
             Entity target = objectManager.getEntity(targetID);
             Vector3f moveVector = target.getPosition().subtract(getPosition());
 
+            //TODO
             rig.setLinearVelocity(moveVector.normalize().mult(SPEED));
+
         }
     }
 
