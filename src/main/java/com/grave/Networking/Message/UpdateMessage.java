@@ -6,10 +6,10 @@ import com.jme3.network.AbstractMessage;
 
 @Serializable
 public class UpdateMessage extends AbstractMessage {
-    Update update;
+    private final Update update;
 
     public UpdateMessage() {
-
+        update = null;
     }
     
     public UpdateMessage(Update update_) {
