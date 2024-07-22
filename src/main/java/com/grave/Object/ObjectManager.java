@@ -171,10 +171,12 @@ public class ObjectManager {
 
     public void forceUpdate(Update update) {
         entityMap.forEach((uuid, entity) -> {
-            if (update.getActions().containsKey(uuid)) {
-                update.getActions().entrySet().forEach((entry) -> {
-                    entity.processAction(entry.getValue());
-                });
+            if (null != update) {
+                if (update.getActions().containsKey(uuid)) {
+                    update.getActions().entrySet().forEach((entry) -> {
+                        entity.processAction(entry.getValue());
+                    });
+                }
             }
         });
     }
