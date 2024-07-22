@@ -8,6 +8,7 @@ import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.shape.Box;
 
+@Serializable
 public class Zombie extends RigEntity {
     private static final float SPEED = 2f;
     private static final float MASS = 5;

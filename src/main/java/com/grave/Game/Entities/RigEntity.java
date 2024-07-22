@@ -9,11 +9,18 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
+import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 
+@Serializable
 public class RigEntity extends Entity {
     protected RigidBody2DControl rig;
+
+    // necessary
+    public RigEntity() {
+        super(null, null, null, null);
+    }
 
     public RigEntity(ObjectManager objectManager_, String name_, Mesh mesh_, Material material_, float mass_)
     {

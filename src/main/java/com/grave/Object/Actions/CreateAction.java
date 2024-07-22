@@ -7,7 +7,7 @@ import com.jme3.network.serializing.Serializable;
 public class CreateAction extends Action {
     Entity entity;
 
-    // necessaray
+    //necessary
     public CreateAction() {}
 
     public CreateAction(Entity entity_)

@@ -202,4 +202,14 @@ public class ObjectManager {
 
         return update;
     }
+
+    public Update getAll() {
+        Update update = new Update();
+
+        entityMap.forEach((uuid, entity) -> {
+            update.addAction(uuid, new CreateAction(entity));
+        });
+
+        return update;
+    }
 }
