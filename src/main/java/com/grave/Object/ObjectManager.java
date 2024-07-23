@@ -53,26 +53,27 @@ public class ObjectManager {
 
     public void update(float tpf) {
         //process net creations and deletions
-        netActionBuffer.forEach((uuid, action) -> {
-            if (action instanceof CreateAction) {
-                CreateAction createAction = (CreateAction) action;
-                System.out.println("gffdfdgfdg");
-                entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
+        netActionBuffer.asMap().forEach((uuid, collection) -> {
+            collection.forEach((action) -> {
+                if (action instanceof CreateAction) {
+                    CreateAction createAction = (CreateAction) action;
+                    System.out.println("gffdfdgfdg");
+                    entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
 
-                localEntitiesNew.put(uuid, getEntity(uuid));
-            }
-            else if (action instanceof DeleteAction) {
-                DeleteAction deleteAction = (DeleteAction) action;
+                    localEntitiesNew.put(uuid, getEntity(uuid));
+                } else if (action instanceof DeleteAction) {
+                    DeleteAction deleteAction = (DeleteAction) action;
 
-                localEntitiesDeleted.put(uuid, getEntity(uuid));
-            }
+                    localEntitiesDeleted.put(uuid, getEntity(uuid));
+                }
+            }); 
         });
         
         //process net actions
         entityMap.forEach((uuid, entity) -> {
             if (netActionBuffer.containsKey(uuid)) {
-                netActionBuffer.forEach((u, a) -> {
-                    entity.processAction(a);
+                netActionBuffer.get(uuid).forEach((action) -> {
+                    entity.processAction(action);
                 });
             }
 

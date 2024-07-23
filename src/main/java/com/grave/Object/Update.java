@@ -18,7 +18,9 @@ public class Update {
     }
     
     public void addActions(ArrayListMultimap<Uuid, Action> actions_) {
-        actions_.putAll(actions);
+        actions_.asMap().forEach((uuid, collection) -> {
+            actions.putAll(uuid, collection);
+        });
     }
 
     public ArrayListMultimap<Uuid, Action> getActions() {
