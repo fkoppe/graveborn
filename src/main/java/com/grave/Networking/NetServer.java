@@ -62,7 +62,7 @@ public class NetServer extends Net {
 
         UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
 
-        //instance.broadcast(updateMessage);
+        instance.broadcast(updateMessage);
 
         //fetch udp pdates...
         //send

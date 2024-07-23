@@ -51,31 +51,27 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
-        //send updates
+        //process net creations and deletions
+        netActionBuffer.forEach((uuid, action) -> {
+            if (action instanceof CreateAction) {
+                CreateAction createAction = (CreateAction) action;
+                System.out.println("gffdfdgfdg");
+                entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
 
-
-        //fetch updates
-
-        netActionBuffer.entrySet().forEach((entry) -> {
-            if (entry.getValue() instanceof CreateAction) {
-                CreateAction createAction = (CreateAction) entry.getValue();
-
-                entityMap.put(entry.getKey(), createAction.getType().build(entry.getKey(), this, createAction.getName()));
-
-                localEntitiesNew.put(entry.getKey(), getEntity(entry.getKey()));
+                localEntitiesNew.put(uuid, getEntity(uuid));
             }
-            else if (entry.getValue() instanceof DeleteAction) {
-                DeleteAction deleteAction = (DeleteAction) entry.getValue();
+            else if (action instanceof DeleteAction) {
+                DeleteAction deleteAction = (DeleteAction) action;
 
-                localEntitiesDeleted.put(entry.getKey(), getEntity(entry.getKey()));
+                localEntitiesDeleted.put(uuid, getEntity(uuid));
             }
         });
         
-        //process updates
+        //process net actions
         entityMap.forEach((uuid, entity) -> {
             if (netActionBuffer.containsKey(uuid)) {
-                netActionBuffer.entrySet().forEach((entry) -> {
-                    entity.processAction(entry.getValue());
+                netActionBuffer.forEach((u, a) -> {
+                    entity.processAction(a);
                 });
             }
 
@@ -189,6 +185,7 @@ public class ObjectManager {
     }
 
     public void forceUpdate(Update update) {
+        System.out.println("forcing");
         netActionBuffer = update.getActions();
     }
 
