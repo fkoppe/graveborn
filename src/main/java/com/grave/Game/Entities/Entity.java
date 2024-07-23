@@ -1,38 +1,29 @@
 package com.grave.Game.Entities;
 
-import java.util.UUID;
-
-import com.grave.uuid;
+import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.MoveAction;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
-import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 
-@Serializable
 public class Entity {
+    private Uuid id;
+    private Type type;
+
     protected Geometry geometry;
     protected ObjectManager objectManager;
 
-    uuid id = null;
-
-    // necessary
-    public Entity() {
-        geometry = null;
-        objectManager = null;
-        geometry = null;
-    }
-
-    public Entity(ObjectManager objectManager_, String name_, Mesh mesh_, Material material_)
+    public Entity(Uuid id_, Type type_, ObjectManager objectManager_, String name_, Mesh mesh_)
     {
+        id = id_;
+        type = type_;
+
         geometry = new Geometry(name_, mesh_);
         objectManager = objectManager_;
-
-        geometry.setMaterial(material_);
     }
 
     public void onInit() {}
@@ -57,6 +48,10 @@ public class Entity {
         node.detachChild(geometry);
     }
 
+    public void setMaterial(Material material) {
+        geometry.setMaterial(material);
+    }
+
     public Vector3f getPosition() {
         return geometry.getLocalTranslation();
     }
@@ -65,13 +60,11 @@ public class Entity {
         return geometry.getName();
     }
 
-    public void setId(uuid id_) {
-        assert(null == id);
-
-        id = id_;
+    public Uuid getId() {
+        return id;
     }
 
-    public uuid getId() {
-        return id;
+    public Type getType() {
+        return type;
     }
 }

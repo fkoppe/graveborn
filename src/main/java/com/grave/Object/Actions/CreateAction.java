@@ -1,22 +1,27 @@
 package com.grave.Object.Actions;
 
-import com.grave.Game.Entities.Entity;
+import com.grave.Game.Entities.Type;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class CreateAction extends Action {
-    Entity entity;
+    Type type;
+    String name;
 
     // necessary
     public CreateAction() {}
 
-    public CreateAction(Entity entity_)
+    public CreateAction(Type type_, String name_)
     {
-        entity = entity_;
+        type = type_;
+        name = name_;
     }
 
+    public Type getType() {
+        return type;
+    }
 
-    public Entity getEntity() {
-        return entity;
+    public String getName() {
+        return name;
     }
 }

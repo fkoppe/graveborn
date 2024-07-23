@@ -1,24 +1,19 @@
 package com.grave.Game.Entities;
 
+import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
-import com.jme3.material.Material;
-import com.jme3.network.serializing.Serializable;
 import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.shape.Box;
+import com.jme3.scene.Mesh;
 
-@Serializable
 public class Human extends RigEntity {
     public static final int MASS = 10;
 
-    // necessary
-    public Human() {
-        super(null, null, null, null, 0);
-    }
-
-    public Human(ObjectManager objectManager_, String name_, Material material_) {
-        super(objectManager_, name_, new Box(1, 1, 1), material_, MASS);
+    public Human(Uuid id_, Type type_, ObjectManager objectManager_, String name_, Mesh mesh_) {
+        super(id_, type_, objectManager_, name_, mesh_);
 
         geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
+
+        rig.setMass(MASS);
     }
 
     @Override

@@ -5,16 +5,16 @@ import java.util.UUID;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
-public final class uuid {
+public final class Uuid {
     String idString;
 
-    public uuid() {
+    public Uuid() {
         idString = UUID.randomUUID().toString();
     }
    
     @Override
     public boolean equals(Object id_) {
-        uuid id = (uuid) id_;
+        Uuid id = (Uuid) id_;
 
         return idString.equals(id.idString);
     }

@@ -1,12 +1,6 @@
 package com.grave.Networking;
 
-import java.util.UUID;
-
-import com.grave.uuid;
-import com.grave.Game.Entities.Entity;
-import com.grave.Game.Entities.Human;
-import com.grave.Game.Entities.RigEntity;
-import com.grave.Game.Entities.Zombie;
+import com.grave.Uuid;
 import com.grave.Networking.Message.*;
 import com.grave.Object.Update;
 import com.grave.Object.Actions.Action;
@@ -38,11 +32,6 @@ public class NetSerializer {
         Serializer.registerClass(MoveAction.class);
         Serializer.registerClass(VelocityAction.class);
 
-        Serializer.registerClass(Entity.class);
-        Serializer.registerClass(Human.class);
-        Serializer.registerClass(RigEntity.class);
-        Serializer.registerClass(Zombie.class);
-
-        Serializer.registerClass(uuid.class);
+        Serializer.registerClass(Uuid.class);
     }
 }

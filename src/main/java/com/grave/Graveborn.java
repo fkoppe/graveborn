@@ -146,7 +146,7 @@ public class Graveborn extends SimpleApplication {
                 throw new RuntimeException("invalid mode");
         }
 
-        objectManager.init();;
+        objectManager.init();
 
         if (null != world) {
             world.init();
