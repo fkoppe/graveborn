@@ -61,14 +61,17 @@ public class ObjectManager {
             array.forEach((action) -> {
                 if (action instanceof CreateAction) {
                     CreateAction createAction = (CreateAction) action;
-                    entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
 
-                    localEntitiesNew.put(uuid, getEntity(uuid));
+                    if(!entityMap.containsKey(uuid)) {
+                        entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
 
-                    if (getEntity(uuid) instanceof RigEntity) {
-                        RigEntity rigEntity = (RigEntity) getEntity(uuid);
+                        localEntitiesNew.put(uuid, getEntity(uuid));
 
-                        //physicsSpace.add(rigEntity.getRig());
+                        if (getEntity(uuid) instanceof RigEntity) {
+                            RigEntity rigEntity = (RigEntity) getEntity(uuid);
+
+                            // physicsSpace.add(rigEntity.getRig());
+                        }
                     }
                 } else if (action instanceof DeleteAction) {
                     DeleteAction deleteAction = (DeleteAction) action;
@@ -205,7 +208,7 @@ public class ObjectManager {
     public void takeUpdate(Update update) {
         // ...
         //TODO
-        //forceUpdate(update);
+        forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {
