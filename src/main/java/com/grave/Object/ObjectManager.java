@@ -1,9 +1,6 @@
 package com.grave.Object;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import com.grave.Graveborn;
 import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
@@ -90,7 +87,7 @@ public class ObjectManager {
     }
 
     public void submitEntityAction(Uuid uuid, Action action) {
-        localActionBuffer.put(uuid, action);
+        localActionBuffer.get(uuid).add(action);
 
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
@@ -106,7 +103,7 @@ public class ObjectManager {
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
-        localActionBuffer.put(id, new CreateAction());
+        localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
 
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
@@ -125,7 +122,7 @@ public class ObjectManager {
 
             entity.onShutdown();
 
-            localActionBuffer.put(uuid, new DeleteAction());
+            localActionBuffer.get(uuid).add(new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
             entityMap.remove(uuid);

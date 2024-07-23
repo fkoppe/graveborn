@@ -14,7 +14,7 @@ public class Update {
     }
 
     public void addAction(Uuid uuid, Action action) {
-        actions.put(uuid, action);
+        actions.get(uuid).add(action);
     }
     
     public void addActions(ArrayListMultimap<Uuid, Action> actions_) {
