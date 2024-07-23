@@ -211,6 +211,8 @@ public class ObjectManager {
 
         update.addActions(localActionBuffer);
 
+        localActionBuffer.clear();
+
         positionBuffer.forEach((uuid, action) -> {
             update.addAction(uuid, action);
         });

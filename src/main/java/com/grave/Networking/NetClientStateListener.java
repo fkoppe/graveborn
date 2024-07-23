@@ -18,7 +18,7 @@ public class NetClientStateListener implements ClientStateListener {
     }
 
     public void clientConnected(Client instance) {
-        Message message = new ClientHandshakeMessage(client.getName());
+        Message message = new ClientHandshakeMessage(client.getName(), client.objectmanager.getAll());
         instance.send(message);
     }
 

@@ -26,7 +26,6 @@ public class ServerHandshakeMessage extends AbstractMessage {
     }
 
     public Update getAll() {
-        System.out.print("returning number of: " + all.getActions().size());
         return all;
     }
 }
