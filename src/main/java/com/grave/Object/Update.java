@@ -1,30 +1,37 @@
 package com.grave.Object;
 
-import com.google.common.collect.ArrayListMultimap;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.grave.Uuid;
 import com.grave.Object.Actions.Action;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class Update {
-    private ArrayListMultimap<Uuid, Action> actions;
+    private HashMap<Uuid, ArrayList<Action>> actions;
 
     public Update() {
-        actions = ArrayListMultimap.create();
+        actions = new HashMap<Uuid, ArrayList<Action>>();
     }
 
     public void addAction(Uuid uuid, Action action) {
+        if (null == actions.get(uuid)) {
+                actions.put(uuid, new ArrayList<Action>());
+        }
         actions.get(uuid).add(action);
     }
     
-    public void addActions(ArrayListMultimap<Uuid, Action> actions_) {
-        actions_.asMap().forEach((uuid, collection) -> {
-            actions.putAll(uuid, collection);
+    public void addActions(HashMap<Uuid, ArrayList<Action>> additional_) {
+        additional_.forEach((uuid, array) -> {
+            if (null == actions.get(uuid)) {
+                actions.put(uuid, new ArrayList<Action>());
+            }
+            actions.get(uuid).addAll(array);
         });
     }
 
-    public ArrayListMultimap<Uuid, Action> getActions() {
-        System.out.println("x: " + actions.size());
+    public HashMap<Uuid, ArrayList<Action>> getActions() {
         return actions;
     }
 }

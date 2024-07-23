@@ -1,6 +1,5 @@
 package com.grave.Object;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.grave.Graveborn;
 import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
@@ -27,8 +26,8 @@ public class ObjectManager {
     private HashMap<Uuid, Entity> localEntitiesNew;
     private HashMap<Uuid, Entity> localEntitiesDeleted;
 
-    private ArrayListMultimap<Uuid, Action> localActionBuffer;
-    private ArrayListMultimap<Uuid, Action> netActionBuffer;
+    private HashMap<Uuid, ArrayList<Action>> localActionBuffer;
+    private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
 
     private PhysicsSpace physicsSpace;
 
@@ -38,8 +37,8 @@ public class ObjectManager {
         localEntitiesNew = new HashMap<Uuid, Entity>();
         localEntitiesDeleted = new HashMap<Uuid, Entity>();
 
-        localActionBuffer = ArrayListMultimap.create();
-        netActionBuffer = ArrayListMultimap.create();
+        localActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
+        netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -53,11 +52,10 @@ public class ObjectManager {
 
     public void update(float tpf) {
         //process net creations and deletions
-        netActionBuffer.asMap().forEach((uuid, collection) -> {
-            collection.forEach((action) -> {
+        netActionBuffer.forEach((uuid, array) -> {
+            array.forEach((action) -> {
                 if (action instanceof CreateAction) {
                     CreateAction createAction = (CreateAction) action;
-                    System.out.println("gffdfdgfdg");
                     entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
 
                     localEntitiesNew.put(uuid, getEntity(uuid));
@@ -104,6 +102,9 @@ public class ObjectManager {
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
+        if (null == localActionBuffer.get(id)) {
+            localActionBuffer.put(id, new ArrayList<Action>());
+        }
         localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
 
         if (entity instanceof RigEntity) {
@@ -123,6 +124,9 @@ public class ObjectManager {
 
             entity.onShutdown();
 
+            if (null == localActionBuffer.get(uuid)) {
+                localActionBuffer.put(uuid, new ArrayList<Action>());
+            }
             localActionBuffer.get(uuid).add(new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
@@ -187,7 +191,6 @@ public class ObjectManager {
     }
 
     public void forceUpdate(Update update) {
-        System.out.println("forcing-" + update.getActions().size());
         netActionBuffer = update.getActions();
     }
 
@@ -206,8 +209,6 @@ public class ObjectManager {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
             update.addAction(uuid, new MoveAction(entity.getPosition()));
         });
-
-        System.out.println("sending-" + update.getActions().size());
 
         return update;
     }
