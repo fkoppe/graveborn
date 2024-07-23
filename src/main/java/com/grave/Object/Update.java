@@ -27,7 +27,10 @@ public class Update {
             if (null == actions.get(uuid)) {
                 actions.put(uuid, new ArrayList<Action>());
             }
-            actions.get(uuid).addAll(array);
+
+            additional_.get(uuid).forEach((action) -> {
+                actions.get(uuid).add(action);
+            });
         });
     }
 
