@@ -6,9 +6,11 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
+@Serializable
 public enum Type {
     NONE,
     BACKGROUND {
