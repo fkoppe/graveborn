@@ -205,7 +205,7 @@ public class ObjectManager {
     public void takeUpdate(Update update) {
         // ...
         //TODO
-        //forceUpdate(update);
+        forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {

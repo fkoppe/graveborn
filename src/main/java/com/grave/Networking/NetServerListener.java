@@ -26,6 +26,8 @@ public class NetServerListener implements MessageListener<HostedConnection> {
             ClientHandshakeMessage handshakeMessage = (ClientHandshakeMessage) message;
             LOGGER.log(Level.INFO, "SERVER: client #" + source.getId() + " established connection as \"" + handshakeMessage.getClientName() + "\"");
 
+            server.objectmanager.takeUpdate(handshakeMessage.getAll());
+
             //Message joinMessage = new ChatMessage(handshakeMessage.getClientName(), "joined the game");
             //server.broadcast(joinMessage);
         }

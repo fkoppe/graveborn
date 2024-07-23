@@ -22,14 +22,12 @@ public class NetClientListener implements MessageListener<Client> {
     @Override
     public void messageReceived(Client source, Message message) {
         if (message instanceof ServerHandshakeMessage) {
-            ServerHandshakeMessage joinMessage = (ServerHandshakeMessage) message;
-            LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getServerName() + "'");
+            ServerHandshakeMessage handshakeMessage = (ServerHandshakeMessage) message;
+            LOGGER.log(Level.INFO, "CLIENT: connected to server '" + handshakeMessage.getServerName() + "'");
 
-            client.serverName = joinMessage.getServerName();
-            LOGGER.log(Level.INFO, "size '" + joinMessage.getAll().getActions().size() + "'");
+            client.serverName = handshakeMessage.getServerName();
 
-            client.objectmanager.forceUpdate(joinMessage.getAll());
-            System.out.print(joinMessage.getAll().getActions());
+            client.objectmanager.forceUpdate(handshakeMessage.getAll());
         }
         else if(message instanceof ServerShutdownMessage)
         {
@@ -40,7 +38,6 @@ public class NetClientListener implements MessageListener<Client> {
         else if (message instanceof UpdateMessage) {
             UpdateMessage updateMessage = (UpdateMessage) message;
 
-            LOGGER.log(Level.FINER, "received update");
             client.objectmanager.forceUpdate(updateMessage.getUpdate());
         }
         else {
