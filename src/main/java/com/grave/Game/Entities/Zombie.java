@@ -9,7 +9,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 
 public class Zombie extends RigEntity {
-    private static final float SPEED = 2f;
+    private static final float SPEED = 1.7f;
     private static final float MASS = 5;
 
     Uuid targetID = null;
@@ -59,7 +59,7 @@ public class Zombie extends RigEntity {
 
             //TODO
             //rig.setLinearVelocity(moveVector.normalize().mult(SPEED));
-            objectManager.submitEntityAction(id, new VelocityAction(moveVector));
+            objectManager.submitEntityAction(id, new VelocityAction(moveVector.normalize().mult(SPEED)));
 
         }
     }
