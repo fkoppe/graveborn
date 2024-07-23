@@ -1,5 +1,9 @@
 package com.grave.Object;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.grave.Graveborn;
 import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
@@ -23,22 +27,22 @@ public class ObjectManager {
 
     private HashMap<Uuid, Entity> entityMap;
 
-    private HashMap<Uuid, Action> localActionBuffer;
     private HashMap<Uuid, Entity> localEntitiesNew;
     private HashMap<Uuid, Entity> localEntitiesDeleted;
 
-    private HashMap<Uuid, Action> netActionBuffer;
+    private ArrayListMultimap<Uuid, Action> localActionBuffer;
+    private ArrayListMultimap<Uuid, Action> netActionBuffer;
 
     private PhysicsSpace physicsSpace;
 
     public ObjectManager(Graveborn app) {
         entityMap = new HashMap<Uuid, Entity>();
-        localActionBuffer = new HashMap<Uuid, Action>();
 
         localEntitiesNew = new HashMap<Uuid, Entity>();
         localEntitiesDeleted = new HashMap<Uuid, Entity>();
 
-        netActionBuffer = new HashMap<Uuid, Action>();
+        localActionBuffer = ArrayListMultimap.create();
+        netActionBuffer = ArrayListMultimap.create();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -190,7 +194,7 @@ public class ObjectManager {
     }
 
     public Update getUpdate() {
-        HashMap<Uuid, Action> copy = new HashMap<>(localActionBuffer);
+        ArrayListMultimap<Uuid, Action> copy = ArrayListMultimap.create(localActionBuffer);
 
         localActionBuffer.clear();
 

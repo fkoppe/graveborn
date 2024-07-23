@@ -85,6 +85,9 @@ dependencies {
     //implementation "com.simsilica:zay-es:1.5.0"
     //implementation "com.simsilica:zay-es-net:1.5.2"
 
+    //MultiMap
+    implementation("com.google.guava:guava:33.2.1-jre")
+
     // Assets sub-project
     runtimeOnly project(':assets')
 
