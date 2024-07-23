@@ -68,7 +68,7 @@ public class ObjectManager {
                     if (getEntity(uuid) instanceof RigEntity) {
                         RigEntity rigEntity = (RigEntity) getEntity(uuid);
 
-                        physicsSpace.add(rigEntity.getRig());
+                        //physicsSpace.add(rigEntity.getRig());
                     }
                 } else if (action instanceof DeleteAction) {
                     DeleteAction deleteAction = (DeleteAction) action;
@@ -217,7 +217,7 @@ public class ObjectManager {
 
         update.addActions(localActionBuffer);
 
-        localActionBuffer.clear();
+        //localActionBuffer.clear();
 
         positionBuffer.forEach((uuid, action) -> {
             update.addAction(uuid, action);
