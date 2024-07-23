@@ -26,6 +26,8 @@ public class NetClientListener implements MessageListener<Client> {
             LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getServerName() + "'");
 
             client.serverName = joinMessage.getServerName();
+            LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getAll().getActions().size() + "'");
+
             client.objectmanager.forceUpdate(joinMessage.getAll());
             System.out.print(joinMessage.getAll().getActions());
         }

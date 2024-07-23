@@ -183,7 +183,7 @@ public class ObjectManager {
     public void takeUpdate(Update update) {
         // ...
         //TODO
-        forceUpdate(update);
+        //forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {
@@ -208,7 +208,6 @@ public class ObjectManager {
         });
 
         System.out.println("sending-" + update.getActions().size());
-        netActionBuffer = update.getActions();
 
         return update;
     }
