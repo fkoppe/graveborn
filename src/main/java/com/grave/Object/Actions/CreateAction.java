@@ -5,7 +5,7 @@ import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class CreateAction extends Action {
-    Type type;
+    Enum<Type> type;
     String name;
 
     // necessary
@@ -18,7 +18,7 @@ public class CreateAction extends Action {
     }
 
     public Type getType() {
-        return type;
+        return (Type)type;
     }
 
     public String getName() {
