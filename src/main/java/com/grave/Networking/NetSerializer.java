@@ -1,6 +1,7 @@
 package com.grave.Networking;
 
 import com.grave.Uuid;
+import com.grave.Game.Entities.Type;
 import com.grave.Networking.Message.*;
 import com.grave.Object.Update;
 import com.grave.Object.Actions.Action;
@@ -33,5 +34,6 @@ public class NetSerializer {
         Serializer.registerClass(VelocityAction.class);
 
         Serializer.registerClass(Uuid.class);
+        Serializer.registerClass(Type.class);
     }
 }
