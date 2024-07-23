@@ -218,9 +218,9 @@ public class ObjectManager {
     public Update getUpdate() {
         Update update = new Update();
 
-        update.addActions(new HashMap<>(localActionBuffer));
+        update.addActions(localActionBuffer);
 
-        localActionBuffer.clear();
+        //localActionBuffer.clear();
 
         positionBuffer.forEach((uuid, action) -> {
             update.addAction(uuid, action);
