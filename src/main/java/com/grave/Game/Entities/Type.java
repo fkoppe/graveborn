@@ -6,14 +6,12 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
-import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
 
-@Serializable
 public enum Type {
     NONE,
-    BACKGROUND() {
+    BACKGROUND {
         @Override
         public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
             Entity entity = new Entity(id, Type.BACKGROUND, objectManager_, name_, new Box(10, 10, 1));
@@ -27,7 +25,7 @@ public enum Type {
             return material;
         }
     },
-    OBSTACKLE() {
+    OBSTACKLE {
         @Override
         public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
             RigEntity entity = new RigEntity(id, Type.OBSTACKLE, objectManager_, name_, new Box(1, 1, 1));
@@ -40,7 +38,7 @@ public enum Type {
             return material;
         }
     },
-    HUMAN() {
+    HUMAN {
         @Override
         public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
             Human entity = new Human(id, Type.HUMAN, objectManager_, name_, new Box(1, 1, 1));
@@ -59,7 +57,7 @@ public enum Type {
             return material;
         }
     },
-    ZOMBIE() {
+    ZOMBIE {
         @Override
         public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
             Zombie entity = new Zombie(id, Type.ZOMBIE, objectManager_, name_, new Box(1, 1, 1));

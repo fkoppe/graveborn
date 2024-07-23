@@ -11,6 +11,7 @@ import com.grave.Object.Actions.DeleteAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.network.serializing.Serializer;
+import com.jme3.network.serializing.serializers.EnumSerializer;
 
 public class NetSerializer {
     public static void serializeAll()
@@ -34,6 +35,7 @@ public class NetSerializer {
         Serializer.registerClass(VelocityAction.class);
 
         Serializer.registerClass(Uuid.class);
-        Serializer.registerClass(Type.class);
+
+        Serializer.registerClass(Type.class, new EnumSerializer());
     }
 }
