@@ -64,6 +64,12 @@ public class ObjectManager {
                     entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
 
                     localEntitiesNew.put(uuid, getEntity(uuid));
+
+                    if (getEntity(uuid) instanceof RigEntity) {
+                        RigEntity rigEntity = (RigEntity) getEntity(uuid);
+
+                        physicsSpace.add(rigEntity.getRig());
+                    }
                 } else if (action instanceof DeleteAction) {
                     DeleteAction deleteAction = (DeleteAction) action;
 
@@ -216,6 +222,8 @@ public class ObjectManager {
         positionBuffer.forEach((uuid, action) -> {
             update.addAction(uuid, action);
         });
+
+        positionBuffer.clear();
 
         return update;
     }
