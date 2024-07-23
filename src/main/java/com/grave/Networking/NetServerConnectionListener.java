@@ -27,7 +27,7 @@ public class NetServerConnectionListener implements ConnectionListener {
         Update update = server.objectmanager.getAll();
         LOGGER.log(Level.INFO, "SERVER: connection #" + update.getActions().size() + " added");
 
-        Message responce = new ServerHandshakeMessage(server.getName(), server.objectmanager.getAll());
+        Message responce = new ServerHandshakeMessage(server.getName(), update);
         hostConnection.send(responce);
     }
 

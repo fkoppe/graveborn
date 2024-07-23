@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import com.grave.Networking.Message.*;
 import com.grave.Object.ObjectManager;
-import com.grave.Object.Update;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.system.NanoTimer;
