@@ -18,6 +18,7 @@ public class ServerHandshakeMessage extends AbstractMessage {
     {
         serverName = serverName_;
         all = all_;
+        System.out.print("number of: " + all.getActions().size());
     }
 
     public String getServerName() {
@@ -25,6 +26,7 @@ public class ServerHandshakeMessage extends AbstractMessage {
     }
 
     public Update getAll() {
+        System.out.print("returning number of: " + all.getActions().size());
         return all;
     }
 }

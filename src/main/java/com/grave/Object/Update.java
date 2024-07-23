@@ -24,6 +24,7 @@ public class Update {
     }
 
     public ArrayListMultimap<Uuid, Action> getActions() {
+        System.out.println("x: " + actions.size());
         return actions;
     }
 }
