@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Networking.Message.ServerHandshakeMessage;
-import com.grave.Object.Update;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
@@ -24,11 +23,8 @@ public class NetServerConnectionListener implements ConnectionListener {
     public void connectionAdded(Server instance, HostedConnection hostConnection) {
         LOGGER.log(Level.INFO, "SERVER: connection #" + hostConnection.getId() + " added");
 
-        Update update = server.objectmanager.getAll();
-        LOGGER.log(Level.INFO, "SERVER: connection #" + update.getActions().size() + " added");
-
-        Message responce = new ServerHandshakeMessage(server.getName(), update);
-        hostConnection.send(responce);
+        Message handshakeMessage = new ServerHandshakeMessage(server.getName(), server.objectmanager.getAll());
+        hostConnection.send(handshakeMessage);
     }
 
     @Override

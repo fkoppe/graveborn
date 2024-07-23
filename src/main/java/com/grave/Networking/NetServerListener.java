@@ -2,7 +2,6 @@ package com.grave.Networking;
 
 import com.grave.Networking.Message.ClientHandshakeMessage;
 import com.grave.Networking.Message.UpdateMessage;
-import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.jme3.network.MessageListener;
 
 import java.util.logging.Level;

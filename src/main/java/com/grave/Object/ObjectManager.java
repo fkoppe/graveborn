@@ -158,7 +158,7 @@ public class ObjectManager {
         if (entityMap.containsKey(uuid)) {
             return entityMap.get(uuid);
         } else {
-            throw new RuntimeException("unknown entity");
+            throw new RuntimeException("OM: unknown entity");
         }
     }
 
@@ -205,7 +205,7 @@ public class ObjectManager {
     public void takeUpdate(Update update) {
         // ...
         //TODO
-        forceUpdate(update);
+        //forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {
@@ -217,13 +217,13 @@ public class ObjectManager {
 
         update.addActions(localActionBuffer);
 
-        localActionBuffer.clear();
+        //localActionBuffer.clear();
 
         positionBuffer.forEach((uuid, action) -> {
             update.addAction(uuid, action);
         });
 
-        positionBuffer.clear();
+        //positionBuffer.clear();
 
         return update;
     }
