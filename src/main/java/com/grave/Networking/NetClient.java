@@ -13,6 +13,7 @@ import com.jme3.system.NanoTimer;
 public class NetClient extends Net {
     private static final Logger LOGGER = Logger.getLogger(NetClient.class.getName());
 
+    private static final int NET_FREQUENCY = 120;
     private static final int RETRY_DELAY = 3;
 
     private String ip;
@@ -20,7 +21,8 @@ public class NetClient extends Net {
 
     private Client instance = null;
     private boolean connected = false;
-    private NanoTimer lastTry = new NanoTimer();
+    private NanoTimer lastTryTimer = new NanoTimer();
+    private NanoTimer netTimer = new NanoTimer();
 
     String serverName;
 
@@ -47,8 +49,8 @@ public class NetClient extends Net {
             disconnect();
         }
 
-        if (!connected && lastTry.getTimeInSeconds() >= RETRY_DELAY) {
-            lastTry.reset();
+        if (!connected && lastTryTimer.getTimeInSeconds() >= RETRY_DELAY) {
+            lastTryTimer.reset();
             LOGGER.log(Level.INFO, "CLIENT: trying to connect to " + ip + ":" + port);
 
             try {
@@ -74,7 +76,9 @@ public class NetClient extends Net {
             }
         }
 
-        if (connected) {
+        if (connected && netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
+            netTimer.reset();
+
             UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
 
             instance.send(updateMessage);

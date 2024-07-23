@@ -9,6 +9,7 @@ import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.CreateAction;
 import com.grave.Object.Actions.DeleteAction;
 import com.grave.Object.Actions.MoveAction;
+import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import com.jme3.bullet.BulletAppState;
@@ -29,6 +30,8 @@ public class ObjectManager {
     private HashMap<Uuid, ArrayList<Action>> localActionBuffer;
     private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
 
+    HashMap<Uuid, Action> positionBuffer;
+
     private PhysicsSpace physicsSpace;
 
     public ObjectManager(Graveborn app) {
@@ -39,6 +42,8 @@ public class ObjectManager {
 
         localActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
         netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
+
+        positionBuffer = new HashMap<Uuid, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -86,12 +91,19 @@ public class ObjectManager {
     }
 
     public void submitEntityAction(Uuid uuid, Action action) {
-        localActionBuffer.get(uuid).add(action);
-
+        
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
             entity.processAction(action);
+
+            if (action instanceof MoveAction) {
+                positionBuffer.put(uuid, action);
+            } else if (action instanceof VelocityAction) {
+                positionBuffer.put(uuid, new MoveAction(entity.getPosition()));
+            } else {
+                localActionBuffer.get(uuid).add(action);
+            }
         }
     }
 
@@ -198,6 +210,10 @@ public class ObjectManager {
         Update update = new Update();
 
         update.addActions(localActionBuffer);
+
+        positionBuffer.forEach((uuid, action) -> {
+            update.addAction(uuid, action);
+        });
 
         return update;
     }

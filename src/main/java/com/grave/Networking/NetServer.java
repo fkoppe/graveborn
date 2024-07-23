@@ -12,12 +12,17 @@ import com.grave.Object.ObjectManager;
 import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
+import com.jme3.system.NanoTimer;
 
 public class NetServer extends Net {
     private static final Logger LOGGER = Logger.getLogger(NetServer.class.getName());
 
+    private static final int NET_FREQUENCY = 120;
+
     private int port;
     private String ip;
+    
+    private NanoTimer netTimer = new NanoTimer();
 
     private Server instance;
 
@@ -60,9 +65,13 @@ public class NetServer extends Net {
         //fetch tcp updates...
         //send
 
-        UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
+        if (netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
+            netTimer.reset();
 
-        instance.broadcast(updateMessage);
+            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
+
+            instance.broadcast(updateMessage);
+        }
 
         //fetch udp pdates...
         //send
