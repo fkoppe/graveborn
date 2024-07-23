@@ -194,13 +194,9 @@ public class ObjectManager {
     }
 
     public Update getUpdate() {
-        ArrayListMultimap<Uuid, Action> copy = ArrayListMultimap.create(localActionBuffer);
-
-        localActionBuffer.clear();
-
         Update update = new Update();
 
-        update.addActions(copy);
+        update.addActions(localActionBuffer);
 
         return update;
     }
