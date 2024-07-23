@@ -126,7 +126,7 @@ public class ObjectManager {
         if (null == localActionBuffer.get(id)) {
             localActionBuffer.put(id, new ArrayList<Action>());
         }
-        localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
+        //localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
 
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
@@ -208,7 +208,7 @@ public class ObjectManager {
     public void takeUpdate(Update update) {
         // ...
         //TODO
-        forceUpdate(update);
+        //forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {
@@ -226,7 +226,7 @@ public class ObjectManager {
             update.addAction(uuid, action);
         });
 
-        positionBuffer.clear();
+        //positionBuffer.clear();
 
         return update;
     }
