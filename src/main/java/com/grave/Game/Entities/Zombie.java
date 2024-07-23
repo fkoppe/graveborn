@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Actions.VelocityAction;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 
@@ -57,7 +58,8 @@ public class Zombie extends RigEntity {
             Vector3f moveVector = target.getPosition().subtract(getPosition());
 
             //TODO
-            rig.setLinearVelocity(moveVector.normalize().mult(SPEED));
+            //rig.setLinearVelocity(moveVector.normalize().mult(SPEED));
+            objectManager.submitEntityAction(id, new VelocityAction(moveVector));
 
         }
     }

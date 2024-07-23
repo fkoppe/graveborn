@@ -14,8 +14,6 @@ public class World {
     private Uuid obstacleId;
     private Uuid zombieId;
 
-    boolean spawned = false;
-
     public World(Graveborn app_, ObjectManager objectManager_)
     {
         objectManager = objectManager_;
@@ -34,16 +32,7 @@ public class World {
     }
 
     public void update(float tpf) {
-        //TODO
-        if(!spawned && false) {
-            obstacleId = objectManager.createEntity(Type.OBSTACKLE, "obstackle");
-            objectManager.submitEntityAction(obstacleId, new MoveAction(new Vector3f(3, 3, 0)));
-
-            zombieId = objectManager.createEntity(Type.ZOMBIE, "zombie");
-            objectManager.submitEntityAction(zombieId, new MoveAction(new Vector3f(6, 6, 0)));
-
-            spawned = true;
-        }
+        
     }
 
     public void shutdown() {

@@ -11,8 +11,8 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 
 public class Entity {
-    private Uuid id;
-    private Type type;
+    protected Uuid id;
+    protected Type type;
 
     protected Geometry geometry;
     protected ObjectManager objectManager;
