@@ -187,7 +187,7 @@ public class ObjectManager {
     }
 
     public void forceUpdate(Update update) {
-        System.out.println("forcing");
+        System.out.println("forcing-" + update.getActions().size());
         netActionBuffer = update.getActions();
     }
 
@@ -206,6 +206,9 @@ public class ObjectManager {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
             update.addAction(uuid, new MoveAction(entity.getPosition()));
         });
+
+        System.out.println("sending-" + update.getActions().size());
+        netActionBuffer = update.getActions();
 
         return update;
     }
