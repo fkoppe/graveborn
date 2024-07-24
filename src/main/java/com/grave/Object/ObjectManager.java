@@ -109,10 +109,10 @@ public class ObjectManager {
         
         entityMap.forEach((uuid, entity) -> {
             if (netPositions.size() > 0) {
-                System.out.println(netPositions);
+                System.out.println("positions: " + netPositions);
                 netPositions.get(uuid);
                 System.out.println("xxx " + uuid);
-                
+
                 // process net position
                 if (netPositions.containsKey(uuid)) {
                     System.out.println(netPositions.get(uuid));
@@ -138,6 +138,8 @@ public class ObjectManager {
 
         netActions.clear();
         netPositions.clear();
+
+        System.out.println("\n\n\n\n");
     }
 
     public void shutdown() {
