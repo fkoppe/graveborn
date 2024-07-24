@@ -9,6 +9,7 @@ import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 
 public class RigEntity extends Entity {
@@ -40,7 +41,12 @@ public class RigEntity extends Entity {
         rig.setMass(mass);
     }
     
+    //TODO remove: analog to Entity geometry rootNode attach
     public RigidBodyControl getRig() {
         return rig;
+    }
+
+    public Vector3f getVelocity() {
+        return rig.getLinearVelocity();
     }
 }

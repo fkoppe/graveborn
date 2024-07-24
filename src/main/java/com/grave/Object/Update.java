@@ -5,16 +5,18 @@ import java.util.HashMap;
 
 import com.grave.Uuid;
 import com.grave.Object.Actions.Action;
+import com.grave.Object.Actions.MoveAction;
+import com.grave.Object.Actions.VelocityAction;
 import com.jme3.network.serializing.Serializable;
 
 @Serializable
 public class Update {
     private HashMap<Uuid, ArrayList<Action>> actions;
-    private HashMap<Uuid, Action> positions;
+    private HashMap<Uuid, ArrayList<Action>> transforms;
 
     public Update() {
         actions = new HashMap<Uuid, ArrayList<Action>>();
-        positions = new HashMap<Uuid, Action>();
+        transforms = new HashMap<Uuid, ArrayList<Action>>();
     }
 
     public void addAction(Uuid uuid, Action action) {
@@ -36,19 +38,28 @@ public class Update {
         });
     }
 
-    public void addPosition(Uuid uuid, Action additional_) {
-        positions.put(uuid, additional_);
+    public void addTransform(Uuid uuid, MoveAction move, VelocityAction velocity) {
+        if (null == transforms.get(uuid)) {
+            transforms.put(uuid, new ArrayList<Action>(2));
+        }
+
+        transforms.get(uuid).add(move);
+        transforms.get(uuid).add(velocity);
     }
 
-    public void addPositions(HashMap<Uuid, Action> additional_) {
-        positions.putAll(additional_);
+    public void addTransforms(HashMap<Uuid, ArrayList<Action>> additional_) {
+        additional_.forEach((uuid, array) -> {
+            assert (array.size() == 2);
+        });
+
+        transforms.putAll(additional_);
     }
 
     public HashMap<Uuid, ArrayList<Action>> getActions() {
         return actions;
     }
 
-    public HashMap<Uuid, Action> getPositions() {
-        return positions;
+    public HashMap<Uuid, ArrayList<Action>> getTransforms() {
+        return transforms;
     }
 }

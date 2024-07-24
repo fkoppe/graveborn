@@ -29,12 +29,12 @@ public class ObjectManager {
     private HashMap<Uuid, Entity> localEntitiesDeleted;
 
     private HashMap<Uuid, ArrayList<Action>> localActions;
-    private HashMap<Uuid, Action> localPositions;
+    private HashMap<Uuid, ArrayList<Action>> localTransforms;
 
     private HashMap<Uuid, ArrayList<Action>> netActions;
-    private HashMap<Uuid, Action> netPositions;
+    private HashMap<Uuid, ArrayList<Action>> netTransforms;
     private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
-    private HashMap<Uuid, Action> netPositionBuffer;
+    private HashMap<Uuid, ArrayList<Action>> netTransformBuffer;
 
     private ReentrantLock lock;
 
@@ -47,12 +47,12 @@ public class ObjectManager {
         localEntitiesDeleted = new HashMap<Uuid, Entity>();
 
         localActions = new HashMap<Uuid, ArrayList<Action>>();
-        localPositions = new HashMap<Uuid, Action>();
+        localTransforms = new HashMap<Uuid, ArrayList<Action>>();
 
         netActions = new HashMap<Uuid, ArrayList<Action>>();
-        netPositions = new HashMap<Uuid, Action>();
+        netTransforms = new HashMap<Uuid, ArrayList<Action>>();
         netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
-        netPositionBuffer = new HashMap<Uuid, Action>();
+        netTransformBuffer = new HashMap<Uuid, ArrayList<Action>>();
 
         lock = new ReentrantLock();
 
@@ -71,12 +71,9 @@ public class ObjectManager {
         netActions.putAll(netActionBuffer);
         netActionBuffer.clear();
 
-        netPositions.putAll(netPositionBuffer);
-        netPositionBuffer.clear();
+        netTransforms.putAll(netTransformBuffer);
+        netTransformBuffer.clear();
         lock.unlock();
-
-        //TODO
-        System.out.println(entityMap.size());
 
         //process netCreate and netDelete actions
         netActions.forEach((uuid, array) -> {
@@ -104,15 +101,20 @@ public class ObjectManager {
                 }
             });
         });
-
-        //TODO
-        System.out.println(entityMap.size());
         
         entityMap.forEach((uuid, entity) -> {
-            if (netPositions.size() > 0) {
+            if (netTransforms.size() > 0) {
                 // process net position
-                if (netPositions.containsKey(uuid)) {
-                    entity.processAction(netPositions.get(uuid));
+                if (netTransforms.containsKey(uuid)) {
+                    ArrayList<Action> array = netTransforms.get(uuid);
+
+                    if(null != array.toArray()[0]) {
+                        entity.processAction((Action)array.toArray()[0]);
+                    }
+
+                    if (null != array.toArray()[1]) {
+                        entity.processAction((Action)array.toArray()[1]);
+                    }
                 }
                 else {
                 }
@@ -131,7 +133,7 @@ public class ObjectManager {
         });
 
         netActions.clear();
-        netPositions.clear();
+        netTransforms.clear();
     }
 
     public void shutdown() {
@@ -146,14 +148,21 @@ public class ObjectManager {
             entity.processAction(action);
 
             if (action instanceof MoveAction) {
-                localPositions.put(uuid, action);
-            } else if (action instanceof VelocityAction) {
-                //localPositions.put(uuid, action);
-                //localPositions.put(uuid, new MoveAction(entity.getPosition()));
-                if (null == localActions.get(uuid)) {
-                    localActions.put(uuid, new ArrayList<Action>());
+                if (localTransforms.containsKey(uuid)) {
+                    localTransforms.get(uuid).toArray()[0] = action;
+                } else {
+                    ArrayList<Action> array = new ArrayList<Action>();
+                    array.add(0, action);
+                    array.add(1, null);
+
+                    localTransforms.put(uuid, array);
                 }
-                localActions.get(uuid).add(action);
+            } else if (action instanceof VelocityAction) {
+                ArrayList<Action> array = new ArrayList<Action>(2);
+                array.add(0, new MoveAction(getEntity(uuid).getPosition()));
+                array.add(1, action);
+
+                localTransforms.put(uuid, array);
             } else {
                 if (null == localActions.get(uuid)) {
                     localActions.put(uuid, new ArrayList<Action>());
@@ -266,9 +275,10 @@ public class ObjectManager {
 
     public void forceUpdate(Update update) {
         lock.lock();
-        netActionBuffer.putAll(update.getActions());
 
-        netPositionBuffer.putAll(update.getPositions());
+        netActionBuffer.putAll(update.getActions());
+        netTransformBuffer.putAll(update.getTransforms());
+
         lock.unlock();
     }
 
@@ -276,12 +286,10 @@ public class ObjectManager {
         Update update = new Update();
 
         update.addActions(localActions);
-
         localActions.clear();
 
-        update.addPositions(localPositions);
-
-        localPositions.clear();
+        update.addTransforms(localTransforms);
+        localTransforms.clear();
 
         return update;
     }
@@ -291,7 +299,13 @@ public class ObjectManager {
 
         entityMap.forEach((uuid, entity) -> {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
-            update.addPosition(uuid, new MoveAction(entity.getPosition()));
+
+            if (entity instanceof RigEntity) {
+                RigEntity rigEntity = (RigEntity) entity;
+                update.addTransform(uuid, new MoveAction(rigEntity.getPosition()), new VelocityAction(rigEntity.getVelocity()));
+            } else {
+                update.addTransform(uuid, new MoveAction(entity.getPosition()), null);
+            }
         });
 
         return update;
