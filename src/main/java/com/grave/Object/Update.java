@@ -14,7 +14,7 @@ public class Update {
 
     public Update() {
         actions = new HashMap<Uuid, ArrayList<Action>>();
-        positions = new HashMap<Uuid, Action>()
+        positions = new HashMap<Uuid, Action>();
     }
 
     public void addAction(Uuid uuid, Action action) {
