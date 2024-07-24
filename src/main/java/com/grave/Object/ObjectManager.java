@@ -88,18 +88,12 @@ public class ObjectManager {
                 System.out.println(netPositions.get(uuid));
                 entity.processAction(netPositions.get(uuid));
             }
-            else {
-                LOGGER.log(Level.WARNING, "OM: newPosition for unknown entity");
-            }
 
             // process net actions
             if (netActions.containsKey(uuid)) {
                 netActions.get(uuid).forEach((action) -> {
                     entity.processAction(action);
                 });
-            }
-            else {
-                LOGGER.log(Level.WARNING, "OM: netAction for unknown entity");
             }
 
             entity.onUpdate(tpf);
@@ -267,7 +261,7 @@ public class ObjectManager {
         netPositionBuffer.putAll(update.getPositions());
         lock.unlock();
 
-        LOGGER.log(Level.FINER, "OM: forcing " + update.getActions().size() + " entities and " + update.getPositions().size() + " positions");
+        LOGGER.log(Level.INFO, "OM: forcing " + update.getActions().size() + " entities and " + update.getPositions().size() + " positions");
     }
 
     public Update getUpdate() {
@@ -292,7 +286,7 @@ public class ObjectManager {
             update.addPosition(uuid, new MoveAction(entity.getPosition()));
         });
 
-        LOGGER.log(Level.FINER, "OM: getAll with " + update.getActions().size() + "entities and " + update.getPositions() + " entities");
+        LOGGER.log(Level.INFO, "OM: getAll with " + update.getActions().size() + "entities and " + update.getPositions() + " entities");
 
         return update;
     }
