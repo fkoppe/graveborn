@@ -19,6 +19,11 @@ public final class Uuid {
         return idString.equals(id.idString);
     }
 
+    @Override
+    public int hashCode() {
+        return UUID.fromString(idString).hashCode();
+    }
+
    public String toString() {
        return idString;
    }

@@ -78,6 +78,7 @@ public class ObjectManager {
         //TODO
         System.out.println(entityMap.size());
 
+        //process netCreate and netDelete actions
         netActions.forEach((uuid, array) -> {
             array.forEach((action) -> {
                 if (action instanceof CreateAction) {
@@ -91,7 +92,7 @@ public class ObjectManager {
                         if (getEntity(uuid) instanceof RigEntity) {
                             RigEntity rigEntity = (RigEntity) getEntity(uuid);
 
-                            // physicsSpace.add(rigEntity.getRig());
+                            physicsSpace.add(rigEntity.getRig());
                         }
                     } else {
                         LOGGER.log(Level.FINER, "OM: entity is already known");
@@ -109,18 +110,11 @@ public class ObjectManager {
         
         entityMap.forEach((uuid, entity) -> {
             if (netPositions.size() > 0) {
-                System.out.println("positions: " + netPositions);
-                netPositions.get(uuid);
-                System.out.println("xxx " + uuid);
-
                 // process net position
                 if (netPositions.containsKey(uuid)) {
-                    System.out.println(netPositions.get(uuid));
                     entity.processAction(netPositions.get(uuid));
-                    System.out.println("yes " + uuid);
                 }
                 else {
-                    System.out.println("nope " + uuid);
                 }
             }
             
@@ -138,8 +132,6 @@ public class ObjectManager {
 
         netActions.clear();
         netPositions.clear();
-
-        System.out.println("\n\n\n\n");
     }
 
     public void shutdown() {
@@ -270,8 +262,6 @@ public class ObjectManager {
 
         netPositionBuffer.putAll(update.getPositions());
         lock.unlock();
-
-        LOGGER.log(Level.INFO, "OM: forcing " + update.getActions() + " entities and " + update.getPositions() + " positions");
     }
 
     public Update getUpdate() {
@@ -295,8 +285,6 @@ public class ObjectManager {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
             update.addPosition(uuid, new MoveAction(entity.getPosition()));
         });
-
-        LOGGER.log(Level.INFO, "OM: getAll with " + update.getActions() + "entities and " + update.getPositions() + " entities");
 
         return update;
     }

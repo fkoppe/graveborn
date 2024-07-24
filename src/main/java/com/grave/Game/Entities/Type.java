@@ -75,11 +75,10 @@ public enum Type {
     };
 
     public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
-        return new Entity(id, NONE, objectManager_, name_, new Box(0, 0, 0));
+        throw new RuntimeException("no entity type specified");
     }
 
     public Material buildMaterial(AssetManager assetManager) {
-        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        return material;
+        throw new RuntimeException("no entity type specified");
     }
 }
