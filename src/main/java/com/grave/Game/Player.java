@@ -82,7 +82,7 @@ public class Player {
         final int x_spawn = (int) ((Math.random() * (0 - -5)) + -5);
         final int y_spawn = (int) ((Math.random() * (0 - -10)) + -10);
 
-        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)));
+        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)), true);
 
         proccessNew();
         proccessDeleted();
@@ -94,12 +94,12 @@ public class Player {
 
         if (moveHorizontal != 0 || moveVertical != 0) {
             VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
-            objectManager.submitEntityAction(humanID, action);
+            objectManager.submitEntityAction(humanID, action, true);
         } else {
             Human human = (Human)objectManager.getEntity(humanID);
             if (human.getVelocity().length() > 0) {
                 VelocityAction action = new VelocityAction(new Vector3f(0, 0, 0));
-                objectManager.submitEntityAction(humanID, action);
+                objectManager.submitEntityAction(humanID, action, true);
             }
         }
     }

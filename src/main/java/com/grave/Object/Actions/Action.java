@@ -6,5 +6,5 @@ import com.jme3.network.serializing.Serializable;
 public class Action {
     
     // necessary
-    Action() {}
+    public Action() {}
 }

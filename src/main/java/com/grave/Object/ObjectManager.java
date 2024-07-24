@@ -44,7 +44,9 @@ public class ObjectManager {
 
     private PhysicsSpace physicsSpace;
 
-    public ObjectManager(Graveborn app) {
+    private boolean isDominant;
+
+    public ObjectManager(Graveborn app_, boolean isDominant_) {
         entityMap = new HashMap<Uuid, Entity>();
 
         localEntitiesNew = new HashMap<Uuid, Entity>();
@@ -64,9 +66,11 @@ public class ObjectManager {
         lock = new ReentrantLock();
 
         BulletAppState bulletAppState = new BulletAppState();
-        app.getStateManager().attach(bulletAppState);
+        app_.getStateManager().attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(Vector3f.ZERO);
+
+        isDominant = isDominant_;
     }
 
     public void init() {
@@ -148,7 +152,7 @@ public class ObjectManager {
 
     }
 
-    public void submitEntityAction(Uuid uuid, Action action) {
+    public void submitEntityAction(Uuid uuid, Action action, boolean isDominantAction) {
         
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
@@ -156,10 +160,14 @@ public class ObjectManager {
             entity.processAction(action);
 
             if (action instanceof MoveAction) {
-                localPositions.put(uuid, action);
+                if(!isDominant || isDominantAction) {
+                    localPositions.put(uuid, action);
+                }
             } else if (action instanceof VelocityAction) {
-                localPositions.put(uuid, new MoveAction(getEntity(uuid).getPosition()));
-                localVelocities.put(uuid, action);
+                if (!isDominant || isDominantAction) {
+                    localPositions.put(uuid, new MoveAction(getEntity(uuid).getPosition()));
+                    localVelocities.put(uuid, action);
+                }
             } else {
                 if (null == localActions.get(uuid)) {
                     localActions.put(uuid, new ArrayList<Action>());
@@ -259,18 +267,6 @@ public class ObjectManager {
     }
 
     public void takeUpdate(Update update) {
-        update.getPositions().forEach((uuid, action) -> {
-            if(entityMap.containsKey(uuid)) {
-                if (getEntity(uuid) instanceof Zombie) {
-                    update.getPositions().remove(uuid);
-                }
-            }
-        });
-
-        forceUpdate(update);
-    }
-
-    public void forceUpdate(Update update) {
         lock.lock();
 
         netActionBuffer.putAll(update.getActions());

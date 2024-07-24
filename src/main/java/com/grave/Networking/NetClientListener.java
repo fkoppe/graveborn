@@ -27,7 +27,7 @@ public class NetClientListener implements MessageListener<Client> {
 
             client.serverName = handshakeMessage.getServerName();
 
-            client.objectmanager.forceUpdate(handshakeMessage.getAll());
+            client.objectmanager.takeUpdate(handshakeMessage.getAll());
         }
         else if(message instanceof ServerShutdownMessage)
         {
@@ -38,7 +38,7 @@ public class NetClientListener implements MessageListener<Client> {
         else if (message instanceof UpdateMessage) {
             UpdateMessage updateMessage = (UpdateMessage) message;
 
-            client.objectmanager.forceUpdate(updateMessage.getUpdate());
+            client.objectmanager.takeUpdate(updateMessage.getUpdate());
         }
         else {
             LOGGER.log(Level.WARNING, "CLIENT: received unknown message");

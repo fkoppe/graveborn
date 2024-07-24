@@ -22,13 +22,13 @@ public class World {
     public void init()
     {
         backgroundId = objectManager.createEntity(Type.BACKGROUND, "background");
-        objectManager.submitEntityAction(backgroundId, new MoveAction(new Vector3f(0, 0, -0.1f)));
+        objectManager.submitEntityAction(backgroundId, new MoveAction(new Vector3f(0, 0, -0.1f)), true);
 
         obstacleId = objectManager.createEntity(Type.OBSTACKLE, "obstacle");
-        objectManager.submitEntityAction(obstacleId, new MoveAction(new Vector3f(3, 3, 0)));
+        objectManager.submitEntityAction(obstacleId, new MoveAction(new Vector3f(3, 3, 0)), true);
 
         zombieId = objectManager.createEntity(Type.ZOMBIE, "zombie");
-        objectManager.submitEntityAction(zombieId, new MoveAction(new Vector3f(6, 6, 0)));
+        objectManager.submitEntityAction(zombieId, new MoveAction(new Vector3f(6, 6, 0)), true);
     }
 
     public void update(float tpf) {

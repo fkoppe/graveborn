@@ -120,25 +120,27 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        objectManager = new ObjectManager(this);
-
         switch (mode) {
             case SERVER:
+                objectManager = new ObjectManager(this, true);
                 world = new World(this, objectManager);
                 net = new NetServer(objectManager, serverName, port);
                 ip = ((NetServer) net).getIp();
                 break;
             case CLIENT:
+                objectManager = new ObjectManager(this, false);
                 net = new NetClient(objectManager, playerName, ip, port);
                 player = new Player(this, objectManager, playerName);
                 break;
             case HOST:
+                objectManager = new ObjectManager(this, true);
                 world = new World(this, objectManager);
                 net = new NetServer(objectManager, serverName, port);
                 ip = ((NetServer) net).getIp();
                 player = new Player(this, objectManager, playerName);
                 break;
             case STANDALONE:
+                objectManager = new ObjectManager(this, true);
                 world = new World(this, objectManager);
                 player = new Player(this, objectManager, playerName);
                 break;
