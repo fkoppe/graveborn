@@ -26,9 +26,7 @@ public class RigEntity extends Entity {
     }
     
     public void processAction(Action action) {
-        if (action instanceof MoveAction) {
-            MoveAction moveAction = (MoveAction) action;
-
+        if (action instanceof MoveAction moveAction) {
             rig.setPhysicsLocation(moveAction.getPosition());
         } else if (action instanceof VelocityAction) {
             VelocityAction velocityAction = (VelocityAction) action;

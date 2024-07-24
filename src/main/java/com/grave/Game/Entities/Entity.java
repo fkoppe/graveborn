@@ -34,8 +34,7 @@ public class Entity {
     }
     
     public void processAction(Action action) {
-        if (action instanceof MoveAction) {
-            MoveAction moveAction = (MoveAction) action;
+        if(action instanceof MoveAction moveAction) {
             geometry.setLocalTranslation(moveAction.getPosition());
         }
     }

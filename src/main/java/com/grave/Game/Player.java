@@ -14,6 +14,9 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
@@ -21,6 +24,7 @@ import com.jme3.scene.Node;
 
 public class Player {
     private final float CAMERA_ZOOM = 8f;
+    private final float CAMERA_MOVE_BORDER = 4f;
     private final float PLAYER_SPEED = 5f;
 
     private ObjectManager objectManager;
@@ -74,7 +78,6 @@ public class Player {
 
     public void init() {
         initCamera();
-        
         initKeys();
 
         humanID = objectManager.createEntity(Type.HUMAN, playerName);
@@ -102,6 +105,8 @@ public class Player {
                 objectManager.submitEntityAction(humanID, action, true);
             }
         }
+
+        handleCamera();
     }
 
     public void shutdown() {
@@ -139,5 +144,31 @@ public class Player {
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
 
         inputManager.addListener(actionListener, "Up", "Down", "Left", "Right");
+    }
+
+    private void handleCamera() {
+        Vector3f camLoc = camera.getLocation();
+        Vector3f playerLoc = objectManager.getEntity(humanID).getPosition();
+
+        Vector3f bottomLeft = camera.getWorldCoordinates(new Vector2f(0, 0), 0);
+        Vector3f topRight = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), camera.getHeight()), 0);
+
+        float top = topRight.y;
+        float bottom = bottomLeft.y;
+        float left = bottomLeft.x;
+        float right = topRight.x;
+
+        if (playerLoc.y > top - CAMERA_MOVE_BORDER) {
+            camera.setLocation(new Vector3f(camLoc.x, camLoc.y + (playerLoc.y - (top - CAMERA_MOVE_BORDER)), camLoc.z));
+        }
+        if (playerLoc.y < bottom + CAMERA_MOVE_BORDER) {
+            camera.setLocation(new Vector3f(camLoc.x, camLoc.y - ((bottom + CAMERA_MOVE_BORDER) - playerLoc.y), camLoc.z));
+        }
+        if (playerLoc.x < left + CAMERA_MOVE_BORDER) {
+            camera.setLocation(new Vector3f(camLoc.x - ((left + CAMERA_MOVE_BORDER) - playerLoc.x), camLoc.y, camLoc.z));
+        }
+        if (playerLoc.x > right - CAMERA_MOVE_BORDER) {
+            camera.setLocation(new Vector3f(camLoc.x + (playerLoc.x - (right - CAMERA_MOVE_BORDER)), camLoc.y, camLoc.z));
+        }
     }
 }
