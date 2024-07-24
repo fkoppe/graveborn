@@ -17,6 +17,7 @@ import com.jme3.bullet.BulletAppState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,8 @@ public class ObjectManager {
     private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
     private HashMap<Uuid, Action> netPositionBuffer;
 
+    private ReentrantLock lock;
+
     private PhysicsSpace physicsSpace;
 
     public ObjectManager(Graveborn app) {
@@ -52,6 +55,8 @@ public class ObjectManager {
         netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
         netPositionBuffer = new HashMap<Uuid, Action>();
 
+        lock = new ReentrantLock();
+
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
@@ -63,17 +68,24 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
+        lock.lock();
         netActions.putAll(netActionBuffer);
         netActionBuffer.clear();
 
         netPositions.putAll(netPositionBuffer);
         netPositionBuffer.clear();
+        lock.unlock();
+
+        System.out.println(entityMap.size());
 
         processCreationDeletion();
+
+        System.out.println(entityMap.size());
         
         entityMap.forEach((uuid, entity) -> {
             //process net position
             if (netPositions.containsKey(uuid)) {
+                System.out.println(netPositions.get(uuid));
                 entity.processAction(netPositions.get(uuid));
             }
 
@@ -228,20 +240,22 @@ public class ObjectManager {
     }
 
     public void takeUpdate(Update update) {
-        update.getPositions().forEach((uuid, action) -> {
-            if(entityMap.containsKey(uuid)) {
-                if (getEntity(uuid) instanceof Zombie) {
-                    update.getPositions().remove(uuid);
-                }
-            }
-        });
+        //update.getPositions().forEach((uuid, action) -> {
+        //    if(entityMap.containsKey(uuid)) {
+        //        if (getEntity(uuid) instanceof Zombie) {
+        //            update.getPositions().remove(uuid);
+        //        }
+        //    }
+        //});
 
         forceUpdate(update);
     }
 
     public void forceUpdate(Update update) {
+        lock.lock();
         netActionBuffer.putAll(update.getActions());
         netPositionBuffer.putAll(update.getPositions());
+        lock.unlock();
     }
 
     public Update getUpdate() {
