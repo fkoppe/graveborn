@@ -83,17 +83,21 @@ public class ObjectManager {
         System.out.println(entityMap.size());
         
         entityMap.forEach((uuid, entity) -> {
-            //process net position
-            if (netPositions.containsKey(uuid)) {
-                System.out.println(netPositions.get(uuid));
-                entity.processAction(netPositions.get(uuid));
+            if (netPositions.size() > 0) {
+                // process net position
+                if (netPositions.containsKey(uuid)) {
+                    System.out.println(netPositions.get(uuid));
+                    entity.processAction(netPositions.get(uuid));
+                }
             }
-
-            // process net actions
-            if (netActions.containsKey(uuid)) {
-                netActions.get(uuid).forEach((action) -> {
-                    entity.processAction(action);
-                });
+            
+            if(netActions.size() > 0) {
+                // process net actions
+                if (netActions.containsKey(uuid)) {
+                    netActions.get(uuid).forEach((action) -> {
+                        entity.processAction(action);
+                    });
+                }
             }
 
             entity.onUpdate(tpf);
