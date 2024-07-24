@@ -150,8 +150,14 @@ public class ObjectManager {
             } else if (action instanceof VelocityAction) {
                 //localPositions.put(uuid, action);
                 //localPositions.put(uuid, new MoveAction(entity.getPosition()));
+                if (null == localActions.get(uuid)) {
+                    localActions.put(uuid, new ArrayList<Action>());
+                }
                 localActions.get(uuid).add(action);
             } else {
+                if (null == localActions.get(uuid)) {
+                    localActions.put(uuid, new ArrayList<Action>());
+                }
                 localActions.get(uuid).add(action);
             }
         }
