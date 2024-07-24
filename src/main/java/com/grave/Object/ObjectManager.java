@@ -49,7 +49,7 @@ public class ObjectManager {
 
         netActions = new HashMap<Uuid, ArrayList<Action>>();
         netPositions = new HashMap<Uuid, Action>();
-        netActions = new HashMap<Uuid, ArrayList<Action>>();
+        netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
         netPositionBuffer = new HashMap<Uuid, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
