@@ -67,6 +67,6 @@ public class Update {
     }
 
     public HashMap<Uuid, Action> getVelocities() {
-        return positions;
+        return velocities;
     }
 }
