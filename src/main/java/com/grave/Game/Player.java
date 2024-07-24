@@ -88,10 +88,10 @@ public class Player {
         proccessNew();
         proccessDeleted();
 
-        if (moveHorizontal != 0 || moveVertical != 0) {
+        //if (moveHorizontal != 0 || moveVertical != 0) {
             VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
             objectManager.submitEntityAction(humanID, action);
-        }
+        //}
     }
 
     public void shutdown() {
