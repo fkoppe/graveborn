@@ -120,24 +120,28 @@ public class Graveborn extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        objectManager = new ObjectManager(this);
-        world = new World(this, objectManager);
-
         switch (mode) {
             case SERVER:
+                objectManager = new ObjectManager(this, true);
+                world = new World(this, objectManager);
                 net = new NetServer(objectManager, serverName, port);
                 ip = ((NetServer) net).getIp();
                 break;
             case CLIENT:
+                objectManager = new ObjectManager(this, false);
                 net = new NetClient(objectManager, playerName, ip, port);
                 player = new Player(this, objectManager, playerName);
                 break;
             case HOST:
+                objectManager = new ObjectManager(this, true);
+                world = new World(this, objectManager);
                 net = new NetServer(objectManager, serverName, port);
                 ip = ((NetServer) net).getIp();
                 player = new Player(this, objectManager, playerName);
                 break;
             case STANDALONE:
+                objectManager = new ObjectManager(this, true);
+                world = new World(this, objectManager);
                 player = new Player(this, objectManager, playerName);
                 break;
             default:
@@ -145,7 +149,10 @@ public class Graveborn extends SimpleApplication {
         }
 
         objectManager.init();
-        world.init();
+
+        if (null != world) {
+            world.init();
+        }
 
         if (null != player) {
             player.init();
@@ -162,7 +169,10 @@ public class Graveborn extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         objectManager.update(tpf);
-        world.update(tpf);
+
+        if (null != world) {
+            world.update(tpf);
+        }
 
         if (null != player) {
             player.update(tpf);
@@ -185,7 +195,10 @@ public class Graveborn extends SimpleApplication {
             player.shutdown();
         }
 
-        world.shutdown();
+        if (null != world) {
+            world.shutdown();
+        }
+
         objectManager.shutdown();
     }
 }

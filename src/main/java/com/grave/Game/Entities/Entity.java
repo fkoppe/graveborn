@@ -1,7 +1,6 @@
 package com.grave.Game.Entities;
 
-import java.util.UUID;
-
+import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.MoveAction;
@@ -12,17 +11,19 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 
 public class Entity {
+    protected Uuid id;
+    protected Type type;
+
     protected Geometry geometry;
     protected ObjectManager objectManager;
 
-    UUID id = null;
-
-    public Entity(ObjectManager objectManager_, String name_, Mesh mesh_, Material material_)
+    public Entity(Uuid id_, Type type_, ObjectManager objectManager_, String name_, Mesh mesh_)
     {
+        id = id_;
+        type = type_;
+
         geometry = new Geometry(name_, mesh_);
         objectManager = objectManager_;
-
-        geometry.setMaterial(material_);
     }
 
     public void onInit() {}
@@ -46,6 +47,10 @@ public class Entity {
         node.detachChild(geometry);
     }
 
+    public void setMaterial(Material material) {
+        geometry.setMaterial(material);
+    }
+
     public Vector3f getPosition() {
         return geometry.getLocalTranslation();
     }
@@ -54,13 +59,11 @@ public class Entity {
         return geometry.getName();
     }
 
-    public void setID(UUID id_) {
-        assert(null == id);
-
-        id = id_;
+    public Uuid getId() {
+        return id;
     }
 
-    public UUID getID() {
-        return id;
+    public Type getType() {
+        return type;
     }
 }

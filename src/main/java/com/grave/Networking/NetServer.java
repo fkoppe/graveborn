@@ -6,19 +6,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.grave.Networking.Message.ClientHandshakeMessage;
-import com.grave.Networking.Message.NoticeMessage;
+import com.grave.Networking.Message.UpdateMessage;
 import com.grave.Networking.Message.ServerShutdownMessage;
-import com.grave.Networking.Message.SyncMessage;
 import com.grave.Object.ObjectManager;
 import com.jme3.network.Message;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
+import com.jme3.system.NanoTimer;
 
 public class NetServer extends Net {
     private static final Logger LOGGER = Logger.getLogger(NetServer.class.getName());
 
+    private static final int NET_FREQUENCY = 120;
+
     private int port;
     private String ip;
+    
+    private NanoTimer netTimer = new NanoTimer();
 
     private Server instance;
 
@@ -44,8 +48,7 @@ public class NetServer extends Net {
         NetSerializer.serializeAll();
 
         instance.addMessageListener(new NetServerListener(this), ClientHandshakeMessage.class);
-        instance.addMessageListener(new NetServerListener(this), SyncMessage.class);
-        instance.addMessageListener(new NetServerListener(this), NoticeMessage.class);
+        instance.addMessageListener(new NetServerListener(this), UpdateMessage.class);
 
         instance.addConnectionListener(new NetServerConnectionListener(this));
     }
@@ -61,6 +64,14 @@ public class NetServer extends Net {
     public void update(float tpf) {
         //fetch tcp updates...
         //send
+
+        if (netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
+            netTimer.reset();
+
+            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
+
+            instance.broadcast(updateMessage);
+        }
 
         //fetch udp pdates...
         //send

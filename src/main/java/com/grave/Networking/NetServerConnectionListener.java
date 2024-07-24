@@ -23,8 +23,8 @@ public class NetServerConnectionListener implements ConnectionListener {
     public void connectionAdded(Server instance, HostedConnection hostConnection) {
         LOGGER.log(Level.INFO, "SERVER: connection #" + hostConnection.getId() + " added");
 
-        Message responce = new ServerHandshakeMessage(server.getName());
-        hostConnection.send(responce);
+        Message handshakeMessage = new ServerHandshakeMessage(server.getName(), server.objectmanager.getAll());
+        hostConnection.send(handshakeMessage);
     }
 
     @Override

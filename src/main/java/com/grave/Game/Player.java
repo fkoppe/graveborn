@@ -1,11 +1,10 @@
 package com.grave.Game;
 
-import java.util.UUID;
-
 import com.grave.Graveborn;
+import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
-import com.grave.Game.Entities.RigEntity;
+import com.grave.Game.Entities.Type;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
@@ -21,8 +20,6 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.shape.Box;
-import com.jme3.texture.Texture;
 import com.jme3.scene.Node;
 
 public class Player {
@@ -39,8 +36,7 @@ public class Player {
     private AssetManager assetManager;
     private Node rootNode;
 
-    private UUID playerID;
-    private UUID backgroundID;
+    private Uuid humanID;
 
     private int moveVertical = 0;
     private int moveHorizontal = 0;
@@ -82,25 +78,33 @@ public class Player {
 
     public void init() {
         initCamera();
-        initBackground();
-
         initKeys();
-        initPlayer();
 
-        //TODO
-        // On Space_Key spawn Zombie
-        //inputManager.addMapping("spawn", new KeyTrigger(KeyInput.KEY_SPACE));
-        //inputManager.addListener((ActionListener) (name, isPressed, tpf) -> {
-        //    if (isPressed) objectManager.spawnZombie();
-        //}, "spawn");
+        humanID = objectManager.createEntity(Type.HUMAN, playerName);
+
+        final int x_spawn = (int) ((Math.random() * (0 - -5)) + -5);
+        final int y_spawn = (int) ((Math.random() * (0 - -10)) + -10);
+
+        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)), true);
+
+        proccessNew();
+        proccessDeleted();
     }
 
     public void update(float tpf) {
         proccessNew();
         proccessDeleted();
 
-        VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
-        objectManager.submitEntityAction(playerID, action);
+        if (moveHorizontal != 0 || moveVertical != 0) {
+            VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
+            objectManager.submitEntityAction(humanID, action, true);
+        } else {
+            Human human = (Human)objectManager.getEntity(humanID);
+            if (human.getVelocity().length() > 0) {
+                VelocityAction action = new VelocityAction(new Vector3f(0, 0, 0));
+                objectManager.submitEntityAction(humanID, action, true);
+            }
+        }
 
         handleCamera();
     }
@@ -110,6 +114,9 @@ public class Player {
 
     private void proccessNew() {
         objectManager.getLocalEntitiesNew().forEach((uuid, entity) -> {
+            Material material = entity.getType().buildMaterial(assetManager);
+            entity.setMaterial(material);
+
             entity.attachToNode(rootNode);
         });
     }
@@ -118,19 +125,6 @@ public class Player {
         objectManager.getLocalEntitiesDeleted().forEach((uuid, entity) -> {
             entity.detachFromNode(rootNode);
         });
-    }
-
-    private void initBackground() {
-        viewPort.setBackgroundColor(new ColorRGBA(1.0f, 0.8f, 1f, 1f));
-
-        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        material.setColor("Color", ColorRGBA.Red);
-
-        Entity background = new Entity(objectManager, "background", new Box(10, 10, 0), material);
-
-        backgroundID = objectManager.createEntity(background);
-
-        objectManager.submitEntityAction(backgroundID, new MoveAction(new Vector3f(0f, 0f, -0.01f)));
     }
 
     private void initCamera() {
@@ -152,25 +146,9 @@ public class Player {
         inputManager.addListener(actionListener, "Up", "Down", "Left", "Right");
     }
 
-    private void initPlayer() {
-        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Texture texture = assetManager.loadTexture("Textures/character.png");
-
-        texture.setMagFilter(Texture.MagFilter.Nearest);
-
-        material.setTexture("ColorMap", texture);
-        material.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-
-        Entity player = new Human(objectManager, "player", material);
-
-        playerID = objectManager.createEntity(player);
-
-        objectManager.submitEntityAction(playerID, new MoveAction(new Vector3f(-3, -3, 0)));
-    }
-
     private void handleCamera() {
         Vector3f camLoc = camera.getLocation();
-        Vector3f playerLoc = objectManager.getEntity(playerID).getPosition();
+        Vector3f playerLoc = objectManager.getEntity(humanID).getPosition();
 
         Vector3f bottomLeft = camera.getWorldCoordinates(new Vector2f(0, 0), 0);
         Vector3f topRight = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), camera.getHeight()), 0);
@@ -193,5 +171,4 @@ public class Player {
             camera.setLocation(new Vector3f(camLoc.x + (playerLoc.x - (right - CAMERA_MOVE_BORDER)), camLoc.y, camLoc.z));
         }
     }
-
 }

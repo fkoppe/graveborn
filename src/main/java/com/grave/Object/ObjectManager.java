@@ -1,48 +1,76 @@
 package com.grave.Object;
 
 import com.grave.Graveborn;
+import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
+import com.grave.Game.Entities.Type;
+import com.grave.Game.Entities.Zombie;
 import com.grave.Object.Actions.Action;
+import com.grave.Object.Actions.CreateAction;
+import com.grave.Object.Actions.DeleteAction;
+import com.grave.Object.Actions.MoveAction;
+import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
-
 import com.jme3.bullet.BulletAppState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ObjectManager {
     private static final Logger LOGGER = Logger.getLogger(ObjectManager.class.getName());
 
-    private HashMap<UUID, Entity> entityMap;
+    private HashMap<Uuid, Entity> entityMap;
 
-    private HashMap<UUID, Action> localActionBuffer;
-    private HashMap<UUID, Entity> localEntitiesNew;
-    private HashMap<UUID, Entity> localEntitiesDeleted;
+    private HashMap<Uuid, Entity> localEntitiesNew;
+    private HashMap<Uuid, Entity> localEntitiesDeleted;
 
-    private HashMap<UUID, Action> actionBuffer;
+    private HashMap<Uuid, ArrayList<Action>> localActions;
+    private HashMap<Uuid, Action> localPositions;
+    private HashMap<Uuid, Action> localVelocities;
+
+    private HashMap<Uuid, ArrayList<Action>> netActions;
+    private HashMap<Uuid, Action> netPositions;
+    private HashMap<Uuid, Action> netVelocities;
+    private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
+    private HashMap<Uuid, Action> netPositionBuffer;
+    private HashMap<Uuid, Action> netVelocityBuffer;
+
+    private ReentrantLock lock;
 
     private PhysicsSpace physicsSpace;
 
-    public ObjectManager(Graveborn app) {
-        entityMap = new HashMap<UUID, Entity>();
-        localActionBuffer = new HashMap<UUID, Action>();
+    private boolean isDominant;
 
-        localEntitiesNew = new HashMap<UUID, Entity>();
-        localEntitiesDeleted = new HashMap<UUID, Entity>();
+    public ObjectManager(Graveborn app_, boolean isDominant_) {
+        entityMap = new HashMap<Uuid, Entity>();
 
-        actionBuffer = new HashMap<UUID, Action>();
+        localEntitiesNew = new HashMap<Uuid, Entity>();
+        localEntitiesDeleted = new HashMap<Uuid, Entity>();
+
+        localActions = new HashMap<Uuid, ArrayList<Action>>();
+        localPositions = new HashMap<Uuid, Action>();
+        localVelocities = new HashMap<Uuid, Action>();
+
+        netActions = new HashMap<Uuid, ArrayList<Action>>();
+        netPositions = new HashMap<Uuid, Action>();
+        netVelocities = new HashMap<Uuid, Action>();
+        netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
+        netPositionBuffer = new HashMap<Uuid, Action>();
+        netVelocityBuffer = new HashMap<Uuid, Action>();
+
+        lock = new ReentrantLock();
 
         BulletAppState bulletAppState = new BulletAppState();
-        app.getStateManager().attach(bulletAppState);
+        app_.getStateManager().attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(Vector3f.ZERO);
+
+        isDominant = isDominant_;
     }
 
     public void init() {
@@ -50,45 +78,116 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
-        //send updates
+        lock.lock();
+        netActions.putAll(netActionBuffer);
+        netActionBuffer.clear();
 
-        //fetch updates
+        netPositions.putAll(netPositionBuffer);
+        netPositionBuffer.clear();
 
-        //process updates
+        netVelocities.putAll(netVelocityBuffer);
+        netVelocityBuffer.clear();
+        lock.unlock();
+
+        //process netCreate and netDelete actions
+        netActions.forEach((uuid, array) -> {
+            array.forEach((action) -> {
+                if (action instanceof CreateAction) {
+                    CreateAction createAction = (CreateAction) action;
+
+                    if (!entityMap.containsKey(uuid)) {
+                        entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
+
+                        localEntitiesNew.put(uuid, getEntity(uuid));
+
+                        if (getEntity(uuid) instanceof RigEntity) {
+                            RigEntity rigEntity = (RigEntity) getEntity(uuid);
+
+                            physicsSpace.add(rigEntity.getRig());
+                        }
+                    } else {
+                        LOGGER.log(Level.FINER, "OM: entity is already known");
+                    }
+                } else if (action instanceof DeleteAction) {
+                    DeleteAction deleteAction = (DeleteAction) action;
+
+                    localEntitiesDeleted.put(uuid, getEntity(uuid));
+                }
+            });
+        });
+        
         entityMap.forEach((uuid, entity) -> {
-            if (actionBuffer.containsKey(uuid)) {
-                actionBuffer.entrySet().forEach((entry) -> {
-                    entity.processAction(entry.getValue());
-                });
+            if (netVelocities.size() > 0) {
+                // process net velocity
+                if (netVelocities.containsKey(uuid)) {
+                    entity.processAction(netVelocities.get(uuid));
+                }
+            }
+
+            if (netPositions.size() > 0) {
+                // process net position
+                if (netPositions.containsKey(uuid)) {
+                    entity.processAction(netPositions.get(uuid));
+                }
+            }
+            
+            if(netActions.size() > 0) {
+                // process net actions
+                if (netActions.containsKey(uuid)) {
+                    netActions.get(uuid).forEach((action) -> {
+                        entity.processAction(action);
+                    });
+                }
             }
 
             entity.onUpdate(tpf);
         });
 
-        actionBuffer.clear();
+        netActions.clear();
+        netPositions.clear();
+        netVelocities.clear();
     }
 
     public void shutdown() {
 
     }
 
-    public void submitEntityAction(UUID uuid, Action action) {
-        localActionBuffer.put(uuid, action);
-
+    public void submitEntityAction(Uuid uuid, Action action, boolean isDominantAction) {
+        
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
             entity.processAction(action);
+
+            if (action instanceof MoveAction) {
+                if(!isDominant || isDominantAction) {
+                    localPositions.put(uuid, action);
+                }
+            } else if (action instanceof VelocityAction) {
+                if (!isDominant || isDominantAction) {
+                    localPositions.put(uuid, new MoveAction(getEntity(uuid).getPosition()));
+                    localVelocities.put(uuid, action);
+                }
+            } else {
+                if (null == localActions.get(uuid)) {
+                    localActions.put(uuid, new ArrayList<Action>());
+                }
+                localActions.get(uuid).add(action);
+            }
         }
     }
 
-    public UUID createEntity(Entity entity) {
-        UUID id = UUID.randomUUID();
+    public Uuid createEntity(Type type, String name) {
+        Uuid id = new Uuid();
+        Entity entity = type.build(id, this, name);
 
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
-        entity.setID(id);
+        if (null == localActions.get(id)) {
+            localActions.put(id, new ArrayList<Action>());
+        }
+        localActions.get(id).add(new CreateAction(entity.getType(), entity.getName()));
 
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
@@ -101,11 +200,16 @@ public class ObjectManager {
         return id;
     }
 
-    public void deleteEntity(UUID uuid) {
+    public void deleteEntity(Uuid uuid) {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
             entity.onShutdown();
+
+            if (null == localActions.get(uuid)) {
+                localActions.put(uuid, new ArrayList<Action>());
+            }
+            localActions.get(uuid).add(new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
             entityMap.remove(uuid);
@@ -114,11 +218,11 @@ public class ObjectManager {
         }
     }
 
-    public Entity getEntity(UUID uuid) {
+    public Entity getEntity(Uuid uuid) {
         if (entityMap.containsKey(uuid)) {
             return entityMap.get(uuid);
         } else {
-            throw new RuntimeException("unknown entity");
+            throw new RuntimeException("OM: unknown entity");
         }
     }
 
@@ -146,49 +250,64 @@ public class ObjectManager {
         return found;
     }
 
-    public HashMap<UUID, Entity> getLocalEntitiesNew() {
-        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesNew.clone();
-        assert (null != copy);
+    public HashMap<Uuid, Entity> getLocalEntitiesNew() {
+        HashMap<Uuid, Entity> copy = new HashMap<>(localEntitiesNew);
 
         localEntitiesNew.clear();
 
         return copy;
     }
 
-    public HashMap<UUID, Entity> getLocalEntitiesDeleted() {
-        HashMap<UUID, Entity> copy = (HashMap<UUID, Entity>) localEntitiesDeleted.clone();
-        assert (null != copy);
+    public HashMap<Uuid, Entity> getLocalEntitiesDeleted() {
+        HashMap<Uuid, Entity> copy = new HashMap<>(localEntitiesDeleted);
 
         localEntitiesDeleted.clear();
 
         return copy;
     }
 
-    public void takeNotice(Notice notice) {
-        // ...
+    public void takeUpdate(Update update) {
+        lock.lock();
+
+        netActionBuffer.putAll(update.getActions());
+        netPositionBuffer.putAll(update.getPositions());
+        netVelocityBuffer.putAll(update.getVelocities());
+
+        lock.unlock();
     }
 
-    public void forceNotice(Notice notice) {
-        // ...
+    public Update getUpdate() {
+        Update update = new Update();
+
+        update.addActions(localActions);
+        localActions.clear();
+
+        update.addPositions(localPositions);
+        localPositions.clear();
+
+        update.addVelocities(localVelocities);
+        localVelocities.clear();
+
+        return update;
     }
 
-    public Notice giveNotice() {
-        Notice notice = new Notice();
+    public Update getAll() {
+        Update update = new Update();
 
-        return notice;
-    }
+        entityMap.forEach((uuid, entity) -> {
+            update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
 
-    public void takeSync(Sync sync) {
-        // ...
-    }
+            if (entity instanceof RigEntity) {
+                RigEntity rigEntity = (RigEntity) entity;
 
-    public void forceSync(Sync sync) {
-        // ...
-    }
+                update.addPosition(uuid, new MoveAction(rigEntity.getPosition()));
+                update.addVelocity(uuid, new VelocityAction(rigEntity.getVelocity()));
 
-    public Sync giveSync() {
-        Sync sync = new Sync();
+            } else {
+                update.addPosition(uuid, new MoveAction(entity.getPosition()));
+            }
+        });
 
-        return sync;
+        return update;
     }
 }

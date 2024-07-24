@@ -3,10 +3,9 @@ package com.grave.Networking;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.grave.Networking.Message.NoticeMessage;
+import com.grave.Networking.Message.UpdateMessage;
 import com.grave.Networking.Message.ServerHandshakeMessage;
 import com.grave.Networking.Message.ServerShutdownMessage;
-import com.grave.Networking.Message.SyncMessage;
 import com.jme3.network.Client;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Message;
@@ -23,10 +22,12 @@ public class NetClientListener implements MessageListener<Client> {
     @Override
     public void messageReceived(Client source, Message message) {
         if (message instanceof ServerHandshakeMessage) {
-            ServerHandshakeMessage joinMessage = (ServerHandshakeMessage) message;
-            LOGGER.log(Level.INFO, "CLIENT: connected to server '" + joinMessage.getServerName() + "'");
+            ServerHandshakeMessage handshakeMessage = (ServerHandshakeMessage) message;
+            LOGGER.log(Level.INFO, "CLIENT: connected to server '" + handshakeMessage.getServerName() + "'");
 
-            client.serverName = joinMessage.getServerName();
+            client.serverName = handshakeMessage.getServerName();
+
+            client.objectmanager.takeUpdate(handshakeMessage.getAll());
         }
         else if(message instanceof ServerShutdownMessage)
         {
@@ -34,15 +35,10 @@ public class NetClientListener implements MessageListener<Client> {
             
             LOGGER.log(Level.INFO, "CLIENT: disconnected from server");
         }
-        else if (message instanceof SyncMessage) {
-            SyncMessage syncMessage = (SyncMessage) message;
+        else if (message instanceof UpdateMessage) {
+            UpdateMessage updateMessage = (UpdateMessage) message;
 
-            client.objectmanager.forceSync(syncMessage.getSync());
-        }
-        else if (message instanceof NoticeMessage) {
-            NoticeMessage noticeMessage = (NoticeMessage) message;
-
-            client.objectmanager.forceNotice(noticeMessage.getNotice());
+            client.objectmanager.takeUpdate(updateMessage.getUpdate());
         }
         else {
             LOGGER.log(Level.WARNING, "CLIENT: received unknown message");

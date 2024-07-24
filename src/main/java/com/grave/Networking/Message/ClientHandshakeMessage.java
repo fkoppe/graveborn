@@ -6,6 +6,7 @@ import com.jme3.network.AbstractMessage;
 @Serializable
 public class ClientHandshakeMessage extends AbstractMessage {
     private final String clientName;
+    //private final Update all;
 
     public ClientHandshakeMessage() {
         clientName = null;
