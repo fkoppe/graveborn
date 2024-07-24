@@ -30,7 +30,7 @@ public class ObjectManager {
     private HashMap<Uuid, ArrayList<Action>> localActionBuffer;
     private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
 
-    HashMap<Uuid, Action> positionBuffer;
+    HashMap<Uuid, Action> localPositionBuffer;
 
     private PhysicsSpace physicsSpace;
 
@@ -43,7 +43,7 @@ public class ObjectManager {
         localActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
         netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
 
-        positionBuffer = new HashMap<Uuid, Action>();
+        localPositionBuffer = new HashMap<Uuid, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -110,9 +110,9 @@ public class ObjectManager {
             entity.processAction(action);
 
             if (action instanceof MoveAction) {
-                positionBuffer.put(uuid, action);
+                localPositionBuffer.put(uuid, action);
             } else if (action instanceof VelocityAction) {
-                positionBuffer.put(uuid, new MoveAction(entity.getPosition()));
+                localPositionBuffer.put(uuid, new MoveAction(entity.getPosition()));
             } else {
                 localActionBuffer.get(uuid).add(action);
             }
@@ -221,7 +221,7 @@ public class ObjectManager {
 
         HashMap<Uuid, Action> position = update.getPositions();
         position.forEach((uuid, action) -> {
-            if (netActionBuffer.containsKey(uuid)) {
+            if (entityMap.containsKey(uuid)) {
                 getEntity(uuid).processAction(action);
             }
         });
@@ -234,7 +234,7 @@ public class ObjectManager {
 
         //localActionBuffer.clear();
 
-        update.addPositions(positionBuffer);
+        update.addPositions(localPositionBuffer);
 
         //positionBuffer.clear();
 
