@@ -236,7 +236,7 @@ public class ObjectManager {
 
         entityMap.forEach((uuid, entity) -> {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
-            update.addAction(uuid, new MoveAction(entity.getPosition()));
+            //update.addAction(uuid, new MoveAction(entity.getPosition()));
         });
 
         return update;
