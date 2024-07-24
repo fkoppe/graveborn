@@ -5,7 +5,6 @@ import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
-import com.grave.Game.Entities.Zombie;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.CreateAction;
 import com.grave.Object.Actions.DeleteAction;
@@ -76,10 +75,36 @@ public class ObjectManager {
         netPositionBuffer.clear();
         lock.unlock();
 
+        //TODO
         System.out.println(entityMap.size());
 
-        processCreationDeletion();
+        netActions.forEach((uuid, array) -> {
+            array.forEach((action) -> {
+                if (action instanceof CreateAction) {
+                    CreateAction createAction = (CreateAction) action;
 
+                    if (!entityMap.containsKey(uuid)) {
+                        entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
+
+                        localEntitiesNew.put(uuid, getEntity(uuid));
+
+                        if (getEntity(uuid) instanceof RigEntity) {
+                            RigEntity rigEntity = (RigEntity) getEntity(uuid);
+
+                            // physicsSpace.add(rigEntity.getRig());
+                        }
+                    } else {
+                        LOGGER.log(Level.FINER, "OM: entity is already known");
+                    }
+                } else if (action instanceof DeleteAction) {
+                    DeleteAction deleteAction = (DeleteAction) action;
+
+                    localEntitiesDeleted.put(uuid, getEntity(uuid));
+                }
+            });
+        });
+
+        //TODO
         System.out.println(entityMap.size());
         
         entityMap.forEach((uuid, entity) -> {
@@ -88,6 +113,10 @@ public class ObjectManager {
                 if (netPositions.containsKey(uuid)) {
                     System.out.println(netPositions.get(uuid));
                     entity.processAction(netPositions.get(uuid));
+                    System.out.println("yes " + uuid);
+                }
+                else {
+                    System.out.println("nope " + uuid);
                 }
             }
             
@@ -109,35 +138,6 @@ public class ObjectManager {
 
     public void shutdown() {
 
-    }
-
-    public void processCreationDeletion() {
-        netActions.forEach((uuid, array) -> {
-            array.forEach((action) -> {
-                if (action instanceof CreateAction) {
-                    CreateAction createAction = (CreateAction) action;
-
-                    if (!entityMap.containsKey(uuid)) {
-                        entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
-
-                        localEntitiesNew.put(uuid, getEntity(uuid));
-
-                        if (getEntity(uuid) instanceof RigEntity) {
-                            RigEntity rigEntity = (RigEntity) getEntity(uuid);
-
-                            // physicsSpace.add(rigEntity.getRig());
-                        }
-                    }
-                    else {
-                        LOGGER.log(Level.FINER, "OM: entity is already known");
-                    }
-                } else if (action instanceof DeleteAction) {
-                    DeleteAction deleteAction = (DeleteAction) action;
-
-                    localEntitiesDeleted.put(uuid, getEntity(uuid));
-                }
-            });
-        });
     }
 
     public void submitEntityAction(Uuid uuid, Action action) {
