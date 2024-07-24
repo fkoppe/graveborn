@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.grave.Networking.Message.*;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Update;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.system.NanoTimer;
@@ -20,9 +21,10 @@ public class NetClient extends Net {
     private int port;
 
     private Client instance = null;
-    private boolean connected = false;
     private NanoTimer lastTryTimer = new NanoTimer();
     private NanoTimer netTimer = new NanoTimer();
+
+    Update allLocal;
 
     String serverName;
 
@@ -36,7 +38,7 @@ public class NetClient extends Net {
 
     public void init()
     {
-        
+        allLocal = objectmanager.getAll();
     }
 
     public void shutdown()
@@ -49,18 +51,17 @@ public class NetClient extends Net {
             disconnect();
         }
 
-        if (!connected && lastTryTimer.getTimeInSeconds() >= RETRY_DELAY) {
+        if (!instance.isConnected() && lastTryTimer.getTimeInSeconds() >= RETRY_DELAY) {
             lastTryTimer.reset();
             LOGGER.log(Level.INFO, "CLIENT: trying to connect to " + ip + ":" + port);
 
             try {
                 instance = Network.connectToServer(ip, port);
-                connected = true;
             } catch (IOException exception) {
                 LOGGER.log(Level.WARNING, "CLIENT: failed to connect to server");
             }
 
-            if (connected) {
+            if (instance.isConnected()) {
                 LOGGER.log(Level.FINE, "CLIENT: establishing connection...");
 
                 NetSerializer.serializeAll();
@@ -76,10 +77,10 @@ public class NetClient extends Net {
             }
         }
 
-        if (connected && netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
+        if (instance.isConnected() && netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
             netTimer.reset();
 
-            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
+            UpdateMessage updateMessage = new UpdateMessage(allLocal);
 
             instance.send(updateMessage);
         }
@@ -93,7 +94,5 @@ public class NetClient extends Net {
                 instance.close();
             }
         }
-
-        connected = false;
     }
 }
