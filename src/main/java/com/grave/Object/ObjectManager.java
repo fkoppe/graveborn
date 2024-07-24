@@ -5,6 +5,7 @@ import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
+import com.grave.Game.Entities.Zombie;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.CreateAction;
 import com.grave.Object.Actions.DeleteAction;
@@ -258,13 +259,13 @@ public class ObjectManager {
     }
 
     public void takeUpdate(Update update) {
-        //update.getPositions().forEach((uuid, action) -> {
-        //    if(entityMap.containsKey(uuid)) {
-        //        if (getEntity(uuid) instanceof Zombie) {
-        //            update.getPositions().remove(uuid);
-        //        }
-        //    }
-        //});
+        update.getPositions().forEach((uuid, action) -> {
+            if(entityMap.containsKey(uuid)) {
+                if (getEntity(uuid) instanceof Zombie) {
+                    update.getPositions().remove(uuid);
+                }
+            }
+        });
 
         forceUpdate(update);
     }
