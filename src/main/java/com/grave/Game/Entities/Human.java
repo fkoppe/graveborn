@@ -14,6 +14,7 @@ public class Human extends RigEntity {
         geometry.setQueueBucket(RenderQueue.Bucket.Transparent);
 
         rig.setMass(MASS);
+        rig.setFriction(0.5f);
     }
 
     @Override

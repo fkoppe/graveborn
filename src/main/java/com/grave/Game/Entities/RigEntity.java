@@ -51,4 +51,12 @@ public class RigEntity extends Entity {
     public Vector3f getVelocity() {
         return rig.getLinearVelocity();
     }
+
+    public void setFriction(float firction) {
+        rig.setFriction(firction);
+    }
+
+    public float getFriction() {
+        return rig.getFriction();
+    }
 }
