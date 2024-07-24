@@ -148,7 +148,8 @@ public class ObjectManager {
             if (action instanceof MoveAction) {
                 localPositions.put(uuid, action);
             } else if (action instanceof VelocityAction) {
-                localPositions.put(uuid, new MoveAction(entity.getPosition()));
+                localPositions.put(uuid, action);
+                //localPositions.put(uuid, new MoveAction(entity.getPosition()));
             } else {
                 localActions.get(uuid).add(action);
             }
