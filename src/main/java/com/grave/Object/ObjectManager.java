@@ -129,7 +129,7 @@ public class ObjectManager {
         if (null == localActionBuffer.get(id)) {
             localActionBuffer.put(id, new ArrayList<Action>());
         }
-        //localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
+        localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
 
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
