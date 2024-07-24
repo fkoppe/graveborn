@@ -31,6 +31,7 @@ public class ObjectManager {
     private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
 
     HashMap<Uuid, Action> localPositionBuffer;
+    HashMap<Uuid, Action> netPositionBuffer;
 
     private PhysicsSpace physicsSpace;
 
@@ -44,6 +45,7 @@ public class ObjectManager {
         netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
 
         localPositionBuffer = new HashMap<Uuid, Action>();
+        netPositionBuffer = new HashMap<Uuid, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
         app.getStateManager().attach(bulletAppState);
@@ -215,16 +217,8 @@ public class ObjectManager {
     }
 
     public void forceUpdate(Update update) {
-        netActionBuffer = update.getActions();
-
-        processCreationDeletion();
-
-        HashMap<Uuid, Action> position = update.getPositions();
-        position.forEach((uuid, action) -> {
-            if (entityMap.containsKey(uuid)) {
-                getEntity(uuid).processAction(action);
-            }
-        });
+        netActionBuffer.putAll(update.getActions());
+        netPositionBuffer.putAll(update.getPositions());
     }
 
     public Update getUpdate() {
@@ -246,7 +240,7 @@ public class ObjectManager {
 
         entityMap.forEach((uuid, entity) -> {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
-            //update.addPosition(uuid, new MoveAction(entity.getPosition()));
+            update.addPosition(uuid, new MoveAction(entity.getPosition()));
         });
 
         return update;

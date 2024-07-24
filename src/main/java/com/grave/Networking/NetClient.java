@@ -21,6 +21,7 @@ public class NetClient extends Net {
     private int port;
 
     private Client instance = null;
+    private boolean connected = false;
     private NanoTimer lastTryTimer = new NanoTimer();
     private NanoTimer netTimer = new NanoTimer();
 
@@ -51,17 +52,18 @@ public class NetClient extends Net {
             disconnect();
         }
 
-        if (!instance.isConnected() && lastTryTimer.getTimeInSeconds() >= RETRY_DELAY) {
+        if (!connected && lastTryTimer.getTimeInSeconds() >= RETRY_DELAY) {
             lastTryTimer.reset();
             LOGGER.log(Level.INFO, "CLIENT: trying to connect to " + ip + ":" + port);
 
             try {
                 instance = Network.connectToServer(ip, port);
+                connected = true;
             } catch (IOException exception) {
                 LOGGER.log(Level.WARNING, "CLIENT: failed to connect to server");
             }
 
-            if (instance.isConnected()) {
+            if (connected) {
                 LOGGER.log(Level.FINE, "CLIENT: establishing connection...");
 
                 NetSerializer.serializeAll();
@@ -77,16 +79,18 @@ public class NetClient extends Net {
             }
         }
 
-        if (instance.isConnected() && netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
+        if (connected && netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
             netTimer.reset();
 
-            UpdateMessage updateMessage = new UpdateMessage(allLocal);
+            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getAll());
 
             instance.send(updateMessage);
         }
     }
 
     void disconnect() {
+        connected = false;
+
         if(null != instance) {
             if (instance.isConnected()) {
                 LOGGER.log(Level.FINE, "CLIENT: closing connection...");
