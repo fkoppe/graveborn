@@ -229,8 +229,10 @@ public class ObjectManager {
 
     public void takeUpdate(Update update) {
         update.getPositions().forEach((uuid, action) -> {
-            if(getEntity(uuid) instanceof Zombie) {
-                update.getPositions().remove(uuid);
+            if(entityMap.containsKey(uuid)) {
+                if (getEntity(uuid) instanceof Zombie) {
+                    update.getPositions().remove(uuid);
+                }
             }
         });
 
