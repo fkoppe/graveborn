@@ -5,6 +5,7 @@ import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
+import com.grave.Game.Entities.Zombie;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.CreateAction;
 import com.grave.Object.Actions.DeleteAction;
@@ -27,11 +28,13 @@ public class ObjectManager {
     private HashMap<Uuid, Entity> localEntitiesNew;
     private HashMap<Uuid, Entity> localEntitiesDeleted;
 
-    private HashMap<Uuid, ArrayList<Action>> localActionBuffer;
-    private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
+    private HashMap<Uuid, ArrayList<Action>> localActions;
+    private HashMap<Uuid, Action> localPositions;
 
-    HashMap<Uuid, Action> localPositionBuffer;
-    HashMap<Uuid, Action> netPositionBuffer;
+    private HashMap<Uuid, ArrayList<Action>> netActions;
+    private HashMap<Uuid, Action> netPositions;
+    private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
+    private HashMap<Uuid, Action> netPositionBuffer;
 
     private PhysicsSpace physicsSpace;
 
@@ -41,10 +44,12 @@ public class ObjectManager {
         localEntitiesNew = new HashMap<Uuid, Entity>();
         localEntitiesDeleted = new HashMap<Uuid, Entity>();
 
-        localActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
-        netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
+        localActions = new HashMap<Uuid, ArrayList<Action>>();
+        localPositions = new HashMap<Uuid, Action>();
 
-        localPositionBuffer = new HashMap<Uuid, Action>();
+        netActions = new HashMap<Uuid, ArrayList<Action>>();
+        netPositions = new HashMap<Uuid, Action>();
+        netActions = new HashMap<Uuid, ArrayList<Action>>();
         netPositionBuffer = new HashMap<Uuid, Action>();
 
         BulletAppState bulletAppState = new BulletAppState();
@@ -58,12 +63,23 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
+        netActions.putAll(netActionBuffer);
+        netActionBuffer.clear();
+
+        netPositions.putAll(netPositionBuffer);
+        netPositionBuffer.clear();
+
         processCreationDeletion();
         
-        //process net actions
         entityMap.forEach((uuid, entity) -> {
-            if (netActionBuffer.containsKey(uuid)) {
-                netActionBuffer.get(uuid).forEach((action) -> {
+            //process net position
+            if (netPositions.containsKey(uuid)) {
+                entity.processAction(netPositions.get(uuid));
+            }
+
+            // process net actions
+            if (netActions.containsKey(uuid)) {
+                netActions.get(uuid).forEach((action) -> {
                     entity.processAction(action);
                 });
             }
@@ -71,7 +87,8 @@ public class ObjectManager {
             entity.onUpdate(tpf);
         });
 
-        netActionBuffer.clear();
+        netActions.clear();
+        netPositions.clear();
     }
 
     public void shutdown() {
@@ -79,7 +96,7 @@ public class ObjectManager {
     }
 
     public void processCreationDeletion() {
-        netActionBuffer.forEach((uuid, array) -> {
+        netActions.forEach((uuid, array) -> {
             array.forEach((action) -> {
                 if (action instanceof CreateAction) {
                     CreateAction createAction = (CreateAction) action;
@@ -112,11 +129,11 @@ public class ObjectManager {
             entity.processAction(action);
 
             if (action instanceof MoveAction) {
-                localPositionBuffer.put(uuid, action);
+                localPositions.put(uuid, action);
             } else if (action instanceof VelocityAction) {
-                localPositionBuffer.put(uuid, new MoveAction(entity.getPosition()));
+                localPositions.put(uuid, new MoveAction(entity.getPosition()));
             } else {
-                localActionBuffer.get(uuid).add(action);
+                localActions.get(uuid).add(action);
             }
         }
     }
@@ -128,10 +145,10 @@ public class ObjectManager {
         entityMap.put(id, entity);
         localEntitiesNew.put(id, entity);
 
-        if (null == localActionBuffer.get(id)) {
-            localActionBuffer.put(id, new ArrayList<Action>());
+        if (null == localActions.get(id)) {
+            localActions.put(id, new ArrayList<Action>());
         }
-        localActionBuffer.get(id).add(new CreateAction(entity.getType(), entity.getName()));
+        localActions.get(id).add(new CreateAction(entity.getType(), entity.getName()));
 
         if (entity instanceof RigEntity) {
             RigEntity rigEntity = (RigEntity) entity;
@@ -150,10 +167,10 @@ public class ObjectManager {
 
             entity.onShutdown();
 
-            if (null == localActionBuffer.get(uuid)) {
-                localActionBuffer.put(uuid, new ArrayList<Action>());
+            if (null == localActions.get(uuid)) {
+                localActions.put(uuid, new ArrayList<Action>());
             }
-            localActionBuffer.get(uuid).add(new DeleteAction());
+            localActions.get(uuid).add(new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
             entityMap.remove(uuid);
@@ -211,8 +228,12 @@ public class ObjectManager {
     }
 
     public void takeUpdate(Update update) {
-        // ...
-        //TODO
+        update.getPositions().forEach((uuid, action) -> {
+            if(getEntity(uuid) instanceof Zombie) {
+                update.getPositions().remove(uuid);
+            }
+        });
+
         forceUpdate(update);
     }
 
@@ -224,13 +245,13 @@ public class ObjectManager {
     public Update getUpdate() {
         Update update = new Update();
 
-        update.addActions(localActionBuffer);
+        update.addActions(localActions);
 
-        localActionBuffer.clear();
+        localActions.clear();
 
-        update.addPositions(localPositionBuffer);
+        update.addPositions(localPositions);
 
-        localPositionBuffer.clear();
+        localPositions.clear();
 
         return update;
     }
