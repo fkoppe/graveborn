@@ -232,11 +232,11 @@ public class ObjectManager {
 
         update.addActions(localActionBuffer);
 
-        //localActionBuffer.clear();
+        localActionBuffer.clear();
 
         update.addPositions(localPositionBuffer);
 
-        //positionBuffer.clear();
+        localPositionBuffer.clear();
 
         return update;
     }
