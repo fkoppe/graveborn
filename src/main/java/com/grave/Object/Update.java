@@ -12,11 +12,15 @@ import com.jme3.network.serializing.Serializable;
 @Serializable
 public class Update {
     private HashMap<Uuid, ArrayList<Action>> actions;
-    private HashMap<Uuid, ArrayList<Action>> transforms;
+
+    private HashMap<Uuid, Action> positions;
+    private HashMap<Uuid, Action> velocities;
 
     public Update() {
         actions = new HashMap<Uuid, ArrayList<Action>>();
-        transforms = new HashMap<Uuid, ArrayList<Action>>();
+
+        positions = new HashMap<Uuid, Action>();
+        velocities = new HashMap<Uuid, Action>();
     }
 
     public void addAction(Uuid uuid, Action action) {
@@ -38,28 +42,31 @@ public class Update {
         });
     }
 
-    public void addTransform(Uuid uuid, MoveAction move, VelocityAction velocity) {
-        if (null == transforms.get(uuid)) {
-            transforms.put(uuid, new ArrayList<Action>(2));
-        }
-
-        transforms.get(uuid).add(move);
-        transforms.get(uuid).add(velocity);
+    public void addPosition(Uuid uuid, MoveAction move) {
+        positions.put(uuid, move);
     }
 
-    public void addTransforms(HashMap<Uuid, ArrayList<Action>> additional_) {
-        additional_.forEach((uuid, array) -> {
-            assert (array.size() == 2);
-        });
+    public void addPositions(HashMap<Uuid, Action> additional_) {
+        positions.putAll(additional_);
+    }
 
-        transforms.putAll(additional_);
+    public void addVelocity(Uuid uuid, VelocityAction velocity) {
+        velocities.put(uuid, velocity);
+    }
+
+    public void addVelocities(HashMap<Uuid, Action> additional_) {
+        velocities.putAll(additional_);
     }
 
     public HashMap<Uuid, ArrayList<Action>> getActions() {
         return actions;
     }
 
-    public HashMap<Uuid, ArrayList<Action>> getTransforms() {
-        return transforms;
+    public HashMap<Uuid, Action> getPositions() {
+        return positions;
+    }
+
+    public HashMap<Uuid, Action> getVelocities() {
+        return positions;
     }
 }

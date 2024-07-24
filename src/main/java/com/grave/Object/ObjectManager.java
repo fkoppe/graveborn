@@ -29,12 +29,15 @@ public class ObjectManager {
     private HashMap<Uuid, Entity> localEntitiesDeleted;
 
     private HashMap<Uuid, ArrayList<Action>> localActions;
-    private HashMap<Uuid, ArrayList<Action>> localTransforms;
+    private HashMap<Uuid, Action> localPositions;
+    private HashMap<Uuid, Action> localVelocities;
 
     private HashMap<Uuid, ArrayList<Action>> netActions;
-    private HashMap<Uuid, ArrayList<Action>> netTransforms;
+    private HashMap<Uuid, Action> netPositions;
+    private HashMap<Uuid, Action> netVelocities;
     private HashMap<Uuid, ArrayList<Action>> netActionBuffer;
-    private HashMap<Uuid, ArrayList<Action>> netTransformBuffer;
+    private HashMap<Uuid, Action> netPositionBuffer;
+    private HashMap<Uuid, Action> netVelocityBuffer;
 
     private ReentrantLock lock;
 
@@ -47,12 +50,15 @@ public class ObjectManager {
         localEntitiesDeleted = new HashMap<Uuid, Entity>();
 
         localActions = new HashMap<Uuid, ArrayList<Action>>();
-        localTransforms = new HashMap<Uuid, ArrayList<Action>>();
+        localPositions = new HashMap<Uuid, Action>();
+        localVelocities = new HashMap<Uuid, Action>();
 
         netActions = new HashMap<Uuid, ArrayList<Action>>();
-        netTransforms = new HashMap<Uuid, ArrayList<Action>>();
+        netPositions = new HashMap<Uuid, Action>();
+        netVelocities = new HashMap<Uuid, Action>();
         netActionBuffer = new HashMap<Uuid, ArrayList<Action>>();
-        netTransformBuffer = new HashMap<Uuid, ArrayList<Action>>();
+        netPositionBuffer = new HashMap<Uuid, Action>();
+        netVelocityBuffer = new HashMap<Uuid, Action>();
 
         lock = new ReentrantLock();
 
@@ -71,8 +77,11 @@ public class ObjectManager {
         netActions.putAll(netActionBuffer);
         netActionBuffer.clear();
 
-        netTransforms.putAll(netTransformBuffer);
-        netTransformBuffer.clear();
+        netPositions.putAll(netPositionBuffer);
+        netPositionBuffer.clear();
+
+        netVelocities.putAll(netVelocityBuffer);
+        netVelocityBuffer.clear();
         lock.unlock();
 
         //process netCreate and netDelete actions
@@ -103,20 +112,17 @@ public class ObjectManager {
         });
         
         entityMap.forEach((uuid, entity) -> {
-            if (netTransforms.size() > 0) {
-                // process net position
-                if (netTransforms.containsKey(uuid)) {
-                    ArrayList<Action> array = netTransforms.get(uuid);
-
-                    if(null != array.toArray()[0]) {
-                        entity.processAction((Action)array.toArray()[0]);
-                    }
-
-                    if (null != array.toArray()[1]) {
-                        entity.processAction((Action)array.toArray()[1]);
-                    }
+            if (netVelocities.size() > 0) {
+                // process net velocity
+                if (netVelocities.containsKey(uuid)) {
+                    entity.processAction(netVelocities.get(uuid));
                 }
-                else {
+            }
+
+            if (netPositions.size() > 0) {
+                // process net position
+                if (netPositions.containsKey(uuid)) {
+                    entity.processAction(netPositions.get(uuid));
                 }
             }
             
@@ -133,7 +139,8 @@ public class ObjectManager {
         });
 
         netActions.clear();
-        netTransforms.clear();
+        netPositions.clear();
+        netVelocities.clear();
     }
 
     public void shutdown() {
@@ -148,21 +155,10 @@ public class ObjectManager {
             entity.processAction(action);
 
             if (action instanceof MoveAction) {
-                if (localTransforms.containsKey(uuid)) {
-                    localTransforms.get(uuid).toArray()[0] = action;
-                } else {
-                    ArrayList<Action> array = new ArrayList<Action>();
-                    array.add(0, action);
-                    array.add(1, null);
-
-                    localTransforms.put(uuid, array);
-                }
+                localPositions.put(uuid, action);
             } else if (action instanceof VelocityAction) {
-                ArrayList<Action> array = new ArrayList<Action>(2);
-                array.add(0, new MoveAction(getEntity(uuid).getPosition()));
-                array.add(1, action);
-
-                localTransforms.put(uuid, array);
+                localPositions.put(uuid, new MoveAction(getEntity(uuid).getPosition()));
+                localVelocities.put(uuid, action);
             } else {
                 if (null == localActions.get(uuid)) {
                     localActions.put(uuid, new ArrayList<Action>());
@@ -277,7 +273,8 @@ public class ObjectManager {
         lock.lock();
 
         netActionBuffer.putAll(update.getActions());
-        netTransformBuffer.putAll(update.getTransforms());
+        netPositionBuffer.putAll(update.getPositions());
+        netVelocityBuffer.putAll(update.getVelocities());
 
         lock.unlock();
     }
@@ -288,8 +285,11 @@ public class ObjectManager {
         update.addActions(localActions);
         localActions.clear();
 
-        update.addTransforms(localTransforms);
-        localTransforms.clear();
+        update.addPositions(localPositions);
+        localPositions.clear();
+
+        update.addVelocities(localVelocities);
+        localVelocities.clear();
 
         return update;
     }
@@ -302,9 +302,12 @@ public class ObjectManager {
 
             if (entity instanceof RigEntity) {
                 RigEntity rigEntity = (RigEntity) entity;
-                update.addTransform(uuid, new MoveAction(rigEntity.getPosition()), new VelocityAction(rigEntity.getVelocity()));
+
+                update.addPosition(uuid, new MoveAction(rigEntity.getPosition()));
+                update.addVelocity(uuid, new VelocityAction(rigEntity.getVelocity()));
+
             } else {
-                update.addTransform(uuid, new MoveAction(entity.getPosition()), null);
+                update.addPosition(uuid, new MoveAction(entity.getPosition()));
             }
         });
 
