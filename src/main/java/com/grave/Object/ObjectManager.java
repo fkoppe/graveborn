@@ -88,12 +88,18 @@ public class ObjectManager {
                 System.out.println(netPositions.get(uuid));
                 entity.processAction(netPositions.get(uuid));
             }
+            else {
+                LOGGER.log(Level.WARNING, "OM: newPosition for unknown entity");
+            }
 
             // process net actions
             if (netActions.containsKey(uuid)) {
                 netActions.get(uuid).forEach((action) -> {
                     entity.processAction(action);
                 });
+            }
+            else {
+                LOGGER.log(Level.WARNING, "OM: netAction for unknown entity");
             }
 
             entity.onUpdate(tpf);
@@ -123,6 +129,9 @@ public class ObjectManager {
 
                             // physicsSpace.add(rigEntity.getRig());
                         }
+                    }
+                    else {
+                        LOGGER.log(Level.FINER, "OM: entity is already known");
                     }
                 } else if (action instanceof DeleteAction) {
                     DeleteAction deleteAction = (DeleteAction) action;
@@ -254,8 +263,11 @@ public class ObjectManager {
     public void forceUpdate(Update update) {
         lock.lock();
         netActionBuffer.putAll(update.getActions());
+
         netPositionBuffer.putAll(update.getPositions());
         lock.unlock();
+
+        LOGGER.log(Level.FINER, "OM: forcing " + update.getActions().size() + " entities and " + update.getPositions().size() + " positions");
     }
 
     public Update getUpdate() {
@@ -279,6 +291,8 @@ public class ObjectManager {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
             update.addPosition(uuid, new MoveAction(entity.getPosition()));
         });
+
+        LOGGER.log(Level.FINER, "OM: getAll with " + update.getActions().size() + "entities and " + update.getPositions() + " entities");
 
         return update;
     }
