@@ -213,6 +213,15 @@ public class ObjectManager {
 
     public void forceUpdate(Update update) {
         netActionBuffer = update.getActions();
+
+        update(0);
+
+        HashMap<Uuid, Action> position = update.getPositions();
+        position.forEach((uuid, action) -> {
+            if (netActionBuffer.containsKey(uuid)) {
+                getEntity(uuid).processAction(action);
+            }
+        });
     }
 
     public Update getUpdate() {
@@ -222,9 +231,7 @@ public class ObjectManager {
 
         //localActionBuffer.clear();
 
-        positionBuffer.forEach((uuid, action) -> {
-            update.addAction(uuid, action);
-        });
+        update.addPositions(positionBuffer);
 
         //positionBuffer.clear();
 
@@ -236,7 +243,7 @@ public class ObjectManager {
 
         entityMap.forEach((uuid, entity) -> {
             update.addAction(uuid, new CreateAction(entity.getType(), entity.getName()));
-            //update.addAction(uuid, new MoveAction(entity.getPosition()));
+            update.addPosition(uuid, new MoveAction(entity.getPosition()));
         });
 
         return update;
