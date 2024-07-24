@@ -265,7 +265,7 @@ public class ObjectManager {
         netPositionBuffer.putAll(update.getPositions());
         lock.unlock();
 
-        LOGGER.log(Level.INFO, "OM: forcing " + update.getActions().size() + " entities and " + update.getPositions().size() + " positions");
+        LOGGER.log(Level.INFO, "OM: forcing " + update.getActions() + " entities and " + update.getPositions() + " positions");
     }
 
     public Update getUpdate() {
@@ -290,7 +290,7 @@ public class ObjectManager {
             update.addPosition(uuid, new MoveAction(entity.getPosition()));
         });
 
-        LOGGER.log(Level.INFO, "OM: getAll with " + update.getActions().size() + "entities and " + update.getPositions() + " entities");
+        LOGGER.log(Level.INFO, "OM: getAll with " + update.getActions() + "entities and " + update.getPositions() + " entities");
 
         return update;
     }
