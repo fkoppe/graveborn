@@ -82,7 +82,7 @@ public class NetClient extends Net {
         if (connected && netTimer.getTimeInSeconds() * NET_FREQUENCY >= 1) {
             netTimer.reset();
 
-            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getAll());
+            UpdateMessage updateMessage = new UpdateMessage(objectmanager.getUpdate());
 
             instance.send(updateMessage);
         }
