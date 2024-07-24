@@ -57,7 +57,7 @@ public class Zombie extends RigEntity {
             Entity target = objectManager.getEntity(targetID);
             Vector3f moveVector = target.getPosition().subtract(getPosition());
 
-            //objectManager.submitEntityAction(id, new VelocityAction(moveVector.normalize().mult(SPEED)));
+            objectManager.submitEntityAction(id, new VelocityAction(moveVector.normalize().mult(SPEED)));
         }
     }
 
