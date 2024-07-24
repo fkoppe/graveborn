@@ -56,30 +56,7 @@ public class ObjectManager {
     }
 
     public void update(float tpf) {
-        //process net creations and deletions
-        netActionBuffer.forEach((uuid, array) -> {
-            array.forEach((action) -> {
-                if (action instanceof CreateAction) {
-                    CreateAction createAction = (CreateAction) action;
-
-                    if(!entityMap.containsKey(uuid)) {
-                        entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
-
-                        localEntitiesNew.put(uuid, getEntity(uuid));
-
-                        if (getEntity(uuid) instanceof RigEntity) {
-                            RigEntity rigEntity = (RigEntity) getEntity(uuid);
-
-                            // physicsSpace.add(rigEntity.getRig());
-                        }
-                    }
-                } else if (action instanceof DeleteAction) {
-                    DeleteAction deleteAction = (DeleteAction) action;
-
-                    localEntitiesDeleted.put(uuid, getEntity(uuid));
-                }
-            }); 
-        });
+        processCreationDeletion();
         
         //process net actions
         entityMap.forEach((uuid, entity) -> {
@@ -97,6 +74,32 @@ public class ObjectManager {
 
     public void shutdown() {
 
+    }
+
+    public void processCreationDeletion() {
+        netActionBuffer.forEach((uuid, array) -> {
+            array.forEach((action) -> {
+                if (action instanceof CreateAction) {
+                    CreateAction createAction = (CreateAction) action;
+
+                    if (!entityMap.containsKey(uuid)) {
+                        entityMap.put(uuid, createAction.getType().build(uuid, this, createAction.getName()));
+
+                        localEntitiesNew.put(uuid, getEntity(uuid));
+
+                        if (getEntity(uuid) instanceof RigEntity) {
+                            RigEntity rigEntity = (RigEntity) getEntity(uuid);
+
+                            // physicsSpace.add(rigEntity.getRig());
+                        }
+                    }
+                } else if (action instanceof DeleteAction) {
+                    DeleteAction deleteAction = (DeleteAction) action;
+
+                    localEntitiesDeleted.put(uuid, getEntity(uuid));
+                }
+            });
+        });
     }
 
     public void submitEntityAction(Uuid uuid, Action action) {
@@ -214,7 +217,7 @@ public class ObjectManager {
     public void forceUpdate(Update update) {
         netActionBuffer = update.getActions();
 
-        update(0);
+        processCreationDeletion();
 
         HashMap<Uuid, Action> position = update.getPositions();
         position.forEach((uuid, action) -> {
