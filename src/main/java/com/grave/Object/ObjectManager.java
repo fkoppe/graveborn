@@ -109,6 +109,10 @@ public class ObjectManager {
         
         entityMap.forEach((uuid, entity) -> {
             if (netPositions.size() > 0) {
+                System.out.println(netPositions);
+                netPositions.get(uuid);
+                System.out.println("xxx " + uuid);
+                
                 // process net position
                 if (netPositions.containsKey(uuid)) {
                     System.out.println(netPositions.get(uuid));
