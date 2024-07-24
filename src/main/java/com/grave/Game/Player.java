@@ -34,6 +34,7 @@ public class Player {
 
     private Uuid humanID;
 
+    private boolean moving = false;
     private int moveVertical = 0;
     private int moveHorizontal = 0;
 
@@ -88,10 +89,18 @@ public class Player {
         proccessNew();
         proccessDeleted();
 
-        //if (moveHorizontal != 0 || moveVertical != 0) {
+        if (moveHorizontal != 0 || moveVertical != 0) {
+            moving = true;
             VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
             objectManager.submitEntityAction(humanID, action);
-        //}
+        } else {
+            if (moving) {
+                moving = false;
+
+                VelocityAction action = new VelocityAction(new Vector3f(0, 0, 0));
+                objectManager.submitEntityAction(humanID, action);
+            }
+        }
     }
 
     public void shutdown() {
