@@ -79,7 +79,11 @@ public class Player {
         initKeys();
 
         humanID = objectManager.createEntity(Type.HUMAN, playerName);
-        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(-3, -3, 0)));
+
+        final int x_spawn = (int) ((Math.random() * (0 - -5)) + -5);
+        final int y_spawn = (int) ((Math.random() * (0 - -10)) + -10);
+
+        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)));
 
         proccessNew();
         proccessDeleted();

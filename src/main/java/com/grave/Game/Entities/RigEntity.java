@@ -33,7 +33,9 @@ public class RigEntity extends Entity {
         } else if (action instanceof VelocityAction) {
             VelocityAction velocityAction = (VelocityAction) action;
 
-            rig.setLinearVelocity(velocityAction.getVelocity());
+            if(rig.getMass() > 0) {
+                rig.setLinearVelocity(velocityAction.getVelocity());
+            }
         }
     }
     
