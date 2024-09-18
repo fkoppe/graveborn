@@ -1,5 +1,8 @@
 package com.grave.Game;
 
+import java.security.KeyPair;
+import java.util.ArrayList;
+
 import com.grave.Graveborn;
 import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
@@ -11,21 +14,34 @@ import com.grave.Object.Actions.VelocityAction;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.input.controls.Trigger;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Triangle;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Cylinder;
 
 public class Player {
     private final float CAMERA_ZOOM = 8f;
     private final float CAMERA_MOVE_BORDER = 4f;
     private final float PLAYER_SPEED = 5f;
+    private final float SPRINT_MULTIPLIER = 3f;
+
+    private final float CROSSHAIR_LAYER = 10.0f;
+    private final int CROSSHAIR_COUNT = 10;
 
     private ObjectManager objectManager;
     private String playerName;
@@ -36,10 +52,17 @@ public class Player {
     private AssetManager assetManager;
     private Node rootNode;
 
+    private ArrayList<Geometry> crosshair;
+
     private Uuid humanID;
 
+    private boolean shooting = false;
+    private boolean sprinting = false;
+    private boolean aiming = false;
     private int moveVertical = 0;
     private int moveHorizontal = 0;
+
+    private boolean crosshairAttached = false;
 
     final private ActionListener actionListener = new ActionListener() {
         @Override
@@ -57,6 +80,15 @@ public class Player {
                 case "Right":
                     moveHorizontal = isPressed ? 1 : 0;
                     break;
+                case "Sprint":
+                    sprinting = isPressed ? true : false;
+                    break;
+                case "Shoot":
+                    shooting = isPressed ? true : false;
+                    break;
+                case "Aim":
+                    aiming = isPressed ? true : false;
+                    break;
                 default:
                     break;
             }
@@ -73,11 +105,14 @@ public class Player {
         assetManager = app_.getAssetManager();
         rootNode = app_.getRootNode();
 
+        crosshair = new ArrayList<Geometry>(CROSSHAIR_COUNT);
+
         app_.getFlyByCamera().setEnabled(false);
     }
 
     public void init() {
         initCamera();
+        initCrosshair();
         initKeys();
 
         humanID = objectManager.createEntity(Type.HUMAN, playerName);
@@ -96,7 +131,18 @@ public class Player {
         proccessDeleted();
 
         if (moveHorizontal != 0 || moveVertical != 0) {
-            VelocityAction action = new VelocityAction(new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED));
+            Vector3f moveVector = new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED);
+
+            if(sprinting)
+            {
+                moveVector = moveVector.mult(SPRINT_MULTIPLIER);
+            }
+
+            //if (shooting) {
+            //    ShootAction = new ShootAction();
+            //}
+
+            VelocityAction action = new VelocityAction(moveVector);
             objectManager.submitEntityAction(humanID, action, true);
         } else {
             Human human = (Human)objectManager.getEntity(humanID);
@@ -107,6 +153,30 @@ public class Player {
         }
 
         handleCamera();
+
+        if(aiming)
+        {
+            if(!crosshairAttached)
+            {
+                for (Geometry dot : crosshair) {
+                    rootNode.attachChild(dot);
+                }
+
+                crosshairAttached = true;
+            }
+
+            handleCrosshair();
+        }
+        else
+        {
+            if (crosshairAttached) {
+                for (Geometry dot : crosshair) {
+                    rootNode.detachChild(dot);
+                }
+
+                crosshairAttached = false;
+            }
+        }
     }
 
     public void shutdown() {
@@ -137,13 +207,36 @@ public class Player {
         camera.setFrustum(-1000, 1000, -aspect * size, aspect * size, size, -size);
     }
 
+    private void initCrosshair()
+    {
+        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Brown);
+
+        for(int i = 0; i < CROSSHAIR_COUNT; i++)
+        {
+            Geometry dot = new Geometry("crosshair", new Box(0.1f, 0.1f, 1));
+            dot.setMaterial(material);
+            dot.setLocalTranslation(0, 0, CROSSHAIR_LAYER);
+
+            crosshair.add(dot);
+        }
+    }
+
     private void initKeys() {
         inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("Sprint", new KeyTrigger(KeyInput.KEY_LCONTROL));
+        inputManager.addMapping("Shoot", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("Aim", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
 
-        inputManager.addListener(actionListener, "Up", "Down", "Left", "Right");
+        //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+
+        inputManager.addListener(actionListener, "Up", "Down", "Left", "Right", "Sprint", "Shoot", "Aim");
     }
 
     private void handleCamera() {
@@ -170,5 +263,28 @@ public class Player {
         if (playerLoc.x > right - CAMERA_MOVE_BORDER) {
             camera.setLocation(new Vector3f(camLoc.x + (playerLoc.x - (right - CAMERA_MOVE_BORDER)), camLoc.y, camLoc.z));
         }
+    }
+
+    private void handleCrosshair()
+    {
+        Human human = (Human)objectManager.getEntity(humanID);
+
+        Vector2f mousePositionScreen = inputManager.getCursorPosition();
+
+        Vector3f playerLoc = human.getPosition();
+        Vector3f mouseLoc = camera.getWorldCoordinates(mousePositionScreen, 0);
+        
+        Vector3f direction = mouseLoc.subtract(playerLoc);
+
+        float lenght = direction.length();
+        
+        for (int i = 0; i < crosshair.size(); i++) {
+            Vector3f pos = playerLoc.add(direction.normalize().mult(lenght / CROSSHAIR_COUNT * (1 + i)));
+            crosshair.get(i).setLocalTranslation(pos.x, pos.y, CROSSHAIR_LAYER);
+        }
+
+        //crosshair.setLocalTranslation(playerLoc.x, playerLoc.y, CROSSHAIR_LAYER);
+
+        //crosshair.lookAt(new Vector3f(direction.getX(), direction.getY(), CROSSHAIR_LAYER), new Vector3f(0, 1, 0));
     }
 }

@@ -101,10 +101,6 @@ public class Arguments {
             if (iFlag) {
                 throw new IllegalArgumentException("host mode does not allow -i flag");
             }
-
-            if (pFlag) {
-                throw new IllegalArgumentException("host mode does not allow -p flag");
-            }
         }
         
         if (sFlag) {
