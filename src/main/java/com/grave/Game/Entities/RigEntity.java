@@ -42,7 +42,7 @@ public class RigEntity extends Entity {
         }
     }
     
-    public void onColision(Uuid other) {
+    public void onCollision(Uuid other) {
         
     }
     

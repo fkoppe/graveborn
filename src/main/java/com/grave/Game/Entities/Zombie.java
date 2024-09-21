@@ -118,7 +118,7 @@ public class Zombie extends RigEntity {
     }
 
     @Override
-    public void onColision(Uuid otherID) {
+    public void onCollision(Uuid otherID) {
         if (!objectManager.knownIs(otherID)) {
             return;
         }

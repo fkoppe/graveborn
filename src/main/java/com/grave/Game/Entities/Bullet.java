@@ -2,6 +2,7 @@ package com.grave.Game.Entities;
 
 import javax.swing.Box;
 
+import com.grave.Game.Player;
 import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.MoveAction;
@@ -48,7 +49,7 @@ public class Bullet extends RigEntity {
     }
     
     @Override
-    public void onColision(Uuid otherID)
+    public void onCollision(Uuid otherID)
     {
         if(!objectManager.knownIs(otherID))
         {
@@ -63,6 +64,9 @@ public class Bullet extends RigEntity {
 
             if (objectManager.knownIs(otherID)) {
                 objectManager.deleteEntity(otherID);
+
+                //TODO
+                player.kill();
             }
         }
         
@@ -70,10 +74,11 @@ public class Bullet extends RigEntity {
             objectManager.deleteEntity(id);
         }
     }
-    
-    public void fire(Uuid entityID, Vector3f targetPosition)
+    Player player;
+    public void fire(Uuid entityID, Vector3f targetPosition, Player player_)
     {
         shooterID = entityID;
+        player = player_;
 
         flyTimer.reset();
 

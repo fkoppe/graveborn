@@ -34,6 +34,9 @@ public class World {
         zombies = new ArrayList<Uuid>();
         spawnTimer = new NanoTimer();
         waveTimer = new NanoTimer();
+
+        app_.setDisplayStatView(false);
+        app_.setDisplayFps(false);
     }
 
     public void init()
