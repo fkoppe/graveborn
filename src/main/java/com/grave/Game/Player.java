@@ -173,28 +173,6 @@ public class Player {
             }
 
             handleCrosshair();
-
-            if(shooting)
-            {
-                if(shootTimer.getTimeInSeconds() > SHOOT_GAP && magazin > 0)
-                {
-                    shootTimer.reset();
-                    magazin--;
-
-                    Vector2f mousePositionScreen = inputManager.getCursorPosition();
-                    Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
-
-                    Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
-
-                    Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
-                    bullet.fire(humanID, mouseLocation);
-                }
-            }
-            
-            if(shootTimer.getTimeInSeconds() > RELOAD_DURATION && magazin == 0)
-            {
-                magazin = MAGAZIN_SIZE;
-            }
         }
         else
         {
@@ -205,6 +183,25 @@ public class Player {
 
                 crosshairAttached = false;
             }
+        }
+
+        if (shooting) {
+            if (shootTimer.getTimeInSeconds() > SHOOT_GAP && magazin > 0) {
+                shootTimer.reset();
+                magazin--;
+
+                Vector2f mousePositionScreen = inputManager.getCursorPosition();
+                Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
+
+                Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
+
+                Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
+                bullet.fire(humanID, mouseLocation);
+            }
+        }
+
+        if (shootTimer.getTimeInSeconds() > RELOAD_DURATION && magazin == 0) {
+            magazin = MAGAZIN_SIZE;
         }
     }
 
