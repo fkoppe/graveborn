@@ -8,6 +8,10 @@ import com.jme3.network.serializing.Serializable;
 public final class Uuid {
     String idString;
 
+    public Uuid(Uuid uuid_) {
+        idString = uuid_.toString();
+    }
+
     public Uuid() {
         idString = UUID.randomUUID().toString();
     }

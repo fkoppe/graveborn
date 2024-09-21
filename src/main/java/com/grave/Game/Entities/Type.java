@@ -72,6 +72,21 @@ public enum Type {
             material.setColor("Color", ColorRGBA.Green);
             return material;
         }
+    },
+    BULLET{
+    @Override
+    public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
+        Bullet entity = new Bullet(id, Type.BULLET, objectManager_, name_, new Box(0.2f, 0.2f, 0.2f));
+        return entity;
+    }
+
+    @Override
+    public Material buildMaterial(AssetManager assetManager) {
+        Material material = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Pink);
+        return material;
+    }
+
     };
 
     public Entity build(Uuid id, ObjectManager objectManager_, String name_) {

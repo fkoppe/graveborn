@@ -5,13 +5,13 @@ import com.grave.Uuid;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
-import com.grave.Game.Entities.Zombie;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.CreateAction;
 import com.grave.Object.Actions.DeleteAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.math.Vector3f;
 import com.jme3.bullet.BulletAppState;
 
@@ -42,6 +42,7 @@ public class ObjectManager {
 
     private ReentrantLock lock;
 
+    private PhysicsColisionListener physicsColisionListener;
     private PhysicsSpace physicsSpace;
 
     private boolean isDominant;
@@ -65,10 +66,13 @@ public class ObjectManager {
 
         lock = new ReentrantLock();
 
+        physicsColisionListener = new PhysicsColisionListener(this);
+
         BulletAppState bulletAppState = new BulletAppState();
         app_.getStateManager().attach(bulletAppState);
         physicsSpace = bulletAppState.getPhysicsSpace();
         physicsSpace.setGravity(Vector3f.ZERO);
+        physicsSpace.addCollisionListener(physicsColisionListener);
 
         isDominant = isDominant_;
     }
@@ -111,6 +115,8 @@ public class ObjectManager {
                 } else if (action instanceof DeleteAction) {
                     DeleteAction deleteAction = (DeleteAction) action;
 
+                    entityMap.remove(uuid);
+
                     localEntitiesDeleted.put(uuid, getEntity(uuid));
                 }
             });
@@ -137,7 +143,7 @@ public class ObjectManager {
                     netActions.get(uuid).forEach((action) -> {
                         entity.processAction(action);
                     });
-                }
+                } 
             }
 
             entity.onUpdate(tpf);
@@ -146,6 +152,8 @@ public class ObjectManager {
         netActions.clear();
         netPositions.clear();
         netVelocities.clear();
+
+        deleteStaged();
     }
 
     public void shutdown() {
@@ -153,14 +161,14 @@ public class ObjectManager {
     }
 
     public void submitEntityAction(Uuid uuid, Action action, boolean isDominantAction) {
-        
+
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
             entity.processAction(action);
 
             if (action instanceof MoveAction) {
-                if(!isDominant || isDominantAction) {
+                if (!isDominant || isDominantAction) {
                     localPositions.put(uuid, action);
                 }
             } else if (action instanceof VelocityAction) {
@@ -212,10 +220,19 @@ public class ObjectManager {
             localActions.get(uuid).add(new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
-            entityMap.remove(uuid);
         } else {
             LOGGER.log(Level.WARNING, "OM: unknown entity");
         }
+    }
+
+    private void deleteStaged()
+    {
+        localEntitiesDeleted.forEach((uuid, entity) -> {
+            if(entityMap.containsKey(entity))
+            {
+                entityMap.remove(uuid);
+            }
+        });
     }
 
     public Entity getEntity(Uuid uuid) {
@@ -223,6 +240,14 @@ public class ObjectManager {
             return entityMap.get(uuid);
         } else {
             throw new RuntimeException("OM: unknown entity");
+        }
+    }
+
+    public boolean knownIs(Uuid uuid) {
+        if (entityMap.containsKey(uuid)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

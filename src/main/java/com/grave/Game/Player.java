@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.grave.Graveborn;
 import com.grave.Uuid;
+import com.grave.Game.Entities.Bullet;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
 import com.grave.Game.Entities.Type;
@@ -33,15 +34,20 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import com.jme3.system.NanoTimer;
 
 public class Player {
     private final float CAMERA_ZOOM = 8f;
     private final float CAMERA_MOVE_BORDER = 4f;
     private final float PLAYER_SPEED = 5f;
-    private final float SPRINT_MULTIPLIER = 3f;
+    private final float SPRINT_MULTIPLIER = 2f;
 
     private final float CROSSHAIR_LAYER = 10.0f;
     private final int CROSSHAIR_COUNT = 10;
+
+    private final float RELOAD_DURATION = 3.0f;
+    private final int MAGAZIN_SIZE = 20;
+    private final float SHOOT_GAP = 0.1f;
 
     private ObjectManager objectManager;
     private String playerName;
@@ -63,6 +69,10 @@ public class Player {
     private int moveHorizontal = 0;
 
     private boolean crosshairAttached = false;
+
+    private NanoTimer shootTimer;
+
+    private int magazin = 0;
 
     final private ActionListener actionListener = new ActionListener() {
         @Override
@@ -106,6 +116,7 @@ public class Player {
         rootNode = app_.getRootNode();
 
         crosshair = new ArrayList<Geometry>(CROSSHAIR_COUNT);
+        shootTimer = new NanoTimer();
 
         app_.getFlyByCamera().setEnabled(false);
     }
@@ -138,10 +149,6 @@ public class Player {
                 moveVector = moveVector.mult(SPRINT_MULTIPLIER);
             }
 
-            //if (shooting) {
-            //    ShootAction = new ShootAction();
-            //}
-
             VelocityAction action = new VelocityAction(moveVector);
             objectManager.submitEntityAction(humanID, action, true);
         } else {
@@ -166,6 +173,28 @@ public class Player {
             }
 
             handleCrosshair();
+
+            if(shooting)
+            {
+                if(shootTimer.getTimeInSeconds() > SHOOT_GAP && magazin > 0)
+                {
+                    shootTimer.reset();
+                    magazin--;
+
+                    Vector2f mousePositionScreen = inputManager.getCursorPosition();
+                    Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
+
+                    Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
+
+                    Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
+                    bullet.fire(humanID, mouseLocation);
+                }
+            }
+            
+            if(shootTimer.getTimeInSeconds() > RELOAD_DURATION && magazin == 0)
+            {
+                magazin = MAGAZIN_SIZE;
+            }
         }
         else
         {
@@ -229,6 +258,7 @@ public class Player {
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Sprint", new KeyTrigger(KeyInput.KEY_LCONTROL));
         inputManager.addMapping("Shoot", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("Shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("Aim", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
 
         //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_X, false));
@@ -282,9 +312,5 @@ public class Player {
             Vector3f pos = playerLoc.add(direction.normalize().mult(lenght / CROSSHAIR_COUNT * (1 + i)));
             crosshair.get(i).setLocalTranslation(pos.x, pos.y, CROSSHAIR_LAYER);
         }
-
-        //crosshair.setLocalTranslation(playerLoc.x, playerLoc.y, CROSSHAIR_LAYER);
-
-        //crosshair.lookAt(new Vector3f(direction.getX(), direction.getY(), CROSSHAIR_LAYER), new Vector3f(0, 1, 0));
     }
 }

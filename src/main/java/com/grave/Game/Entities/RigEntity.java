@@ -21,8 +21,13 @@ public class RigEntity extends Entity {
 
         CollisionShape shape = CollisionShapeFactory.createBoxShape(geometry);
         rig = new RigidBody2DControl(shape, 0);
+        
         rig.setRotation(false);
         geometry.addControl(rig);
+
+        rig.setUserObject(new Uuid(id_));
+
+        rig.setCollisionGroup(1);
     }
     
     public void processAction(Action action) {
@@ -31,10 +36,14 @@ public class RigEntity extends Entity {
         } else if (action instanceof VelocityAction) {
             VelocityAction velocityAction = (VelocityAction) action;
 
-            if(rig.getMass() > 0) {
+            if (rig.getMass() > 0) {
                 rig.setLinearVelocity(velocityAction.getVelocity());
             }
         }
+    }
+    
+    public void onColision(Uuid other) {
+        
     }
     
     public void setMass(float mass) {
