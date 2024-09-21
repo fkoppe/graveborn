@@ -62,7 +62,7 @@ public enum Type {
     ZOMBIE {
         @Override
         public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
-            Zombie entity = new Zombie(id, Type.ZOMBIE, objectManager_, name_, new Box(1, 1, 1));
+            Zombie entity = new Zombie(id, Type.ZOMBIE, objectManager_, name_, new Box(0.6f, 0.6f, 1));
             return entity;
         }
         
