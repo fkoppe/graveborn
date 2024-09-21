@@ -116,4 +116,29 @@ public class Zombie extends RigEntity {
     public void onShutdown() {
         // ...
     }
+
+    @Override
+    public void onColision(Uuid otherID) {
+        if (!objectManager.knownIs(otherID)) {
+            return;
+        }
+
+        if(null == targetID)
+        {
+            return;
+        }
+
+        if(!otherID.equals(targetID))
+        {
+            return;
+        }
+
+        Entity entity = objectManager.getEntity(otherID);
+
+        assert(entity instanceof Human);
+
+        if (objectManager.knownIs(otherID)) {
+            objectManager.deleteEntity(otherID);
+        }
+    }
 }

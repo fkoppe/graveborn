@@ -55,9 +55,7 @@ public class Bullet extends RigEntity {
             return;
         }
 
-        if (otherID.equals(shooterID)) {
-            throw new RuntimeException("bullets must never collide with human (but unfortunatly did)");
-        }
+        assert(!otherID.equals(shooterID));
 
         Entity entity = objectManager.getEntity(otherID);
 

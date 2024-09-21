@@ -228,7 +228,7 @@ public class ObjectManager {
     private void deleteStaged()
     {
         localEntitiesDeleted.forEach((uuid, entity) -> {
-            if(entityMap.containsKey(entity))
+            if(entityMap.containsKey(uuid))
             {
                 entityMap.remove(uuid);
             }

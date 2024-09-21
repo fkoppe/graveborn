@@ -71,6 +71,7 @@ public class Player {
     private boolean crosshairAttached = false;
 
     private NanoTimer shootTimer;
+    private NanoTimer respawnTimer;
 
     private int magazin = 0;
 
@@ -117,6 +118,7 @@ public class Player {
 
         crosshair = new ArrayList<Geometry>(CROSSHAIR_COUNT);
         shootTimer = new NanoTimer();
+        respawnTimer = new NanoTimer();
 
         app_.getFlyByCamera().setEnabled(false);
     }
@@ -126,12 +128,7 @@ public class Player {
         initCrosshair();
         initKeys();
 
-        humanID = objectManager.createEntity(Type.HUMAN, playerName);
-
-        final int x_spawn = (int) ((Math.random() * (0 - -5)) + -5);
-        final int y_spawn = (int) ((Math.random() * (0 - -10)) + -10);
-
-        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)), true);
+        spawnHuman();
 
         proccessNew();
         proccessDeleted();
@@ -140,6 +137,22 @@ public class Player {
     public void update(float tpf) {
         proccessNew();
         proccessDeleted();
+
+        if(!objectManager.knownIs(humanID) && humanID != null)
+        {
+            respawnTimer.reset();
+            humanID = null;
+            System.out.println("player is dead");
+        }
+
+        if (!objectManager.knownIs(humanID) && respawnTimer.getTimeInSeconds() > 10) {
+            spawnHuman();
+        }
+
+        if(null == humanID)
+        {
+            return;
+        }
 
         if (moveHorizontal != 0 || moveVertical != 0) {
             Vector3f moveVector = new Vector3f(moveHorizontal, moveVertical, 0).normalize().mult(PLAYER_SPEED);
@@ -294,20 +307,32 @@ public class Player {
 
     private void handleCrosshair()
     {
-        Human human = (Human)objectManager.getEntity(humanID);
+        Human human = (Human) objectManager.getEntity(humanID);
 
         Vector2f mousePositionScreen = inputManager.getCursorPosition();
 
         Vector3f playerLoc = human.getPosition();
         Vector3f mouseLoc = camera.getWorldCoordinates(mousePositionScreen, 0);
-        
+
         Vector3f direction = mouseLoc.subtract(playerLoc);
 
         float lenght = direction.length();
-        
+
         for (int i = 0; i < crosshair.size(); i++) {
             Vector3f pos = playerLoc.add(direction.normalize().mult(lenght / CROSSHAIR_COUNT * (1 + i)));
             crosshair.get(i).setLocalTranslation(pos.x, pos.y, CROSSHAIR_LAYER);
         }
+    }
+    
+    private void spawnHuman()
+    {
+        respawnTimer.reset();
+
+        humanID = objectManager.createEntity(Type.HUMAN, playerName);
+
+        final int x_spawn = (int) ((Math.random() * (0 - -5)) + -5);
+        final int y_spawn = (int) ((Math.random() * (0 - -10)) + -10);
+
+        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)), true);
     }
 }
