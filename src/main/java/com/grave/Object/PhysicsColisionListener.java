@@ -4,7 +4,6 @@ import com.grave.Uuid;
 import com.grave.Game.Entities.RigEntity;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
 
 public class PhysicsColisionListener implements PhysicsCollisionListener {
     private ObjectManager objectmanager;
@@ -27,7 +26,7 @@ public class PhysicsColisionListener implements PhysicsCollisionListener {
         RigEntity riggedA = (RigEntity) objectmanager.getEntity(a);
         RigEntity riggedB = (RigEntity) objectmanager.getEntity(b);
 
-        riggedA.onColision(b);
-        riggedB.onColision(a);
+        riggedA.onCollision(b);
+        riggedB.onCollision(a);
     }
 }

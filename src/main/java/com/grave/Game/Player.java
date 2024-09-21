@@ -57,6 +57,7 @@ public class Player {
     private ViewPort viewPort;
     private AssetManager assetManager;
     private Node rootNode;
+    private GUI gui;
 
     private ArrayList<Geometry> crosshair;
 
@@ -74,6 +75,7 @@ public class Player {
     private NanoTimer respawnTimer;
 
     private int magazin = 0;
+    private int kills = 0;
 
     final private ActionListener actionListener = new ActionListener() {
         @Override
@@ -120,6 +122,10 @@ public class Player {
         shootTimer = new NanoTimer();
         respawnTimer = new NanoTimer();
 
+        gui = new GUI(assetManager, app_.getGuiNode());
+
+
+
         app_.getFlyByCamera().setEnabled(false);
     }
 
@@ -127,6 +133,7 @@ public class Player {
         initCamera();
         initCrosshair();
         initKeys();
+        initGUI();
 
         spawnHuman();
 
@@ -202,6 +209,7 @@ public class Player {
             if (shootTimer.getTimeInSeconds() > SHOOT_GAP && magazin > 0) {
                 shootTimer.reset();
                 magazin--;
+                gui.setAmmoText(magazin);
 
                 Vector2f mousePositionScreen = inputManager.getCursorPosition();
                 Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
@@ -209,13 +217,19 @@ public class Player {
                 Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
 
                 Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
-                bullet.fire(humanID, mouseLocation);
+                bullet.fire(humanID, mouseLocation, this);
             }
         }
 
         if (shootTimer.getTimeInSeconds() > RELOAD_DURATION && magazin == 0) {
             magazin = MAGAZIN_SIZE;
+            gui.setAmmoText(magazin);
         }
+    }
+
+    public void kill(){
+        kills++;
+        gui.setKillText(kills);
     }
 
     public void shutdown() {
@@ -235,6 +249,15 @@ public class Player {
             entity.detachFromNode(rootNode);
         });
     }
+
+    private void initGUI(){
+        magazin = MAGAZIN_SIZE;
+        gui.setAmmoText(magazin);
+
+        kills = 0;
+        gui.setKillText(kills);
+    }
+
 
     private void initCamera() {
         camera.setLocation(new Vector3f(0, 0, 20));
