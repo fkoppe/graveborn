@@ -3,8 +3,12 @@ package com.grave.Game;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.lwjgl.opencl.pocl_content_size;
+
 import com.grave.Graveborn;
 import com.grave.Uuid;
+import com.grave.Game.Entities.Entity;
+import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.MoveAction;
@@ -15,7 +19,7 @@ public class World {
     private int MAX_ZOMBIE = 10;
     private float SPAWN_COOLDOWN = 2.0f;
 
-    private final float WAVE_COOLDOWN = 20.0f;
+    private final float WAVE_COOLDOWN = 10.0f;
 
     private ObjectManager objectManager;
 
@@ -61,11 +65,28 @@ public class World {
         {
             spawnTimer.reset();
 
-            final int x_spawn = (int) ((Math.random() * (20 - -20)) + -20);
-            final int y_spawn = (int) ((Math.random() * (20 - -20)) + -20);
+            ArrayList<Entity> array = objectManager.queryEntityByClass(RigEntity.class);
+
+            boolean legit = false;
+            Vector3f pos = new Vector3f(0, 0, 0);;
+
+            while(!legit)
+            {
+                final int x_spawn = (int) ((Math.random() * (20 - -20)) + -20);
+                final int y_spawn = (int) ((Math.random() * (20 - -20)) + -20);
+                pos = new Vector3f(x_spawn, y_spawn, 0);
+
+                for(Entity e : array)
+                {
+                    if(e.getPosition().subtract(pos).length() > 5.0f)
+                    {
+                        legit = true;
+                    }
+                }
+            }
 
             Uuid zombieId = objectManager.createEntity(Type.ZOMBIE, "zombie");
-            objectManager.submitEntityAction(zombieId, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)), true);
+            objectManager.submitEntityAction(zombieId, new MoveAction(pos), true);
 
             zombies.add(zombieId);
         }

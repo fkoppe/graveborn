@@ -12,6 +12,7 @@ public class Configurator {
         System.out.println("1. Client");
         System.out.println("2. Host");
         System.out.println("3. Server");
+        System.out.println("4. Standalone");
 
         while (true) {
             System.out.print("Enter the number corresponding to the mode: ");
@@ -27,8 +28,11 @@ public class Configurator {
                 case "3":
                     mode = Mode.SERVER;
                     break;
+                case "4":
+                    mode = Mode.STANDALONE;
+                    break;
                 default:
-                    System.out.println("Invalid input. Please enter 1, 2, or 3.");
+                    System.out.println("Invalid input. Please enter 1, 2, 3, or 4.");
                     continue;
             }
             break;

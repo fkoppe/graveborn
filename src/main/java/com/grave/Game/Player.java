@@ -150,6 +150,20 @@ public class Player {
             respawnTimer.reset();
             humanID = null;
             System.out.println("player is dead");
+
+            kills = 0;
+            magazin = MAGAZIN_SIZE;
+
+            gui.setAmmoText(magazin);
+            gui.setKillText(kills);
+
+            if (crosshairAttached) {
+                for (Geometry dot : crosshair) {
+                    rootNode.detachChild(dot);
+                }
+
+                crosshairAttached = false;
+            }
         }
 
         if (!objectManager.knownIs(humanID) && respawnTimer.getTimeInSeconds() > 10) {

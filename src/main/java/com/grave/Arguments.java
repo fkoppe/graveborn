@@ -10,6 +10,7 @@ public class Arguments {
     private boolean cFlag = false;
     private boolean hFlag = false;
     private boolean sFlag = false;
+    private boolean saFlag = false;
     private boolean iFlag = false;
     private boolean pFlag = false;
     private boolean cnFlag = false;
@@ -27,6 +28,9 @@ public class Arguments {
                     break;
                 case "-s":
                     sFlag = true;
+                    break;
+                case "-sa":
+                    saFlag = true;
                     break;
                 case "-i":
                     if (i + 1 < args.length) {
@@ -87,13 +91,18 @@ public class Arguments {
             mode = Mode.SERVER;
         }
 
+        if (sFlag) {
+            modeFlagCount++;
+            mode = Mode.STANDALONE;
+        }
+
         if (modeFlagCount > 1) {
-            throw new IllegalArgumentException("only one mode flag (c/h/s) allowed");
+            throw new IllegalArgumentException("only one mode flag (c/h/s/sa) allowed");
         }
         
         if (cFlag) {
             if (snFlag) {
-                throw new IllegalArgumentException("server mode does not allow -sn flag");
+                throw new IllegalArgumentException("client mode does not allow -sn flag");
             }
         }
 
@@ -112,5 +121,20 @@ public class Arguments {
                 throw new IllegalArgumentException("server mode does not allow -cn flag");
             }
         }
+
+        if (saFlag) {
+            if (iFlag) {
+                throw new IllegalArgumentException("standalone mode does not allow -i flag");
+            }
+
+            if (cnFlag) {
+                throw new IllegalArgumentException("standalone mode does not allow -cn flag");
+            }
+
+            if (snFlag) {
+                throw new IllegalArgumentException("standalone mode does not allow -sn flag");
+            }
+        }
+
     }
 }

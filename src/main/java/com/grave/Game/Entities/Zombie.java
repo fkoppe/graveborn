@@ -12,9 +12,9 @@ import com.jme3.scene.Mesh;
 import com.jme3.system.NanoTimer;
 
 public class Zombie extends RigEntity {
-    private static final float SPEED = 1.7f;
+    private static final float SPEED = 1.8f;
     private static final float MASS = 5;
-    private static final float FIND_DISTANCE = 15.0f;
+    private static final float FIND_DISTANCE = 30.0f;
     private static final float FOLLOW_DISTANCE = 10.0f;
     private static final float FIND_COOLDOWN = 2.0f;
 
