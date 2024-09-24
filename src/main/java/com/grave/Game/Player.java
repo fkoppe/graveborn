@@ -179,7 +179,7 @@ public class Player {
         {
             respawnTimer.reset();
             humanID = null;
-            System.out.println("player died with " + kills + " kills\n While being dead change weapon using 1,2,3");
+            System.out.println("player died with " + kills + "kills");
 
             kills = 0;
             magazin = gun.getMagazine();
@@ -194,6 +194,7 @@ public class Player {
             Human h = (Human) objectManager.getEntity(humanID);
 
             kills = h.getKills();
+            gui.setKillText(kills);
         }
 
         if (!objectManager.knownIs(humanID) && respawnTimer.getTimeInSeconds() > 10) {
@@ -267,11 +268,6 @@ public class Player {
             magazin = gun.getMagazine();
             gui.setAmmoText(magazin);
         }
-    }
-
-    public void kill(){
-        kills++;
-        gui.setKillText(kills);
     }
 
     public void shutdown() {
@@ -377,7 +373,7 @@ public class Player {
 
     private void handleCrosshair()
     {
-        if (aiming) {
+        if (aiming && magazin > 0) {
             showCrosshair();
 
             Human human = (Human) objectManager.getEntity(humanID);

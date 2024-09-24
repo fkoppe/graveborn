@@ -1,9 +1,9 @@
 package com.grave.Game;
 
 public enum Gun {
-    ASSAULT("Assault", 2.0f, 3500.0f, 3.0f, 3.0f, 20, 0.1f, 1, 0.0f),
-    ASSAULT2("Assault2", 3f, 3100.0f, 4.0f, 4.0f, 25, 0.3f, 3, 0.1f),
-    MACHINE("Machine", 10.0f, 5500.0f, 5.0f, 10.0f, 150, 0.04f, 1, 0.0f);
+    ASSAULT("Assault Riffle", 2.0f, 3500.0f, 3.0f, 3.0f, 20, 0.1f, 1, 0.0f),
+    ASSAULT2("Assault Riffle 2", 3f, 3100.0f, 4.0f, 4.0f, 25, 0.3f, 3, 0.1f),
+    MACHINE("Machinegun", 10.0f, 5500.0f, 5.0f, 10.0f, 150, 0.04f, 1, 0.0f);
 
     private final String name;
     private final float mass;
