@@ -8,6 +8,7 @@ import com.grave.Uuid;
 import com.grave.Game.Entities.Bullet;
 import com.grave.Game.Entities.Entity;
 import com.grave.Game.Entities.Human;
+import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.MoveAction;
@@ -40,14 +41,12 @@ public class Player {
     private final float CAMERA_ZOOM = 8f;
     private final float CAMERA_MOVE_BORDER = 4f;
     private final float PLAYER_SPEED = 5f;
-    private final float SPRINT_MULTIPLIER = 2f;
+    private final float SPRINT_MULTIPLIER = 2.5f;
 
     private final float CROSSHAIR_LAYER = 10.0f;
     private final int CROSSHAIR_COUNT = 10;
 
-    private final float RELOAD_DURATION = 3.0f;
-    private final int MAGAZIN_SIZE = 20;
-    private final float SHOOT_GAP = 0.1f;
+    private Gun gun;
 
     private ObjectManager objectManager;
     private String playerName;
@@ -72,8 +71,10 @@ public class Player {
     private boolean crosshairAttached = false;
 
     private NanoTimer shootTimer;
+    private NanoTimer salvoTimer;
     private NanoTimer respawnTimer;
 
+    private int salvo = 0;
     private int magazin = 0;
     private int kills = 0;
 
@@ -102,6 +103,32 @@ public class Player {
                 case "Aim":
                     aiming = isPressed ? true : false;
                     break;
+                case "Reload":
+                    magazin = 0;
+                    shootTimer.reset();
+                    gui.setAmmoText(magazin);
+                    break;
+                case "AssaultRiffle":
+                    gun = Gun.ASSAULT;
+                    gui.setGun(gun);
+                    magazin = 0;
+                    shootTimer.reset();
+                    gui.setAmmoText(magazin);
+                    break;
+                case "AssaultRiffle2":
+                    gun = Gun.ASSAULT2;
+                    gui.setGun(gun);
+                    magazin = 0;
+                    shootTimer.reset();
+                    gui.setAmmoText(magazin);
+                    break;
+                case "MaschineGun":
+                    gun = Gun.MACHINE;
+                    gui.setGun(gun);
+                    magazin = 0;
+                    shootTimer.reset();
+                    gui.setAmmoText(magazin);
+                    break;
                 default:
                     break;
             }
@@ -120,13 +147,15 @@ public class Player {
 
         crosshair = new ArrayList<Geometry>(CROSSHAIR_COUNT);
         shootTimer = new NanoTimer();
+        salvoTimer = new NanoTimer();
         respawnTimer = new NanoTimer();
 
         gui = new GUI(assetManager, app_.getGuiNode());
 
-
-
         app_.getFlyByCamera().setEnabled(false);
+
+        gun = Gun.ASSAULT;
+        gui.setGun(gun);
     }
 
     public void init() {
@@ -137,6 +166,7 @@ public class Player {
 
         spawnHuman();
 
+        //TODO remove process calls
         proccessNew();
         proccessDeleted();
     }
@@ -149,21 +179,21 @@ public class Player {
         {
             respawnTimer.reset();
             humanID = null;
-            System.out.println("player is dead");
+            System.out.println("player died with " + kills + " kills\n While being dead change weapon using 1,2,3");
 
             kills = 0;
-            magazin = MAGAZIN_SIZE;
+            magazin = gun.getMagazine();
 
             gui.setAmmoText(magazin);
             gui.setKillText(kills);
 
-            if (crosshairAttached) {
-                for (Geometry dot : crosshair) {
-                    rootNode.detachChild(dot);
-                }
+            hideCrosshair();
+        }
+        
+        if (objectManager.knownIs(humanID)) {
+            Human h = (Human) objectManager.getEntity(humanID);
 
-                crosshairAttached = false;
-            }
+            kills = h.getKills();
         }
 
         if (!objectManager.knownIs(humanID) && respawnTimer.getTimeInSeconds() > 10) {
@@ -173,6 +203,17 @@ public class Player {
         if(null == humanID)
         {
             return;
+        }
+
+        if(shooting || aiming && gun == Gun.MACHINE)
+        {
+            moveHorizontal = 0;
+            moveVertical = 0;
+        }
+
+        if(gun == Gun.MACHINE)
+        {
+            sprinting = false;
         }
 
         if (moveHorizontal != 0 || moveVertical != 0) {
@@ -194,49 +235,36 @@ public class Player {
         }
 
         handleCamera();
-
-        if(aiming)
-        {
-            if(!crosshairAttached)
-            {
-                for (Geometry dot : crosshair) {
-                    rootNode.attachChild(dot);
-                }
-
-                crosshairAttached = true;
-            }
-
-            handleCrosshair();
-        }
-        else
-        {
-            if (crosshairAttached) {
-                for (Geometry dot : crosshair) {
-                    rootNode.detachChild(dot);
-                }
-
-                crosshairAttached = false;
-            }
-        }
+        handleCrosshair();
 
         if (shooting) {
-            if (shootTimer.getTimeInSeconds() > SHOOT_GAP && magazin > 0) {
-                shootTimer.reset();
-                magazin--;
-                gui.setAmmoText(magazin);
+            if (shootTimer.getTimeInSeconds() > gun.getGap() && magazin > 0) {
+                if(salvoTimer.getTimeInSeconds() > gun.getSgap())
+                {
+                    salvoTimer.reset();
+                    salvo++;
+                    magazin--;
+                    gui.setAmmoText(magazin);
 
-                Vector2f mousePositionScreen = inputManager.getCursorPosition();
-                Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
+                    Vector2f mousePositionScreen = inputManager.getCursorPosition();
+                    Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
 
-                Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
+                    Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
 
-                Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
-                bullet.fire(humanID, mouseLocation, this);
+                    Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
+                    bullet.fire(humanID, mouseLocation, gun);
+                }
+
+                if(salvo >= gun.getSalvo())
+                {
+                    shootTimer.reset();
+                    salvo = 0;
+                }
             }
         }
 
-        if (shootTimer.getTimeInSeconds() > RELOAD_DURATION && magazin == 0) {
-            magazin = MAGAZIN_SIZE;
+        if (shootTimer.getTimeInSeconds() > gun.getReload() && magazin == 0) {
+            magazin = gun.getMagazine();
             gui.setAmmoText(magazin);
         }
     }
@@ -265,7 +293,7 @@ public class Player {
     }
 
     private void initGUI(){
-        magazin = MAGAZIN_SIZE;
+        magazin = gun.getMagazine();
         gui.setAmmoText(magazin);
 
         kills = 0;
@@ -307,13 +335,18 @@ public class Player {
         inputManager.addMapping("Shoot", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("Shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("Aim", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        inputManager.addMapping("Reload", new KeyTrigger(KeyInput.KEY_R));
+
+        inputManager.addMapping("AssaultRiffle", new KeyTrigger(KeyInput.KEY_1));
+        inputManager.addMapping("AssaultRiffle2", new KeyTrigger(KeyInput.KEY_2));
+        inputManager.addMapping("MaschineGun", new KeyTrigger(KeyInput.KEY_3));
 
         //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         //inputManager.addMapping("CurserMove", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
 
-        inputManager.addListener(actionListener, "Up", "Down", "Left", "Right", "Sprint", "Shoot", "Aim");
+        inputManager.addListener(actionListener, "Up", "Down", "Left", "Right", "Sprint", "Shoot", "Aim", "Reload", "AssaultRiffle", "AssaultRiffle2", "MaschineGun");
     }
 
     private void handleCamera() {
@@ -344,20 +377,48 @@ public class Player {
 
     private void handleCrosshair()
     {
-        Human human = (Human) objectManager.getEntity(humanID);
+        if (aiming) {
+            showCrosshair();
 
-        Vector2f mousePositionScreen = inputManager.getCursorPosition();
+            Human human = (Human) objectManager.getEntity(humanID);
 
-        Vector3f playerLoc = human.getPosition();
-        Vector3f mouseLoc = camera.getWorldCoordinates(mousePositionScreen, 0);
+            Vector2f mousePositionScreen = inputManager.getCursorPosition();
 
-        Vector3f direction = mouseLoc.subtract(playerLoc);
+            Vector3f playerLoc = human.getPosition();
+            Vector3f mouseLoc = camera.getWorldCoordinates(mousePositionScreen, 0);
 
-        float lenght = direction.length();
+            Vector3f direction = mouseLoc.subtract(playerLoc);
 
-        for (int i = 0; i < crosshair.size(); i++) {
-            Vector3f pos = playerLoc.add(direction.normalize().mult(lenght / CROSSHAIR_COUNT * (1 + i)));
-            crosshair.get(i).setLocalTranslation(pos.x, pos.y, CROSSHAIR_LAYER);
+            float lenght = direction.length();
+
+            for (int i = 0; i < crosshair.size(); i++) {
+                Vector3f pos = playerLoc.add(direction.normalize().mult(lenght / CROSSHAIR_COUNT * (1 + i)));
+                crosshair.get(i).setLocalTranslation(pos.x, pos.y, CROSSHAIR_LAYER);
+            }
+        } else {
+            hideCrosshair();
+        }
+    }
+
+    private void hideCrosshair()
+    {
+        if (crosshairAttached) {
+            for (Geometry dot : crosshair) {
+                rootNode.detachChild(dot);
+            }
+
+            crosshairAttached = false;
+        }
+    }
+
+    private void showCrosshair()
+    {
+        if (!crosshairAttached) {
+            for (Geometry dot : crosshair) {
+                rootNode.attachChild(dot);
+            }
+
+            crosshairAttached = true;
         }
     }
     
@@ -365,11 +426,32 @@ public class Player {
     {
         respawnTimer.reset();
 
+        shootTimer.reset();
+        salvoTimer.reset();
+        magazin = gun.getMagazine();
+
+        ArrayList<Entity> array = objectManager.queryEntityByClass(RigEntity.class);
+
+            boolean legit = false;
+            Vector3f pos = new Vector3f(0, 0, 0);;
+
+            while(!legit)
+            {
+                final int x_spawn = (int) ((Math.random() * (20 - -20)) + -20);
+                final int y_spawn = (int) ((Math.random() * (20 - -20)) + -20);
+                pos = new Vector3f(x_spawn, y_spawn, 0);
+
+                legit = true;
+
+                for (Entity e : array) {
+                    if (e.getPosition().subtract(pos).length() < 5.0f) {
+                        legit = false;
+                    }
+                }
+            }
+            
         humanID = objectManager.createEntity(Type.HUMAN, playerName);
 
-        final int x_spawn = (int) ((Math.random() * (0 - -5)) + -5);
-        final int y_spawn = (int) ((Math.random() * (0 - -10)) + -10);
-
-        objectManager.submitEntityAction(humanID, new MoveAction(new Vector3f(x_spawn, y_spawn, 0)), true);
+        objectManager.submitEntityAction(humanID, new MoveAction(pos), true);
     }
 }

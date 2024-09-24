@@ -6,6 +6,7 @@ import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -23,11 +24,16 @@ public class RigEntity extends Entity {
         rig = new RigidBody2DControl(shape, 0);
         
         rig.setRotation(false);
+
         geometry.addControl(rig);
 
         rig.setUserObject(new Uuid(id_));
 
-        rig.setCollisionGroup(1);
+        rig.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_04);
+
+        rig.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_01);
+        rig.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
+        rig.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
     }
     
     public void processAction(Action action) {

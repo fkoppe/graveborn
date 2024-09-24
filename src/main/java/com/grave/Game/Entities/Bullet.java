@@ -1,32 +1,26 @@
 package com.grave.Game.Entities;
 
-import javax.swing.Box;
-
-import com.grave.Game.Player;
+import com.grave.Game.Gun;
 import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.control.GhostControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.system.NanoTimer;
 
 public class Bullet extends RigEntity {
-    private static final float SPEED = 3000;
-    private static final float MASS = 1;
-    private static final float TIME = 3;
-
     private NanoTimer flyTimer = new NanoTimer();
+
+    private float time = 0.0f;
 
     Uuid shooterID;
 
     public Bullet(Uuid id_, Type type_, ObjectManager objectManager_, String name_, Mesh mesh_) {
         super(id_, type_, objectManager_, name_, mesh_);
         
-        rig.setMass(MASS);
+        rig.setMass(1);
 
         rig.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
 
@@ -41,7 +35,7 @@ public class Bullet extends RigEntity {
 
     @Override
     public void onUpdate(float tpf) {
-        if (flyTimer.getTimeInSeconds() >= TIME) {
+        if (flyTimer.getTimeInSeconds() >= time) {
             if (objectManager.knownIs(id)) {
                 objectManager.deleteEntity(id);
             }
@@ -51,12 +45,11 @@ public class Bullet extends RigEntity {
     @Override
     public void onCollision(Uuid otherID)
     {
-        if(!objectManager.knownIs(otherID))
-        {
+        if (!objectManager.knownIs(otherID)) {
             return;
         }
 
-        assert(!otherID.equals(shooterID));
+        assert (!otherID.equals(shooterID));
 
         Entity entity = objectManager.getEntity(otherID);
 
@@ -65,20 +58,25 @@ public class Bullet extends RigEntity {
             if (objectManager.knownIs(otherID)) {
                 objectManager.deleteEntity(otherID);
 
-                //TODO
-                player.kill();
+                if(objectManager.knownIs(shooterID))
+                {
+                    Human h = (Human)objectManager.getEntity(shooterID);
+                    h.countKill();
+                }
             }
         }
-        
+
         if (objectManager.knownIs(id)) {
             objectManager.deleteEntity(id);
         }
     }
-    Player player;
-    public void fire(Uuid entityID, Vector3f targetPosition, Player player_)
+
+    public void fire(Uuid entityID, Vector3f targetPosition, Gun gun)
     {
+        rig.setMass(gun.getMass());
+        time = gun.getTime();
+        
         shooterID = entityID;
-        player = player_;
 
         flyTimer.reset();
 
@@ -86,7 +84,7 @@ public class Bullet extends RigEntity {
         Vector3f direction = targetPosition.subtract(playerLoc).normalize();
 
         objectManager.submitEntityAction(id, new MoveAction(playerLoc), true);
-        objectManager.submitEntityAction(id, new VelocityAction(direction.normalize().mult(SPEED)), true);
+        objectManager.submitEntityAction(id, new VelocityAction(direction.normalize().mult(gun.getSpeed())), true);
     }
 
     @Override

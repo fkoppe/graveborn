@@ -46,12 +46,10 @@ public class World {
     public void init()
     {
         backgroundId = objectManager.createEntity(Type.BACKGROUND, "background");
-        objectManager.submitEntityAction(backgroundId, new MoveAction(new Vector3f(0, 0, -0.1f)), true);
+        objectManager.submitEntityAction(backgroundId, new MoveAction(new Vector3f(0, 0, -5f)), true);
 
         obstacleId = objectManager.createEntity(Type.OBSTACKLE, "obstacle");
         objectManager.submitEntityAction(obstacleId, new MoveAction(new Vector3f(3, 3, 0)), true);
-
-        
     }
 
     public void update(float tpf) {
@@ -68,7 +66,7 @@ public class World {
             ArrayList<Entity> array = objectManager.queryEntityByClass(RigEntity.class);
 
             boolean legit = false;
-            Vector3f pos = new Vector3f(0, 0, 0);;
+            Vector3f pos = new Vector3f(0, 0, 0);
 
             while(!legit)
             {
@@ -76,11 +74,13 @@ public class World {
                 final int y_spawn = (int) ((Math.random() * (20 - -20)) + -20);
                 pos = new Vector3f(x_spawn, y_spawn, 0);
 
+                legit = true;
+
                 for(Entity e : array)
                 {
-                    if(e.getPosition().subtract(pos).length() > 5.0f)
+                    if(e.getPosition().subtract(pos).length() < 10.0f)
                     {
-                        legit = true;
+                        legit = false;
                     }
                 }
             }

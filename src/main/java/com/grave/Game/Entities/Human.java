@@ -9,6 +9,8 @@ import com.jme3.scene.Mesh;
 public class Human extends RigEntity {
     public static final int MASS = 10;
 
+    private int killCount = 0;
+
     public Human(Uuid id_, Type type_, ObjectManager objectManager_, String name_, Mesh mesh_) {
         super(id_, type_, objectManager_, name_, mesh_);
 
@@ -35,6 +37,17 @@ public class Human extends RigEntity {
 
     @Override
     public void onShutdown() {
+    }
 
+    public void countKill() {
+        killCount++;
+    }
+
+    public void resetKill() {
+        killCount = 0;
+    }
+
+    public int getKills() {
+        return killCount;
     }
 }

@@ -76,7 +76,7 @@ public enum Type {
     BULLET{
     @Override
     public Entity build(Uuid id, ObjectManager objectManager_, String name_) {
-        Bullet entity = new Bullet(id, Type.BULLET, objectManager_, name_, new Box(0.2f, 0.2f, 0.2f));
+        Bullet entity = new Bullet(id, Type.BULLET, objectManager_, name_, new Box(0.15f, 0.15f, 0.15f));
         return entity;
     }
 

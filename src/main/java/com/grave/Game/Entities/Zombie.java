@@ -12,15 +12,18 @@ import com.jme3.scene.Mesh;
 import com.jme3.system.NanoTimer;
 
 public class Zombie extends RigEntity {
-    private static final float SPEED = 1.8f;
+    private static float SPEED;
     private static final float MASS = 5;
     private static final float FIND_DISTANCE = 30.0f;
     private static final float FOLLOW_DISTANCE = 10.0f;
-    private static final float FIND_COOLDOWN = 2.0f;
+
+    private static float FIND_COOLDOWN;
+    private static float LOOSE_COOLDOWN;
 
     Uuid targetID = null;
 
     private NanoTimer findTimer = new NanoTimer();
+    private NanoTimer looseTimer = new NanoTimer();
 
     Vector3f moveVector = new Vector3f(0, 0, 0);
 
@@ -34,6 +37,10 @@ public class Zombie extends RigEntity {
 
         rig.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_01);
         rig.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
+
+        SPEED = (float) ((Math.random() * (1.4 - 2.1)) + 2.1);
+        FIND_COOLDOWN = (float) ((Math.random() * (0.1 - 5)) + 5);
+        LOOSE_COOLDOWN = (float) ((Math.random() * (0.1 - 5)) + 5);
     }
 
     @Override
@@ -90,7 +97,9 @@ public class Zombie extends RigEntity {
             Entity target = objectManager.getEntity(targetID);
             Vector3f vector = target.getPosition().subtract(getPosition());
 
-            if (moveVector.length() >= FOLLOW_DISTANCE) {
+            if (moveVector.length() >= FOLLOW_DISTANCE && looseTimer.getTimeInSeconds() > LOOSE_COOLDOWN) {
+                looseTimer.reset();
+                
                 targetID = null;
 
                 final int x = (int) ((Math.random() * (2 - 0)) + -0);
