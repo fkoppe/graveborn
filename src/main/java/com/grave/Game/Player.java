@@ -154,7 +154,7 @@ public class Player {
 
         app_.getFlyByCamera().setEnabled(false);
 
-        gun = Gun.ASSAULT;
+        gun = Gun.PISTOLE;
         gui.setGun(gun);
     }
 
@@ -179,7 +179,7 @@ public class Player {
         {
             respawnTimer.reset();
             humanID = null;
-            System.out.println("player died with " + kills + "kills");
+            System.out.println("player died with " + kills + " kills");
 
             kills = 0;
             magazin = gun.getMagazine();

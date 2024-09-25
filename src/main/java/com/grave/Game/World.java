@@ -95,12 +95,19 @@ public class World {
         {
             waveTimer.reset();
 
-            MAX_ZOMBIE *= 1.5f;
-
-            if(SPAWN_COOLDOWN > 2)
+            if(MAX_ZOMBIE < 300)
             {
-                SPAWN_COOLDOWN -= 1;
+                MAX_ZOMBIE *= 1.2f;
+
+                System.out.println("max zombies: " + MAX_ZOMBIE);
             }
+
+            if(SPAWN_COOLDOWN > 0.4f)
+            {
+                SPAWN_COOLDOWN -= 0.1f;
+            }
+
+            System.out.println("current zombies: " + zombies.size());
         }
     }
 

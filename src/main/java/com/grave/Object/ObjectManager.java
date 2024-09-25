@@ -11,7 +11,6 @@ import com.grave.Object.Actions.DeleteAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.math.Vector3f;
 import com.jme3.bullet.BulletAppState;
 
@@ -213,6 +212,12 @@ public class ObjectManager {
             Entity entity = entityMap.get(uuid);
 
             entity.onShutdown();
+
+            if (entity instanceof RigEntity) {
+                RigEntity rigEntity = (RigEntity) entity;
+
+                physicsSpace.remove(rigEntity.getRig());
+            }
 
             if (null == localActions.get(uuid)) {
                 localActions.put(uuid, new ArrayList<Action>());
