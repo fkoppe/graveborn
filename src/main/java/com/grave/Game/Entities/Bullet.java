@@ -3,7 +3,9 @@ package com.grave.Game.Entities;
 import com.grave.Game.Gun;
 import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.DeleteAction;
+import com.grave.Object.Actions.FireAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -43,6 +45,34 @@ public class Bullet extends RigEntity {
             }
         }
     }
+
+    @Override
+    public void processAction(Action action) {
+        if (action instanceof MoveAction moveAction) {
+            rig.setPhysicsLocation(moveAction.getPosition());
+        } else if (action instanceof VelocityAction) {
+            VelocityAction velocityAction = (VelocityAction) action;
+
+            if (rig.getMass() > 0) {
+                rig.setLinearVelocity(velocityAction.getVelocity());
+            }
+        } else if (action instanceof FireAction) {
+            FireAction fireAction = (FireAction) action;
+
+            rig.setMass(fireAction.gun.getMass());
+            time = fireAction.gun.getTime();
+
+            shooterID = fireAction.shooterID;
+
+            flyTimer.reset();
+
+            Vector3f playerLoc = objectManager.getEntity(fireAction.shooterID).getPosition();
+            Vector3f direction = fireAction.targetPosition.subtract(playerLoc).normalize();
+
+            objectManager.submitEntityAction(id, new MoveAction(playerLoc), false);
+            objectManager.submitEntityAction(id, new VelocityAction(direction.normalize().mult(fireAction.gun.getSpeed())), false);
+        }
+    }
     
     @Override
     public void onCollision(Uuid otherID)
@@ -73,22 +103,6 @@ public class Bullet extends RigEntity {
             //objectManager.deleteEntity(id);
             objectManager.submitEntityAction(id, new DeleteAction(), false);
         }
-    }
-
-    public void fire(Uuid entityID, Vector3f targetPosition, Gun gun)
-    {
-        rig.setMass(gun.getMass());
-        time = gun.getTime();
-        
-        shooterID = entityID;
-
-        flyTimer.reset();
-
-        Vector3f playerLoc = objectManager.getEntity(entityID).getPosition();
-        Vector3f direction = targetPosition.subtract(playerLoc).normalize();
-
-        objectManager.submitEntityAction(id, new MoveAction(playerLoc), true);
-        objectManager.submitEntityAction(id, new VelocityAction(direction.normalize().mult(gun.getSpeed())), true);
     }
 
     @Override

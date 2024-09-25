@@ -11,6 +11,7 @@ import com.grave.Game.Entities.Human;
 import com.grave.Game.Entities.RigEntity;
 import com.grave.Game.Entities.Type;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Actions.FireAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.asset.AssetManager;
@@ -251,9 +252,7 @@ public class Player {
                     Vector3f mouseLocation = camera.getWorldCoordinates(mousePositionScreen, 0);
 
                     Uuid bulletID = objectManager.createEntity(Type.BULLET, "bullet");
-
-                    Bullet bullet = (Bullet) objectManager.getEntity(bulletID);
-                    bullet.fire(humanID, mouseLocation, gun);
+                    objectManager.submitEntityAction(bulletID, new FireAction(humanID, mouseLocation, gun), true);
                 }
 
                 if(salvo >= gun.getSalvo())

@@ -11,6 +11,7 @@ import com.grave.Object.Actions.Action;
 import com.grave.Object.Actions.ChatAction;
 import com.grave.Object.Actions.CreateAction;
 import com.grave.Object.Actions.DeleteAction;
+import com.grave.Object.Actions.FireAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.network.serializing.Serializer;
@@ -35,6 +36,7 @@ public class NetSerializer {
         Serializer.registerClass(DeleteAction.class);
         Serializer.registerClass(MoveAction.class);
         Serializer.registerClass(VelocityAction.class);
+        Serializer.registerClass(FireAction.class);
 
         Serializer.registerClass(Uuid.class);
     }

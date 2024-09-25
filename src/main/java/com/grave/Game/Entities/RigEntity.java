@@ -36,6 +36,7 @@ public class RigEntity extends Entity {
         rig.addCollideWithGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
     }
     
+    @Override
     public void processAction(Action action) {
         if (action instanceof MoveAction moveAction) {
             rig.setPhysicsLocation(moveAction.getPosition());
