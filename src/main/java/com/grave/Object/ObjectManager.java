@@ -114,9 +114,11 @@ public class ObjectManager {
                 } else if (action instanceof DeleteAction) {
                     DeleteAction deleteAction = (DeleteAction) action;
 
-                    entityMap.remove(uuid);
+                    //entityMap.remove(uuid);
 
-                    localEntitiesDeleted.put(uuid, getEntity(uuid));
+                    //localEntitiesDeleted.put(uuid, getEntity(uuid));
+
+                    deleteEntity(uuid);
                 }
             });
         });
@@ -226,18 +228,12 @@ public class ObjectManager {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
-            entity.onShutdown();
+            
 
-            if (entity instanceof RigEntity) {
-                RigEntity rigEntity = (RigEntity) entity;
-
-                physicsSpace.remove(rigEntity.getRig());
-            }
-
-            if (null == localActions.get(uuid)) {
-                localActions.put(uuid, new ArrayList<Action>());
-            }
-            localActions.get(uuid).add(new DeleteAction());
+            //if (null == localActions.get(uuid)) {
+            //    localActions.put(uuid, new ArrayList<Action>());
+            //}
+            //localActions.get(uuid).add(new DeleteAction());
 
             localEntitiesDeleted.put(uuid, entity);
         } else {
@@ -248,9 +244,17 @@ public class ObjectManager {
     private void deleteStaged()
     {
         localEntitiesDeleted.forEach((uuid, entity) -> {
+            entity.onShutdown();
+            
             if(entityMap.containsKey(uuid))
             {
                 entityMap.remove(uuid);
+            }
+
+            if (entity instanceof RigEntity) {
+                RigEntity rigEntity = (RigEntity) entity;
+
+                physicsSpace.remove(rigEntity.getRig());
             }
         });
     }
