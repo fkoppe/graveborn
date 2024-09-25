@@ -98,10 +98,10 @@ public class NetClient extends Net {
                 LOGGER.log(Level.FINE, "CLIENT: closing connection...");
 
                 instance.close();
+
+                restart = true;
             }
         }
-
-        restart = true;
     }
     
     public boolean restart()
