@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Actions.DeleteAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Vector3f;
@@ -147,7 +148,8 @@ public class Zombie extends RigEntity {
         assert(entity instanceof Human);
 
         if (objectManager.knownIs(otherID)) {
-            objectManager.deleteEntity(otherID);
+            //objectManager.deleteEntity(otherID);
+            objectManager.submitEntityAction(otherID, new DeleteAction(), false);
         }
     }
 }

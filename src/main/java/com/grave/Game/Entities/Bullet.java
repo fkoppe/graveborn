@@ -3,6 +3,7 @@ package com.grave.Game.Entities;
 import com.grave.Game.Gun;
 import com.grave.Uuid;
 import com.grave.Object.ObjectManager;
+import com.grave.Object.Actions.DeleteAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -37,7 +38,8 @@ public class Bullet extends RigEntity {
     public void onUpdate(float tpf) {
         if (flyTimer.getTimeInSeconds() >= time) {
             if (objectManager.knownIs(id)) {
-                objectManager.deleteEntity(id);
+                //objectManager.deleteEntity(id);
+                objectManager.submitEntityAction(id, new DeleteAction(), false);
             }
         }
     }
@@ -56,7 +58,8 @@ public class Bullet extends RigEntity {
         if ((entity instanceof Human || entity instanceof Zombie || entity instanceof Bullet)) {
 
             if (objectManager.knownIs(otherID)) {
-                objectManager.deleteEntity(otherID);
+                //objectManager.deleteEntity(otherID);
+                objectManager.submitEntityAction(otherID, new DeleteAction(), false);
 
                 if(objectManager.knownIs(shooterID))
                 {
@@ -67,7 +70,8 @@ public class Bullet extends RigEntity {
         }
 
         if (objectManager.knownIs(id)) {
-            objectManager.deleteEntity(id);
+            //objectManager.deleteEntity(id);
+            objectManager.submitEntityAction(id, new DeleteAction(), false);
         }
     }
 

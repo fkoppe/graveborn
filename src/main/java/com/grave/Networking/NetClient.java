@@ -29,6 +29,8 @@ public class NetClient extends Net {
 
     String serverName;
 
+    private boolean restart = false;
+
     public NetClient(ObjectManager objectManager_, String name_, String ip_, int port_)
     {
         super(objectManager_, name_);
@@ -91,12 +93,19 @@ public class NetClient extends Net {
     void disconnect() {
         connected = false;
 
-        if(null != instance) {
+        if (null != instance) {
             if (instance.isConnected()) {
                 LOGGER.log(Level.FINE, "CLIENT: closing connection...");
 
                 instance.close();
             }
         }
+
+        restart = true;
+    }
+    
+    public boolean restart()
+    {
+        return restart;
     }
 }

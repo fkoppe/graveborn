@@ -156,7 +156,6 @@ public class ObjectManager {
     }
 
     public void shutdown() {
-
     }
 
     public void submitEntityAction(Uuid uuid, Action action, boolean isDominantAction) {
@@ -164,22 +163,38 @@ public class ObjectManager {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 
-            entity.processAction(action);
+            boolean process = true;
 
             if (action instanceof MoveAction) {
-                if (!isDominant || isDominantAction) {
+                if (isDominant || isDominantAction) {
                     localPositions.put(uuid, action);
                 }
             } else if (action instanceof VelocityAction) {
-                if (!isDominant || isDominantAction) {
+                if (isDominant || isDominantAction) {
                     localPositions.put(uuid, new MoveAction(getEntity(uuid).getPosition()));
                     localVelocities.put(uuid, action);
+                }
+            } else if (action instanceof DeleteAction) {
+                if (isDominant || isDominantAction) {
+                    if (null == localActions.get(uuid)) {
+                        localActions.put(uuid, new ArrayList<Action>());
+                    }
+                    localActions.get(uuid).add(action);
+                    deleteEntity(uuid);
+                }
+                else {
+                    process = false;
                 }
             } else {
                 if (null == localActions.get(uuid)) {
                     localActions.put(uuid, new ArrayList<Action>());
                 }
                 localActions.get(uuid).add(action);
+            }
+
+            if(process)
+            {
+                entity.processAction(action);
             }
         }
     }
@@ -207,7 +222,7 @@ public class ObjectManager {
         return id;
     }
 
-    public void deleteEntity(Uuid uuid) {
+    private void deleteEntity(Uuid uuid) {
         if (entityMap.containsKey(uuid)) {
             Entity entity = entityMap.get(uuid);
 

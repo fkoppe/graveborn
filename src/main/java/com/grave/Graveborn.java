@@ -181,6 +181,18 @@ public class Graveborn extends SimpleApplication {
         if (null != net) {
             net.update(tpf);
         }
+
+        switch (mode) {
+            case CLIENT:
+                assert(null != net);
+                NetClient client = (NetClient)net;
+                if(client.restart())
+                {
+                    destroy();
+                    simpleInitApp();
+                }
+                break;
+        }
     }
 
     @Override
