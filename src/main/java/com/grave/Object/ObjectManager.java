@@ -158,6 +158,9 @@ public class ObjectManager {
     }
 
     public void shutdown() {
+        entityMap.clear();
+
+        physicsSpace.destroy();
     }
 
     public void submitEntityAction(Uuid uuid, Action action, boolean isDominantAction) {

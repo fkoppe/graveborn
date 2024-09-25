@@ -271,6 +271,7 @@ public class Player {
     }
 
     public void shutdown() {
+        rootNode.detachAllChildren();
     }
 
     private void proccessNew() {
