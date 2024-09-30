@@ -67,10 +67,14 @@ public class Bullet extends RigEntity {
             flyTimer.reset();
 
             Vector3f playerLoc = objectManager.getEntity(fireAction.shooterID).getPosition();
-            Vector3f direction = fireAction.targetPosition.subtract(playerLoc).normalize();
+            Vector3f targetPos = fireAction.targetPosition;
+            targetPos.setZ(0);
+
+            Vector3f direction = targetPos.subtract(playerLoc).normalize();
+
 
             objectManager.submitEntityAction(id, new MoveAction(playerLoc), false);
-            objectManager.submitEntityAction(id, new VelocityAction(direction.normalize().mult(fireAction.gun.getSpeed())), false);
+            objectManager.submitEntityAction(id, new VelocityAction(direction.mult(fireAction.gun.getSpeed())), false);
         }
     }
     
