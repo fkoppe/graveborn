@@ -9,9 +9,12 @@ import com.grave.Object.Actions.FireAction;
 import com.grave.Object.Actions.MoveAction;
 import com.grave.Object.Actions.VelocityAction;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 import com.jme3.system.NanoTimer;
+
+import java.util.Random;
 
 public class Bullet extends RigEntity {
     private NanoTimer flyTimer = new NanoTimer();
@@ -67,12 +70,40 @@ public class Bullet extends RigEntity {
             flyTimer.reset();
 
             Vector3f playerLoc = objectManager.getEntity(fireAction.shooterID).getPosition();
-            Vector3f direction = fireAction.targetPosition.subtract(playerLoc).normalize();
+            Vector3f targetPos = fireAction.targetPosition;
+            targetPos.setZ(0);
+
+            Vector3f direction = targetPos.subtract(playerLoc).normalize();
+
+            float spreadAngle = randomSpread(fireAction.gun.getSpread());
+
+            Vector3f spreadVector = turnVector(direction, spreadAngle);
 
             objectManager.submitEntityAction(id, new MoveAction(playerLoc), false);
-            objectManager.submitEntityAction(id, new VelocityAction(direction.normalize().mult(fireAction.gun.getSpeed())), false);
+            objectManager.submitEntityAction(id, new VelocityAction(spreadVector.mult(fireAction.gun.getSpeed())), false);
         }
     }
+
+    private float randomSpread(float spread){
+        System.out.println(spread);
+        Random random = new Random();
+        float min = -spread;
+        float max = spread;
+        float randomFloatInRange = min + random.nextFloat() * (max - min);
+        System.out.println(randomFloatInRange);
+        return randomFloatInRange;
+    }
+
+    private Vector3f turnVector(Vector3f vector, float angle){
+        float radianAngle = (float) Math.toRadians(angle);
+        Vector3f rotationAxis = new Vector3f(0, 0, 1).normalize();
+        Quaternion quaternion = new Quaternion();
+        quaternion.fromAngleAxis(radianAngle, rotationAxis);
+        Vector3f rotatedVector = quaternion.mult(vector);
+
+        return rotatedVector;
+    }
+
     
     @Override
     public void onCollision(Uuid otherID)

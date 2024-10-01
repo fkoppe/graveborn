@@ -46,6 +46,9 @@ public class Graveborn extends SimpleApplication {
         Graveborn app = new Graveborn(arguments);
         app.setSettings(settings);
         app.setShowSettings(false);
+        app.setDisplayStatView(false);
+        app.setDisplayFps(false);
+        app.setPauseOnLostFocus(false);
         app.start(context);
     }
 
